@@ -1,0 +1,11 @@
+int32 id
+float32 cx
+float32 cy
+float32 vx
+float32 vy
+int32 x
+int32 y
+int32 w
+int32 h
+int32 age
+string state

@@ -1,0 +1,8 @@
+prefix=/home/jorge/Documents/ros_espros/cam660_apps/install
+
+Name: tof_preprocessing
+Description: Description of tof_preprocessing
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: 

@@ -1,0 +1,9 @@
+int32 id
+float32 cx
+float32 cy
+int32 x
+int32 y
+int32 w
+int32 h
+float32 area
+bool is_static

@@ -1,0 +1,2 @@
+espros_cam660
+-DCATKIN_DEVEL_PREFIX=/home/jorge/Documents/ros_espros/cam660_driver/devel -DCMAKE_INSTALL_PREFIX=/home/jorge/Documents/ros_espros/cam660_driver/install -G Unix Makefiles

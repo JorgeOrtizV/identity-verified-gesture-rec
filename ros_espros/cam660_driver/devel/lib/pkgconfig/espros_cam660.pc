@@ -1,0 +1,8 @@
+prefix=/home/jorge/Documents/ros_espros/cam660_driver/devel
+
+Name: espros_cam660
+Description: Description of espros_cam660
+Version: 1.7.0
+Cflags: -I/home/jorge/Documents/ros_espros/cam660_driver/devel/include -I/home/jorge/Documents/ros_espros/cam660_driver/src/espros_cam660/include
+Libs: -L${prefix}/lib -lespros_cam660
+Requires: roscpp dynamic_reconfigure message_runtime sensor_msgs

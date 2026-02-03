@@ -1,0 +1,31 @@
+\subsubsection usage Usage
+\verbatim
+<node name="cam660_node" pkg="espros_cam660" type="cam660_node">
+  <param name="lens_type" type="int" value="0" />
+  <param name="lens_center_offset_x" type="int" value="0" />
+  <param name="lens_center_offset_y" type="int" value="0" />
+  <param name="image_type" type="int" value="1" />
+  <param name="start_stream" type="bool" value="True" />
+  <param name="hdr_mode" type="int" value="0" />
+  <param name="integration_time_tof_1" type="int" value="50" />
+  <param name="integration_time_tof_2" type="int" value="400" />
+  <param name="integration_time_tof_3" type="int" value="1000" />
+  <param name="integration_time_gray" type="int" value="3000" />
+  <param name="min_amplitude" type="int" value="100" />
+  <param name="frequency_modulation" type="int" value="0" />
+  <param name="channel" type="int" value="0" />
+  <param name="median_filter" type="bool" value="False" />
+  <param name="average_filter" type="bool" value="False" />
+  <param name="temporal_filter_factor" type="double" value="0.0" />
+  <param name="temporal_filter_threshold" type="int" value="0" />
+  <param name="edge_filter_threshold" type="int" value="0" />
+  <param name="interference_detection_limit" type="int" value="0" />
+  <param name="use_last_value" type="bool" value="False" />
+  <param name="cartesian" type="bool" value="True" />
+  <param name="publish_point_cloud" type="bool" value="True" />
+  <param name="roi_left_x" type="int" value="0" />
+  <param name="roi_right_x" type="int" value="319" />
+  <param name="roi_height" type="int" value="240" />
+</node>
+\endverbatim
+
