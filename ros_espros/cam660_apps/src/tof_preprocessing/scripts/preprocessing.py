@@ -82,15 +82,19 @@ class DepthPreprocessingNode:
         self.fg_threshold = rospy.get_param("~fg_threshold", 200)
         # Only consider blobs with minimum area:
         self.min_blob_area = rospy.get_param("~min_blob_area", 3000)
-        # Merge blobs threshold
-        self.overlap_thresh = rospy.get_param("~overlap_thresh", 0.5)
+        # Remove small flickering
+        self.min_blob_size = rospy.get_param("~min_blob_size", 300)
         # Allow matching a track with the closest one up to a distance
         self.track_dist_thresh = rospy.get_param("~track_dist_thresh", 50)
         # Keep tracks for a time till timeout 
         self.track_timeout = rospy.get_param("~track_timeout", 15)
         # Keep age pixels in the foreground, if bigger than a threshold, update it with background
         self.fg_age_threshold = rospy.get_param("~fg_age_threshold", 50)
-        self.static_scene_thresh = rospy.get_param("~static_scene_thresh", 45)
+        self.static_scene_thresh = rospy.get_param("~static_scene_thresh", 30)
+        # Split blobs
+        self.min_depth_values = rospy.get_param("~min_depth_values", 100)
+        self.depth_variation_thresh = rospy.get_param("~depth_variation_thresh", 300)
+        self.peaks_threshold = rospy.get_param("~peaks_threshold", 0.4)
 
         # Background model
         self.bg_buffer = []
@@ -157,22 +161,30 @@ class DepthPreprocessingNode:
 
         # Detect foreground
         fg_mask = self.foreground_segmentation(depth_clean)
+        # For some reason sometimes fg doesn't get updated when small artifacts, remove them by force
+        fg_mask = self.remove_small_artifacts(fg_mask)
         # Foreground aging
         self.fg_age[fg_mask>0] += 1
         self.fg_age[fg_mask==0] = 0
         # Blob detection
         blobs = self.extract_blobs(fg_mask)
-        # Merge blobs that share a large overlapping percentage
-        # Not the best results, I create a bunch of new tracks because centroid gets displaced when I merge... Actually overlap percentage is always small <0.3... Even though you can see a big bbox containing a small box... Maybe then just check centroids and if other centroids are very close to the main box (locked in by tracker, then consider the mask inside that bbox as well for classification)
-        blobs = self.merge_overlapping_blobs(blobs)
         # Blob update
         self.track_mask = np.zeros_like(fg_mask, dtype=bool)
-        self.update_tracks(blobs)
-        self.publish_blobs(msg.header)
+        self.bridge_cleanup_mask = np.zeros((240, 320), dtype=bool)
+        self.update_tracks(blobs, depth_clean)
+
+        # In case we have a super blob we have to split and clean the bridge areas
+        if np.any(self.bridge_cleanup_mask):
+            rospy.loginfo("Cleaning up bridge areas")
+            self.force_background_update_bridge(self.bridge_cleanup_mask, depth_clean)
+            fg_mask[self.bridge_cleanup_mask] = 0
+            self.fg_age[self.bridge_cleanup_mask] = 0
+        
         # Background update
         self.update_background(depth, fg_mask)
 
-
+        # Publish data
+        self.publish_blobs(msg.header)
         self.publish_images(depth_clean, fg_mask, msg.header)
 
 
@@ -201,13 +213,25 @@ class DepthPreprocessingNode:
 
         fg = fg.astype(np.uint8)*255
 
-        kernel = np.ones((5,5), np.uint8)
-        fg = cv2.morphologyEx(fg, cv2.MORPH_OPEN, kernel)
-        fg = cv2.morphologyEx(fg, cv2.MORPH_CLOSE, kernel)
+        kernel_open = np.ones((7,7), np.uint8)
+        fg = cv2.morphologyEx(fg, cv2.MORPH_OPEN, kernel_open)
+        #fg = cv2.morphologyEx(fg, cv2.MORPH_CLOSE, kernel)
         # Add a second closing to avoid having blobs in the middle of a white area
-        fg = cv2.morphologyEx(fg, cv2.MORPH_CLOSE, np.ones((9,9), np.uint8))# before was (9,9) let's see how it goes with this kernel
+        # Elliptical kernel is less likely to connect diagonal blobs
+        kernel_ellipse = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
+        fg = cv2.morphologyEx(fg, cv2.MORPH_CLOSE, kernel_ellipse)
 
         return fg
+
+    def remove_small_artifacts(self, fg_mask):
+        num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(fg_mask, connectivity=8)
+        cleaned = np.zeros_like(fg_mask)
+
+        for i in range(1, num_labels):
+            if stats[i, cv2.CC_STAT_AREA] >= self.min_blob_size:
+                cleaned[labels==i] = 255
+
+        return cleaned
 
     def extract_blobs(self, fg_mask):
         num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(fg_mask)
@@ -223,76 +247,17 @@ class DepthPreprocessingNode:
             blobs.append({
                 "centroid": (int(cx), int(cy)),
                 "bbox" : (x,y,w,h),
-                "mask" : (labels==i)
+                "mask" : (labels==i),
+                "area" : area
             })
 
         return blobs
 
-    def bbox_overlap(self, a, b):
-        ax, ay, aw, ah = a
-        bx, by, bw, bh = b
-
-        inter_x1 = max(ax, bx)
-        inter_y1 = max(ay, by)
-        inter_x2 = min(ax+aw, bx+bw)
-        inter_y2 = min(ay+ah, by+bh)
-
-        if inter_x2 <= inter_x1 or inter_y2 <= inter_y1:
-            return 0.0
-
-        inter_area = (inter_x2-inter_x1)*(inter_y2-inter_y1)
-        area_a = aw*ah
-        area_b = bw*bh
-
-        return inter_area/min(area_a, area_b)
-
-    def merge_overlapping_blobs(self, blobs):
-        merged = []
-        used = set()
-
-        for i, b1 in enumerate(blobs):
-            if i in used:
-                continue
-
-            x1, y1, w1, h1 = b1["bbox"]
-            mask = b1["mask"].copy()
-            area = np.sum(mask)
-
-            for j, b2 in enumerate(blobs):
-                if j <= i or j in used:
-                    continue
-
-                # print(self.bbox_overlap(b1["bbox"], b2["bbox"]))
-
-                if self.bbox_overlap(b1["bbox"], b2["bbox"]) > self.overlap_thresh:
-                    # print("merging blobs")
-                    used.add(j)
-                    
-                    x2, y2, w2, h2 = b2["bbox"]
-                    x_min = min(x1, x2)
-                    y_min = min(y1, y2)
-                    x_max = max(x1+w1, x2+w2)
-                    y_max = max(y1+h1, y2+h2)
-                    x1, y1 = x_min, y_min
-                    w1, h1 = x_max-x_min, y_max-y_min
-
-                    mask |= b2["mask"]
-                    area += np.sum(b2["mask"])
-
-            cx, cy = np.mean(np.column_stack(np.where(mask)), axis=0)[::-1]
-
-            merged.append({
-                "centroid": (int(cx), int(cy)),
-                "bbox": (x1, y1, w1, h1),
-                "mask" : mask
-            })
-
-        return merged
-
-
-    def update_tracks(self, blobs):
+    def update_tracks(self, blobs, depth_map):
         updated_tracks = {}
         inactive_blobs = 0
+
+        all_bridges = np.zeros((240, 320), dtype=bool)
         for blob in blobs:
             matched_id = None
             min_dist = float("inf")
@@ -304,12 +269,55 @@ class DepthPreprocessingNode:
                     matched_id = tid
 
             if matched_id is None:
+                # If distances are too far away, we could be merging two blobs into one
+                x,y, w, h = blob["bbox"]
+                aspect_ratio = max(w,h) / min(w,h) # When two agents are combined laterally distance ratio spikes
+                # Debug
+                #print("Area:", blob["area"])
+                #print("Ratio:", aspect_ratio)
+                if blob["area"] > 8000 and aspect_ratio > 1.4: #Important factor is the area
+                    rospy.loginfo("TRIGGERING BLOB SPLITTING ROUTINE")
+                    # Find peaks inside the blob
+                    # Try depth-based split first (if depth available) - Proven to be more robust than distance transform splitting
+                    split_result = None
+                    if depth_map is not None:
+                        split_result = self.split_blob_depth(blob, self.tracks, depth_map)
+    
+                    # Fall back to distance transform if depth fails
+                    if split_result is None:
+                        split_result = self.split_blob_dt(blob, self.tracks)
+    
+                    if split_result:
+                        sub_blobs, bridge_mask = split_result
+                        rospy.loginfo(f"Split into {len(sub_blobs)} sub-blobs")
+
+                        all_bridges |= bridge_mask
+
+                        for sub_blob, track_id in sub_blobs:
+                            track = self.tracks[track_id]
+                            track.centroid = sub_blob["centroid"]
+                            track.bbox = sub_blob["bbox"]
+                            track.bbox_history.append(sub_blob["bbox"])
+                            track.centroid_history.append(sub_blob["centroid"])
+                            track.age += 1
+                            track.last_seen = self.frame_count
+                            track.update_static_flag()
+                            if track.is_static:
+                                inactive_blobs += 1
+                            updated_tracks[track_id] = track
+                            self.track_mask |= (sub_blob["mask"] & ~all_bridges)
+                        continue  # Don't create new track
+                    else:
+                        rospy.logwarn("Failed to split, creating new track")
+
+                # Create new track (normal case or split failed)
                 track = Track(self.next_track_id, blob["centroid"], blob["bbox"])
                 track.bbox_history.append(blob["bbox"])
                 track.centroid_history.append(blob["centroid"])
                 updated_tracks[self.next_track_id] = track
                 self.next_track_id += 1
             else:
+                # Matching existing track found
                 track = self.tracks[matched_id]
                 track.centroid = blob["centroid"]
                 track.bbox = blob["bbox"]
@@ -322,8 +330,7 @@ class DepthPreprocessingNode:
                     inactive_blobs+=1
                 updated_tracks[matched_id] = track
             # Don't update zones where there-s a blob
-            x,y,w,h = track.bbox
-            self.track_mask[y:y+h, x:x+w] = True
+            self.track_mask |= blob["mask"]
 
         for tid, track in self.tracks.items():
             if tid not in updated_tracks and self.frame_count-track.last_seen < self.track_timeout:
@@ -334,27 +341,270 @@ class DepthPreprocessingNode:
         else:
             self.static_scene_counter = 0
         self.full_update = self.static_scene_counter > self.static_scene_thresh
-        #if inactive_blobs == len(blobs) and len(blobs)>0:
-         #   self.full_update=True
-        #else:
-         #   self.full_update=False
 
         self.tracks = updated_tracks
+        self.bridge_cleanup_mask = all_bridges
+
+    def split_blob_dt(self, blob, tracks):
+        if len(tracks) == 0:
+            return None
+
+        # Find peaks using distance transform
+        mask_uint8 = blob["mask"].astype(np.uint8) * 255
+        dist = cv2.distanceTransform(mask_uint8, cv2.DIST_L2, 5) # Measure distance to background
+
+        # Find local maxima (dilate and compare)
+        local_max = cv2.dilate(dist, np.ones((15, 15), np.uint8))
+        peaks_mask = (dist == local_max) & (dist > 10)  # Only significant peaks
+
+        # Get peak coordinates
+        peak_coords = np.column_stack(np.where(peaks_mask))
+
+        if len(peak_coords) < 2:
+            rospy.loginfo("Not enough peaks found")
+            return None
+
+        rospy.loginfo(f"Found {len(peak_coords)} peaks")
+
+        # For each peak, find nearest existing track centroid
+        peak_to_track = {}  # {peak_idx: track_id}
+
+        for peak_idx, (py, px) in enumerate(peak_coords):
+            min_dist = float('inf')
+            nearest_track_id = None
+
+            for track_id, track in tracks.items():
+                tx, ty = track.centroid
+                dist_to_track = np.sqrt((px - tx)**2 + (py - ty)**2)
+
+                if dist_to_track < min_dist:
+                    min_dist = dist_to_track
+                    nearest_track_id = track_id
+
+            # Only assign if close enough to an existing track
+            if min_dist < self.track_dist_thresh:
+                peak_to_track[peak_idx] = nearest_track_id
+                rospy.loginfo(f"Peak {peak_idx} at ({px}, {py}) → Track {nearest_track_id} (dist={min_dist:.1f})")
+
+        # Check if peaks correspond to different tracks
+        if len(peak_to_track) < 2:
+            rospy.loginfo("Not enough peaks matched to tracks")
+            return None
+
+        unique_tracks = set(peak_to_track.values())
+
+        if len(unique_tracks) < 2:
+            rospy.loginfo("All peaks belong to same track")
+            return None
+
+        rospy.loginfo(f"Peaks map to {len(unique_tracks)} tracks: {unique_tracks}")
+
+        # Split blob using watershed with peaks as seeds
+        markers = np.zeros((240, 320), dtype=np.int32)
+
+        for peak_idx, track_id in peak_to_track.items():
+            py, px = peak_coords[peak_idx]
+            # Use track_id + 1 as marker (avoid 0 which is background)
+            markers[py, px] = track_id + 1
+
+        # Watershed needs 3-channel image
+        mask_3ch = cv2.cvtColor(mask_uint8, cv2.COLOR_GRAY2BGR)
+        markers = cv2.watershed(mask_3ch, markers)
+
+        # Extract sub-blobs for each track
+        sub_blobs = []
+        combined_sub_mask = np.zeros((240, 320), dtype=bool)
+
+        for track_id in unique_tracks:
+            marker_value = track_id + 1
+            sub_mask = (markers == marker_value) & blob["mask"]
+
+            if np.sum(sub_mask) < self.min_blob_area:
+                rospy.logwarn(f"Sub-blob for track {track_id} too small: {np.sum(sub_mask)} pixels")
+                return None
+
+            combined_sub_mask |= sub_mask
+
+            # Compute properties
+            coords = np.column_stack(np.where(sub_mask))
+            cy, cx = coords.mean(axis=0)
+            y_min, x_min = coords.min(axis=0)
+            y_max, x_max = coords.max(axis=0)
+
+            sub_blob = {
+                "centroid": (int(cx), int(cy)),
+                "bbox": (int(x_min), int(y_min), int(x_max - x_min), int(y_max - y_min)),
+                "mask": sub_mask,
+                "area": int(np.sum(sub_mask))
+            }
+
+            sub_blobs.append((sub_blob, track_id))
+            rospy.loginfo(f"Sub-blob for track {track_id}: area={sub_blob['area']}, centroid={sub_blob['centroid']}")
+
+        if len(sub_blobs) < 2:
+            return None
+
+        bridge_mask = blob["mask"] & ~combined_sub_mask
+        bridge_mask |= (markers == -1) & blob["mask"]
+        rospy.loginfo(f"Bridge area: {np.sum(bridge_mask)} pixels")
+
+        return sub_blobs, bridge_mask
+
+
+    def split_blob_depth(self, blob, tracks, depth_map):
+        if len(tracks) == 0:
+            return None
+
+        # Extract depth values within blob
+        blob_mask = blob["mask"]
+        blob_depths = depth_map[blob_mask]
+        blob_depths = blob_depths[np.isfinite(blob_depths)]
+
+        if len(blob_depths) < self.min_depth_values:
+            return None
+
+        # Check depth variation (indicating multiple people)
+        depth_std = np.std(blob_depths)
+        depth_range = np.ptp(blob_depths)  # peak-to-peak
+
+        if depth_range < self.depth_variation_thresh:  # Not enough depth variation
+            rospy.loginfo(f"Insufficient depth variation: range={depth_range:.0f}mm")
+            return None
+
+        # Find depth peaks using inverse depth as "distance"
+        # Closer objects (smaller depth) should be peaks
+        # Invert depth so peaks become maxima
+        depth_for_blob = depth_map.copy()
+        depth_for_blob[~blob_mask] = 0
+
+        # Invert valid depths (so closer = higher value)
+        max_depth = np.nanmax(depth_for_blob[blob_mask])
+        inverted_depth = np.zeros_like(depth_for_blob)
+        inverted_depth[blob_mask] = max_depth - depth_for_blob[blob_mask]
+
+        # Smooth to avoid noise peaks
+        inverted_depth_smooth = cv2.GaussianBlur(inverted_depth, (11, 11), 0) # Gaussian around peaks
+
+        # Find local maxima
+        local_max = cv2.dilate(inverted_depth_smooth, np.ones((15, 15), np.uint8))
+        peaks_mask = (inverted_depth_smooth == local_max) & (inverted_depth_smooth > inverted_depth_smooth.max() * self.peaks_threshold) # Threshold
+
+        # Get peak coordinates
+        peak_coords = np.column_stack(np.where(peaks_mask))
+
+        if len(peak_coords) < 2:
+            rospy.loginfo("Not enough depth peaks")
+            return None
+
+        rospy.loginfo(f"Found {len(peak_coords)} depth peaks")
+
+        # Match peaks to existing track centroids
+        peak_to_track = {}
+
+        for peak_idx, (py, px) in enumerate(peak_coords):
+            min_dist = float('inf')
+            nearest_track_id = None
+
+            for track_id, track in tracks.items():
+                tx, ty = track.centroid
+                dist_to_track = np.sqrt((px - tx)**2 + (py - ty)**2)
+
+                if dist_to_track < min_dist:
+                    min_dist = dist_to_track
+                    nearest_track_id = track_id
+
+            if min_dist < self.track_dist_thresh:
+                peak_to_track[peak_idx] = nearest_track_id
+                rospy.logdebug(f"Depth peak {peak_idx} → Track {nearest_track_id} (dist={min_dist:.1f})")
+
+        if len(peak_to_track) < 2:
+            return None
+
+        unique_tracks = set(peak_to_track.values())
+
+        if len(unique_tracks) < 2:
+            return None
+
+        rospy.loginfo(f"Depth peaks map to {len(unique_tracks)} tracks")
+
+        # Use watershed on inverted depth to split
+        markers = np.zeros((240, 320), dtype=np.int32)
+
+        for peak_idx, track_id in peak_to_track.items():
+            py, px = peak_coords[peak_idx]
+            markers[py, px] = track_id + 1
+
+        # Convert inverted depth to uint8 for watershed
+        inverted_uint8 = cv2.normalize(inverted_depth_smooth, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+        inverted_3ch = cv2.cvtColor(inverted_uint8, cv2.COLOR_GRAY2BGR)
+
+        markers = cv2.watershed(inverted_3ch, markers)
+
+        # Extract sub-blobs
+        sub_blobs = []
+        combined_sub_mask = np.zeros((240, 320), dtype=bool)
+
+        for track_id in unique_tracks:
+            marker_value = track_id + 1
+            # Only keep pixels that are in original blob AND assigned to this track
+            sub_mask = (markers == marker_value) & blob_mask
+
+            if np.sum(sub_mask) < self.min_blob_area:
+                rospy.logwarn(f"Sub-blob for track {track_id} too small")
+                return None
+
+            combined_sub_mask |= sub_mask
+
+            coords = np.column_stack(np.where(sub_mask))
+            cy, cx = coords.mean(axis=0)
+            y_min, x_min = coords.min(axis=0)
+            y_max, x_max = coords.max(axis=0)
+
+            sub_blob = {
+                "centroid": (int(cx), int(cy)),
+                "bbox": (int(x_min), int(y_min), int(x_max - x_min), int(y_max - y_min)),
+                "mask": sub_mask,
+                "area": int(np.sum(sub_mask))
+            }
+
+            sub_blobs.append((sub_blob, track_id))
+
+        if len(sub_blobs) < 2:
+            return None
+
+        bridge_mask = blob_mask & ~combined_sub_mask
+        bridge_mask |= (markers == -1) & blob_mask
+        rospy.loginfo(f"Bridge area: {np.sum(bridge_mask)} pixels")
+
+        return sub_blobs, bridge_mask
 
     def update_background(self, depth, fg_mask):
         valid = np.isfinite(depth) & (depth > 0)
         static_fg = self.fg_age > self.fg_age_threshold
+
         bg_mask = ((fg_mask == 0) | (static_fg & ~self.track_mask)) & valid
         if self.full_update:
-            #print("Static scene")
-        #    bg_mask = ((fg_mask == 0) | static_fg) & valid
             beta = self.bg_beta2
         else:
-            #print("Active scene")
-        #    bg_mask = (fg_mask == 0) & (~self.track_mask) & valid
             beta = self.bg_beta
-        # bg_mask = (self.fg_persistent==0) & valid
         self.background[bg_mask] = beta*self.background[bg_mask]+(1-beta)*depth[bg_mask]
+
+    def force_background_update_bridge(self, bridge_mask, depth):
+        if bridge_mask is None or not bridge_mask.any():
+            return
+
+        dilated_bridge = cv2.dilate(bridge_mask.astype(np.uint8)*255, np.ones((5,5), np.uint8))
+
+        valid = np.isfinite(depth) & (depth > 0) & (dilated_bridge > 0)
+
+        if not valid.any():
+            return
+
+        self.background[valid] = depth[valid]
+
+        self.fg_age[valid] = 0
+
+        rospy.loginfo(f"Force-updated background in {np.sum(valid)} bridge pixels")
 
 
     def publish_images(self, depth, fg_mask, header):

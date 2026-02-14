@@ -7,17 +7,20 @@
         <param name="min_depth" value="150" />
         <param name="max_depth" value="6000" />
         <param name="bg_frames" value="50" />
-	<param name="bg_beta" value="0.9995" />
+	<param name="bg_beta" value="0.999" />
 	<param name="bg_beta2" value="0.9" />
 	<param name="fg_threshold" value="200" />
 
 	<param name="fg_age_threshold" value="50" />
-	<param name="static_scene_thresh" value="45" />
+	<param name="static_scene_thresh" value="30" />
 
 	<param name="min_blob_area" value="3000" />
-	<param name="overlap_thresh" value="0.4" />
+	<param name="min_blob_size" value="300" />
         <param name="track_dist_thresh" value="50" />
         <param name="track_timeout" value="15" />
+	<param name="min_depth_values" value="100" />
+	<param name="depth_variation_thresh" value="300" />
+	<param name="peaks_threshold" value="0.4" />
 
 	<param name="fg_blob_mem" value="60" />
 	<param name="fg_bbox_mem" value="20" />
