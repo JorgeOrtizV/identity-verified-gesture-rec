@@ -20,9 +20,16 @@ class Agent:
         self.y = blob.y
         self.w = blob.w
         self.h = blob.h
+
+        # Parameters
         self.bbox_alpha = rospy.get_param("~bbox_alpha", 0.7)
         self.hit_thresh = rospy.get_param("~hit_thresh", 10)
+        self.boundary_thresh = rospy.get_param("~boundary_thresh", 40)
 
+        # Image dimensions
+        self.width, self.height = 320, 240
+
+        # Agent init
         self.last_seen = rospy.Time.now()
         self.age = 1
         self.confidence = 1.0
@@ -30,6 +37,8 @@ class Agent:
         self.hits = 1
         self.miss_count = 0
         self.roi = None
+        self.spawn_location = (self.x, self.y)
+        self.spawn_type = self.classify_spawn(blob)
 
     def init_kalman(self, cx, cy):
         # 4 state params (x,y,vx,vy), 2 measurement params (x,y)
@@ -65,7 +74,7 @@ class Agent:
         ], np.float32)
 
         self.kf.predict()
-        
+
         cx, cy = self.kf.statePre[:2].flatten()
         self.x = int(cx - self.w/2)
         self.y = int(cy - self.h/2)
@@ -94,10 +103,18 @@ class Agent:
         s = self.kf.statePost.flatten()
         return s[0], s[1]
 
+    def classify_spawn(self, blob):
+        near_boundary = (
+            blob.cx < self.boundary_thresh or blob.cx > self.width - self.boundary_thresh or
+            blob.cy < self.boundary_thresh or blob.cy > self.height - self.boundary_thresh
+        )
+
+        return "BOUNDARY" if near_boundary else "CENTER"
+
     def mark_missed(self):
         self.miss_count+=1
         self.confidence *= 0.95
-        if self.miss_count > 3:
+        if self.miss_count > 5:
             self.state = "LOST"
 
 
@@ -105,11 +122,16 @@ class AgentTrackerNode:
     def __init__(self):
         self.agents = {}
         self.next_id = 0
-
+        
+        # Parameters
         self.maha_thresh = rospy.get_param("~maha_thresh", 9.21)
         self.iou_thresh = rospy.get_param("~iou_thresh", 0.6)
-        self.gate_thresh = rospy.get_param("~gate_thresh", 60)
+        # self.gate_thresh = rospy.get_param("~gate_thresh", 60)
+        self.duplicate_centroid_thresh = rospy.get_param("~duplicate_centroid_thresh", 30)
+        self.avg_conf_thresh = rospy.get_param("~avg_conf_thresh", 0.7)
 
+        # ROS I/O
+        # Sub
         self.sub = rospy.Subscriber(
             "/preproc/blobs",
             BlobArray,
@@ -117,27 +139,27 @@ class AgentTrackerNode:
             queue_size=1
         )
 
+        # Pub
         self.pub = rospy.Publisher(
             "/tracking/kalman",
             AgentArray,
             queue_size=1
         )
-        
+
 
     def callback(self, msg):
         blobs = msg.blobs
         agents = list(self.agents.values())
         now = msg.header.stamp
 
-        # Predict
+        # Predict all agents
         for agent in agents:
             dt = (now - agent.last_seen).to_sec()
             dt = max(0.01, min(dt, 0.2))
             agent.predict(dt)
 
-        # Create Cost Matrix
         if len(agents) == 0:
-            for b in blobs: 
+            for b in blobs:
                 self.create_agent(b)
             self.publish_agents(msg.header)
             return
@@ -145,41 +167,95 @@ class AgentTrackerNode:
         if len(blobs) == 0:
             for agent in agents:
                 agent.mark_missed()
-            self.merge_duplicate_agents()
             self.cleanup()
             self.publish_agents(msg.header)
             return
 
+        # Build cost matrix
         cost_matrix = self.build_cost_matrix(agents, blobs)
 
         # Hungarian assignment
         row, col = linear_sum_assignment(cost_matrix)
-        matched_agents = set()
-        matched_blobs = set()
-        for r, c in zip(row, col):
-            if cost_matrix[r,c] > self.gate_thresh:
+
+        # Group assignments per blob
+        blob_to_agents = {}
+
+        for r,c in zip(row, col):
+            if cost_matrix[r,c] > self.maha_thresh:
                 continue
 
-            agent = agents[r]
-            blob = blobs[c]
+            if not c in blob_to_agents:
+                blob_to_agents[c] = []
+            blob_to_agents[c].append(r)
 
-            agent.correct(blob)
-            matched_agents.add(agent.id)
-            matched_blobs.add(c)
+        # Find all agents close to each blob
+        for blob_idx in range(len(blobs)):
+            close_agents = []
+            for agent_idx in range(len(agents)):
+                if cost_matrix[agent_idx, blob_idx] < self.maha_thresh:
+                    close_agents.append(agent_idx)
 
-        # Missed agents
+            # If more than two agents are close to a blob we override hungarian assignment
+            if len(close_agents) >= 2:
+                blob_to_agents[blob_idx] = close_agents
+
+        matched_agents = set()
+        matched_blobs = set()
+
+        for blob_idx, agent_indices in blob_to_agents.items():
+            matched_blobs.add(blob_idx)
+            blob = blobs[blob_idx]
+
+            if len(agent_indices) == 1:
+                # 1-to-1 match, no brainer
+                agent_idx = agent_indices[0]
+                agent = agents[agent_idx]
+                agent.correct(blob)
+                matched_agents.add(agent.id)
+
+            elif len(agent_indices) >= 2:
+                rospy.logwarn(f"Potential superblob: {len(agent_indices)} agents → blob {blob_idx}")
+
+                avg_confidence = np.mean([agents[idx].confidence for idx in agent_indices])
+                
+                # Use prediction instead of corrupted observation
+                if avg_confidence > self.avg_conf_thresh:
+                    rospy.loginfo("Using predictions, ignoring superblob observation")
+                    for agent_idx in agent_indices:
+                        agent = agents[agent_idx]
+                        agent.last_seen = now
+                        agent.age+=1
+                        agent.hits+=1
+
+                        agent.confidence *= 0.95
+
+                        matched_agents.add(agent.id)
+                        rospy.loginfo(f"Agent {agent.id}: kept prediction, conf={agent.confidence:.2f}")
+                else:
+                    # Fallback: Update with same observation
+                    rospy.loginfo(f"Low confidence ({avg_confidence:.2f}) → using observation")
+                    for agent_idx in agent_indices:
+                        agent = agents[agent_idx]
+                        agent.correct(blob)
+                        agent.confidence *= 0.9
+                        matched_agents.add(agent.id)
+
+        # Handle missing agents
         for agent in agents:
             if agent.id not in matched_agents:
                 agent.mark_missed()
 
-        # Create agents for no matches
+        # Create new agents for unmatchd blobs
         for i, blob in enumerate(blobs):
             if i not in matched_blobs:
                 self.create_agent(blob)
 
+        # Merge duplicate agents
         self.merge_duplicate_agents()
+
         self.cleanup()
         self.publish_agents(msg.header)
+
 
     def build_cost_matrix(self, agents, blobs):
         cost = np.full((len(agents), len(blobs)), 1e6, dtype=np.float32)
@@ -198,6 +274,7 @@ class AgentTrackerNode:
         agent = Agent(self.next_id, blob)
         self.agents[self.next_id] = agent
         self.next_id += 1
+        rospy.loginfo(f"Created Agent: {agent.id}. Detected spawn location: {agent.spawn_location} -> {agent.spawn_type}")
 
     def mahalanobis(self, agent, blob):
         z = np.array([[blob.cx], [blob.cy]], np.float32)
@@ -211,7 +288,6 @@ class AgentTrackerNode:
 
         return np.sqrt(float(y.T @ np.linalg.inv(S) @ y))
 
-
     def merge_duplicate_agents(self):
         ids = list(self.agents.keys())
         to_remove = set()
@@ -223,20 +299,85 @@ class AgentTrackerNode:
             for j in range(i+1, len(ids)):
                 if ids[j] in to_remove:
                     continue
+
                 a = self.agents.get(ids[i], None)
                 b = self.agents.get(ids[j], None)
 
                 if a is None or b is None:
                     continue
 
-                if self.bbox_iou(a,b) > self.iou_thresh:
-                    keep, remove = (a,b) if a.age > b.age else (b, a)
-                    keep.confidence += remove.confidence
+                # Use intersection over union as main reason
+                iou = self.bbox_iou(a,b)
+                # Use size ratio to merge small slaves with master agent
+                area_a = a.w * a.h
+                area_b = b.w * b.h
+                size_ratio = min(area_a, area_b)/ max(area_a, area_b) if max(area_a, area_b) > 0 else 0
+                # Use centroid distance as another criteria
+                a_c = np.array(a.get_centroid())
+                b_c = np.array(b.get_centroid())
+                centroid_dist = np.linalg.norm(a_c - b_c)
+
+                # Center spawn as extra criteria
+                a_center_spawn = hasattr(a, "spawn_type") and a.spawn_type == "CENTER"
+                b_center_spawn = hasattr(b, "spawn_type") and b.spawn_type == "CENTER"
+
+                should_merge = False
+                merge_reason = ""
+
+                # Debug
+                #print("IOU:", iou)
+                #print("Size ratio:", size_ratio)
+                #print("Centroid dist:", centroid_dist)
+
+                # First step: Being aggressive for agents that just appear in the middle of the scene
+                if (a_center_spawn or b_center_spawn) and (a.age < 10 or b.age < 10):
+                    if centroid_dist < 80:
+                        should_merge = True
+                        merge_reason = "suspicious_spawn_proximity"
+                    elif iou > 0.25:
+                        should_merge = True
+                        merge_reason = "suspicious_spawn_overlap"
+                # Conservative rules
+                else:
+                    # Big IoU and small centroid distance
+                    if iou > self.iou_thresh and centroid_dist < self.duplicate_centroid_thresh:
+                        should_merge = True
+                        merge_reason = "high_iou_close_centroids"
+                    elif size_ratio < 0.4 and centroid_dist < 60:
+                        should_merge = True
+                        merge_reason = "fragement_detection"
+
+                if should_merge:
+                    rospy.loginfo(
+                        f"Merging duplicate agents {ids[i]} & {ids[j]} "
+                        f"[{merge_reason}]"
+                        f"(IoU={iou:.2f}, dist={centroid_dist:.1f}px), size_ratio={size_ratio:.2f})"
+                    )
+
+                     # Prefer boundary-spawned over center-spawned
+                    if hasattr(a, 'spawn_type') and hasattr(b, 'spawn_type'):
+                        if a.spawn_type == 'BOUNDARY' and b.spawn_type == 'CENTER':
+                            keep, remove = a, b
+                        elif b.spawn_type == 'BOUNDARY' and a.spawn_type == 'CENTER':
+                            keep, remove = b, a
+                        else:
+                            # Both same type - use age/size
+                            keep, remove = (a, b) if a.age > b.age else (b, a)
+                    else:
+                        keep, remove = (a, b) if a.age > b.age else (b, a)
+                    # Keep older/more confident agent
+                    #if area_a > area_b or (area_a == area_b and a.confidence > b.confidence):
+                    #    keep, remove = a, b
+                    #else:
+                    #    keep, remove = b, a
+
+                    
+                    keep.confidence = min(1.0, keep.confidence+remove.confidence*0.5)
                     to_remove.add(remove.id)
 
         for rid in to_remove:
+            rospy.loginfo(f"Removed duplicate agent {rid}")
             del self.agents[rid]
-
 
     def bbox_iou(self, a, b):
         inter_x1 = max(a.x, b.x)
@@ -253,6 +394,7 @@ class AgentTrackerNode:
 
         return inter_area / float(area_a + area_b - inter_area)
 
+
     def cleanup(self):
         now = rospy.Time.now()
         to_delete = []
@@ -261,7 +403,7 @@ class AgentTrackerNode:
             if (now - agent.last_seen).to_sec() > 1.0:
                 agent.state = "LOST"
 
-            if (now - agent.last_seen).to_sec() > 2.0:
+            if (now - agent.last_seen).to_sec() > 2.0 and agent.state == "LOST":
                 to_delete.append(aid)
 
             if agent.confidence < 0.3:
