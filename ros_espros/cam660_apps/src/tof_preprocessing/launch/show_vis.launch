@@ -1,0 +1,22 @@
+<launch>
+    <node pkg="tof_preprocessing"
+          type="vis_depth_clean.py"
+          name="vis_depth_clean"
+          output="screen">
+    </node>
+
+    <node pkg="tof_preprocessing"
+          type="vis_blobs.py"
+          name="vis_blobs"
+          output="screen">
+    </node>
+
+    <node pkg="tof_preprocessing"
+          type="vis_kalman.py"
+          name="vis_kalman"
+          output="screen">
+    </node>
+
+</launch>
+
+
