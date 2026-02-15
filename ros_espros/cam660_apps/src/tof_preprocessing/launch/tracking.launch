@@ -1,0 +1,28 @@
+<launch>
+    <node pkg="tof_preprocessing"
+          type="tracking.py"
+          name="tracking"
+          output="screen">
+
+        <param name="bbox_alpha" value="0.7" />
+	<param name="hit_thresh" value="10" />
+	<param name="miss_count_thresh" value="5" />
+
+	<param name="maha_thresh" value="9.21" />
+	<param name="iou_thresh" value="0.6" />
+	<param name="duplicate_centroid_thresh" value="30" />
+	<param name="avg_conf_thresh" value="0.7" />
+	<param name="static_scene_threshold" value="20" />
+	<param name="boundary_thresh" value="40" />
+	<param name="proximity_thresh" value="80" />
+	<param name="iou_center_spawn_thresh" value="0.25" />
+	<param name="strict_close_centroids_thresh" value="20" />
+	<param name="agent_legal_age" value="10" />
+	<param name="agent_low_conf_thresh" value="0.7" />
+	<param name="agent_cleanup_conf" value="0.3" />
+	<param name="size_ratio_thresh" value="0.35" />
+	<param name="loose_close_centroid_thresh" value="60" />
+
+    </node>
+</launch>
+

@@ -11,7 +11,7 @@ from scipy.optimize import linear_sum_assignment
 
 
 class Agent:
-    def __init__(self, agent_id, blob):
+    def __init__(self, agent_id, blob, spawn_location, spawn_type):
         self.id = agent_id
         self.kf = self.init_kalman(blob.cx, blob.cy)
 
@@ -24,10 +24,7 @@ class Agent:
         # Parameters
         self.bbox_alpha = rospy.get_param("~bbox_alpha", 0.7)
         self.hit_thresh = rospy.get_param("~hit_thresh", 10)
-        self.boundary_thresh = rospy.get_param("~boundary_thresh", 40)
-
-        # Image dimensions
-        self.width, self.height = 320, 240
+        self.miss_count_thresh = rospy.get_param("~miss_count_thresh", 5)
 
         # Agent init
         self.last_seen = rospy.Time.now()
@@ -37,8 +34,8 @@ class Agent:
         self.hits = 1
         self.miss_count = 0
         self.roi = None
-        self.spawn_location = (self.x, self.y)
-        self.spawn_type = self.classify_spawn(blob)
+        self.spawn_location = spawn_location 
+        self.spawn_type = spawn_type
 
     def init_kalman(self, cx, cy):
         # 4 state params (x,y,vx,vy), 2 measurement params (x,y)
@@ -103,18 +100,10 @@ class Agent:
         s = self.kf.statePost.flatten()
         return s[0], s[1]
 
-    def classify_spawn(self, blob):
-        near_boundary = (
-            blob.cx < self.boundary_thresh or blob.cx > self.width - self.boundary_thresh or
-            blob.cy < self.boundary_thresh or blob.cy > self.height - self.boundary_thresh
-        )
-
-        return "BOUNDARY" if near_boundary else "CENTER"
-
     def mark_missed(self):
         self.miss_count+=1
         self.confidence *= 0.95
-        if self.miss_count > 5:
+        if self.miss_count > self.miss_count_thresh:
             self.state = "LOST"
 
 
@@ -122,13 +111,26 @@ class AgentTrackerNode:
     def __init__(self):
         self.agents = {}
         self.next_id = 0
+
+        # Image dimensions
+        self.width, self.height = 320, 240
         
         # Parameters
         self.maha_thresh = rospy.get_param("~maha_thresh", 9.21)
         self.iou_thresh = rospy.get_param("~iou_thresh", 0.6)
-        # self.gate_thresh = rospy.get_param("~gate_thresh", 60)
         self.duplicate_centroid_thresh = rospy.get_param("~duplicate_centroid_thresh", 30)
         self.avg_conf_thresh = rospy.get_param("~avg_conf_thresh", 0.7)
+        self.static_scene_threshold = rospy.get_param("~static_scene_threshold", 20) #px/s, being very relaxed about this because just moving the arm triggers 100+ avg scene velocity, we could increase it but distance control has proven to be really good.
+        self.boundary_thresh = rospy.get_param("~boundary_thresh", 40)
+        # If agent is very close to an existing agent when spawning in the center, not create
+        self.proximity_thresh = rospy.get_param("~proximity_thresh", 80) # If necessary reduce it, since it is only used when spawn location is center maybe we are safe with 80.
+        self.iou_center_spawn_thresh = rospy.get_param("~iou_center_spawn_thresh", 0.25)
+        self.strict_close_centroids_thresh = rospy.get_param("~strict_close_centroids_thresh", 20)
+        self.agent_legal_age = rospy.get_param("~agent_legal_age", 10)
+        self.agent_low_conf_thresh = rospy.get_param("~agent_low_conf_thresh", 0.7)
+        self.agent_cleanup_conf = rospy.get_param("~agent_cleanup_conf", 0.3)
+        self.size_ratio_thresh = rospy.get_param("~size_ratio_thresh", 0.35)
+        self.loose_close_centroid_thresh = rospy.get_param("~loose_close_centroid_thresh", 60)
 
         # ROS I/O
         # Sub
@@ -160,7 +162,7 @@ class AgentTrackerNode:
 
         if len(agents) == 0:
             for b in blobs:
-                self.create_agent(b)
+                self.create_agent(b, agents)
             self.publish_agents(msg.header)
             return
 
@@ -248,7 +250,7 @@ class AgentTrackerNode:
         # Create new agents for unmatchd blobs
         for i, blob in enumerate(blobs):
             if i not in matched_blobs:
-                self.create_agent(blob)
+                self.create_agent(blob, agents)
 
         # Merge duplicate agents
         self.merge_duplicate_agents()
@@ -270,11 +272,62 @@ class AgentTrackerNode:
         return cost
 
 
-    def create_agent(self, blob):
-        agent = Agent(self.next_id, blob)
+    def create_agent(self, blob, agents):
+        # Check average scene motion and spawn location. 
+        # If scene is mostly static and potential agent appears in the center then we don-t create
+        # the agent since it would be most likely a fragment of a bigger agent due to sensor flickering
+        scene_motion = self.scene_motion_level()
+        is_static = scene_motion < self.static_scene_threshold
+        # Debug 
+        # print("Scene Motion", scene_motion)
+
+        # Check spawn location
+        spawn_location = (blob.cx, blob.cy)
+        spawn_type = self.classify_spawn(spawn_location)
+
+        # Check relative position with other agents
+        blob_pos = np.array([blob.cx, blob.cy])
+        proximity = False
+        for agent in agents:
+            agent_pos = np.array(agent.get_centroid())
+            dist = np.linalg.norm(agent_pos - blob_pos)
+            if dist < self.proximity_thresh:
+                proximity = True
+
+
+        if spawn_type == "CENTER" and is_static and len(self.agents) > 0:
+            rospy.loginfo("Not creating agent: Center spawn during static scene - most likely fragment")
+            return
+        elif spawn_type == "CENTER" and proximity:
+            rospy.loginfo("Not creating agent: Center spawn and very close to existing agent - most likely fragment")
+            return
+
+        agent = Agent(self.next_id, blob, spawn_location, spawn_type)
         self.agents[self.next_id] = agent
         self.next_id += 1
-        rospy.loginfo(f"Created Agent: {agent.id}. Detected spawn location: {agent.spawn_location} -> {agent.spawn_type}")
+        rospy.loginfo(f"Created Agent: {agent.id}. Detected spawn location: {spawn_location} -> {spawn_type}")
+
+    def scene_motion_level(self):
+        if len(self.agents) == 0:
+            return 0
+
+        velocities = []
+        for agent in self.agents.values():
+            vx = agent.kf.statePost[2,0]
+            vy = agent.kf.statePost[3,0]
+            vel = np.sqrt(vx**2 + vy**2)
+            velocities.append(vel)
+
+        return np.mean(velocities)
+
+    def classify_spawn(self, spawn_loc):
+        near_boundary = (
+            spawn_loc[0] < self.boundary_thresh or spawn_loc[0] > self.width - self.boundary_thresh or
+            spawn_loc[1] < self.boundary_thresh or spawn_loc[1] > self.height - self.boundary_thresh
+        )
+
+        return "BOUNDARY" if near_boundary else "CENTER"
+
 
     def mahalanobis(self, agent, blob):
         z = np.array([[blob.cx], [blob.cy]], np.float32)
@@ -331,10 +384,11 @@ class AgentTrackerNode:
 
                 # First step: Being aggressive for agents that just appear in the middle of the scene
                 if (a_center_spawn or b_center_spawn) and (a.age < 10 or b.age < 10):
-                    if centroid_dist < 80:
+                    # since we are avoiding creating agents in this scenario, first check might be redundant but leaving it here just in case.
+                    if centroid_dist < self.proximity_thresh:
                         should_merge = True
                         merge_reason = "suspicious_spawn_proximity"
-                    elif iou > 0.25:
+                    elif iou > self.iou_center_spawn_thresh:
                         should_merge = True
                         merge_reason = "suspicious_spawn_overlap"
                 # Conservative rules
@@ -343,7 +397,11 @@ class AgentTrackerNode:
                     if iou > self.iou_thresh and centroid_dist < self.duplicate_centroid_thresh:
                         should_merge = True
                         merge_reason = "high_iou_close_centroids"
-                    elif size_ratio < 0.4 and centroid_dist < 60:
+                    # Very close centroids - Assess performance
+                    elif centroid_dist < self.strict_close_centroids_thresh:
+                        should_merge = True
+                        merge_Reason = "very_close_centroids"
+                    elif size_ratio < self.size_ratio_thresh and centroid_dist < self.loose_close_centroid_thresh:
                         should_merge = True
                         merge_reason = "fragement_detection"
 
@@ -406,7 +464,15 @@ class AgentTrackerNode:
             if (now - agent.last_seen).to_sec() > 2.0 and agent.state == "LOST":
                 to_delete.append(aid)
 
-            if agent.confidence < 0.3:
+            if agent.confidence < self.agent_cleanup_conf:
+                to_delete.append(aid)
+
+            # If we have young center agents with low confidence, remove them since they are most likely fragments
+            if agent.age < self.agent_legal_age and agent.confidence < self.agent_low_conf_thresh and agent.spawn_type == "CENTER":
+                rospy.loginfo(
+                    f"Deleting young center-spawn agent {aid} "
+                    f"(age={agent.age}, conf={agent.confidence:.2f})"
+                )
                 to_delete.append(aid)
 
         for aid in to_delete:

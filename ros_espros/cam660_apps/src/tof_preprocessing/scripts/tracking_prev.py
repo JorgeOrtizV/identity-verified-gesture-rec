@@ -20,8 +20,8 @@ class Agent:
         self.y = blob.y
         self.w = blob.w
         self.h = blob.h
-        self.bbox_alpha = 0.7
-        self.hit_thresh = 10
+        self.bbox_alpha = rospy.get_param("~bbox_alpha", 0.7)
+        self.hit_thresh = rospy.get_param("~hit_thresh", 10)
 
         self.last_seen = rospy.Time.now()
         self.age = 1
@@ -47,9 +47,7 @@ class Agent:
             [0, 1, 0, 0]
         ], np.float32)
 
-        #kf.processNoiseCov = np.eye(4, dtype=np.float32) * 0.03#0.01
-        kf.processNoiseCov = np.diag([5,5,100,100]).astype(np.float32) # high initial uncertainity for velocity
-        #kf.measurementNoiseCov = np.eye(2, dtype=np.float32) * 0.5#0.1
+        kf.processNoiseCov = np.diag([5,5,1000,1000]).astype(np.float32) # high initial uncertainity for velocity
         kf.measurementNoiseCov = np.diag([10,10]).astype(np.float32)
         kf.errorCovPost = np.eye(4, dtype=np.float32)
 
@@ -58,8 +56,16 @@ class Agent:
 
         return kf
 
-    def predict(self):
+    def predict(self, dt):
+        self.kf.transitionMatrix = np.array([
+            [1,0,dt,0],
+            [0,1,0,dt],
+            [0,0,1,0],
+            [0,0,0,1]
+        ], np.float32)
+
         self.kf.predict()
+        
         cx, cy = self.kf.statePre[:2].flatten()
         self.x = int(cx - self.w/2)
         self.y = int(cy - self.h/2)
@@ -81,6 +87,7 @@ class Agent:
         self.hits += 1
 
         if self.hits >= self.hit_thresh:
+            self.miss_count = 0
             self.state = "ACTIVE"
 
     def get_centroid(self):
@@ -90,7 +97,8 @@ class Agent:
     def mark_missed(self):
         self.miss_count+=1
         self.confidence *= 0.95
-        self.state = "LOST"
+        if self.miss_count > 3:
+            self.state = "LOST"
 
 
 class AgentTrackerNode:
@@ -115,77 +123,17 @@ class AgentTrackerNode:
             queue_size=1
         )
         
-        # Blob-centric version : better for agent splitting
-#    def callback(self, msg):
-#        blobs = msg.blobs
-
-        # Predict all agents
-#        for agent in self.agents.values():
-#            agent.predict()
-
-#        associations = {}
-
-#        for blob in blobs:
-#            agent, d = self.find_best_agent(blob)
-
-#            if agent:
-#                associations.setdefault(agent.id, []).append(blob)
-#            else:
-#                self.create_agent(blob)
-
-#        for aid, blob_list in associations.items():
-#            agent = self.agents[aid]
-#            main_blob = min(blob_list, key=lambda b: self.euclid(agent, b))
-#            agent.correct(main_blob)
-
-#        self.merge_duplicate_agents()
-#        self.cleanup()
-#        self.publish_agents(msg.header)
-
-    # Agent-centric : Drawback - 1-to-1 matching
-#    def callback(self, msg):
-#        blobs = msg.blobs
-
-        # Predict all agents
-#        for agent in self.agents.values():
-#            agent.predict()
-
-        # Find best agent for each blob
-#        assignments = {}
-
-#        for i, blob in enumerate(blobs):
-#            best_agent, best_dist = None, np.inf
-#            for agent in self.agents.values():
-#                d = self.mahalanobis(agent, blob)
-#                if d < best_dist and d < self.maha_thresh:
-#                    best_agent, best_dist = agent, d
-#            if best_agent:
-#                aid = best_agent.id
-#                if aid not in assignments or best_dist < assignments[aid][2]:
-#                    assignments[aid] = (i, blob, best_dist)
-
-        # Correct once per agent
-#        used_blobs = set()
-#        for aid, (i, blob, _) in assignments.items():
-#            self.agents[aid].correct(blob)
-#            used_blobs.add(i)
-
-        # Create agents only for blobs without match
-#        for i, blob in enumerate(blobs):
-#            if i not in used_blobs:
-#                self.create_agent(blob)
-
-#        self.merge_duplicate_agents()
-#        self.cleanup()
-#        self.publish_agents(msg.header)
 
     def callback(self, msg):
         blobs = msg.blobs
         agents = list(self.agents.values())
+        now = msg.header.stamp
 
         # Predict
         for agent in agents:
-            agent.predict()
+            dt = (now - agent.last_seen).to_sec()
+            dt = max(0.01, min(dt, 0.2))
+            agent.predict(dt)
 
         # Create Cost Matrix
         if len(agents) == 0:
@@ -197,7 +145,7 @@ class AgentTrackerNode:
         if len(blobs) == 0:
             for agent in agents:
                 agent.mark_missed()
-            self.merge_duplicate_agents()
+            #self.merge_duplicate_agents()
             self.cleanup()
             self.publish_agents(msg.header)
             return
@@ -229,7 +177,7 @@ class AgentTrackerNode:
             if i not in matched_blobs:
                 self.create_agent(blob)
 
-        self.merge_duplicate_agents()
+        #self.merge_duplicate_agents()
         self.cleanup()
         self.publish_agents(msg.header)
 
@@ -251,22 +199,6 @@ class AgentTrackerNode:
         self.agents[self.next_id] = agent
         self.next_id += 1
 
-    def find_best_agent(self, blob):
-        best = None
-        min_dist = float("inf")
-
-        for agent in self.agents.values():
-
-            dist = self.mahalanobis(agent, blob)
-            #cx, cy = agent.get_centroid()
-            #dist = np.linalg.norm([blob.cx - cx, blob.cy - cy])
-            print(dist)
-            if dist < min_dist and dist < self.maha_thresh:
-                min_dist = dist
-                best = agent
-
-        return best, min_dist
-
     def mahalanobis(self, agent, blob):
         z = np.array([[blob.cx], [blob.cy]], np.float32)
 
@@ -279,21 +211,32 @@ class AgentTrackerNode:
 
         return np.sqrt(float(y.T @ np.linalg.inv(S) @ y))
 
-    def euclid(self, agent, blob):
-        cx, cy = agent.get_centroid()
-        return np.linalg.norm([blob.cx - cx, blob.cy - cy])
 
     def merge_duplicate_agents(self):
         ids = list(self.agents.keys())
+        to_remove = set()
+
         for i in range(len(ids)):
+            if ids[i] in to_remove:
+                continue
+
             for j in range(i+1, len(ids)):
-                a = self.agents[ids[i]]
-                b = self.agents[ids[j]]
+                if ids[j] in to_remove:
+                    continue
+                a = self.agents.get(ids[i], None)
+                b = self.agents.get(ids[j], None)
+
+                if a is None or b is None:
+                    continue
 
                 if self.bbox_iou(a,b) > self.iou_thresh:
                     keep, remove = (a,b) if a.age > b.age else (b, a)
                     keep.confidence += remove.confidence
-                    del self.agents[remove.id]
+                    to_remove.add(remove.id)
+
+        for rid in to_remove:
+            del self.agents[rid]
+
 
     def bbox_iou(self, a, b):
         inter_x1 = max(a.x, b.x)
@@ -319,6 +262,9 @@ class AgentTrackerNode:
                 agent.state = "LOST"
 
             if (now - agent.last_seen).to_sec() > 2.0:
+                to_delete.append(aid)
+
+            if agent.confidence < 0.3:
                 to_delete.append(aid)
 
         for aid in to_delete:
