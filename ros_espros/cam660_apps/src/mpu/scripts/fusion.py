@@ -19,21 +19,25 @@ class FusionNode:
 
         # Rospy params
         self.imu_window_duration = rospy.get_param("~imu_window_duration", 0.4)
-        self.imu_safety_margin = rospy.get_param("~imu_safety_margin", 0.2)
+        self.imu_safety_margin = rospy.get_param("~imu_safety_margin", 0.3)
         self.vision_window_duration = rospy.get_param("~vision_window_duration", 1.0)
-        self.confidence_thresh = rospy.get_param("~confidence_thresh", 0.6)
-        self.tolerant_confidence_thresh = rospy.get_param("~tolerant_confidence_thresh", 0.4)
+        self.confidence_thresh = rospy.get_param("~confidence_thresh", 0.8)
+        self.tolerant_confidence_thresh = rospy.get_param("~tolerant_confidence_thresh", 0.6)
+        self.reentry_confidence_thresh = rospy.get_param("~reentry_confidence_thresh", 1.2)
         self.visual_queue_size = rospy.get_param("~visual_queue_size", 10)
         self.imu_queue_size = rospy.get_param("~imu_queue_size", 200)
         self.agent_motion_thresh = rospy.get_param("~agent_motion_thresh", 0.15)
         self.imu_lambda = rospy.get_param("~imu_lambda", 0.4)
-        self.imu_thresh = rospy.get_param("~imu_thresh", 0.05) # Normally I get a 0.02 when totally static
+        self.imu_min_activity_thresh = rospy.get_param("~imu_thresh", 0.05) # Normally I get a 0.02 when totally static
         self.imu_rate = rospy.get_param("~imu_rate", 50) # Hz - updated with time
-        self.max_imu = rospy.get_param("~max_imu", 5.0)
-        self.default_max_agent_vel = rospy.get_param("~max_agent_vel", 1.2)
+        self.max_gyro = rospy.get_param("~max_gyro", 3.5)
+        self.max_accel = rospy.get_param("~max_accel", 9.0)
+        self.default_max_agent_vel = rospy.get_param("~max_agent_vel", 5.0)
         self.agent_vel_alpha = rospy.get_param("~agent_vel_alpha", 0.98)
         self.default_max_fg_change = rospy.get_param("~default_max_fg_change", 100)
         self.fg_change_alpha = rospy.get_param("~fg_update_alpha", 0.99)
+        self.hysteresis_delay = rospy.get_param("~hysteresis_delay", 5.0)
+        self.temporal_weight = rospy.get_param("~temporal_weight", 0.6)
         self.gravity = 9.80665
 
         # Init
@@ -47,12 +51,17 @@ class FusionNode:
         self.fg_change_history = {}
         self.max_fg_change = {}
         self.max_agent_vel = {}
-        # Introducing activity history correlation
+        # Activity history correlation
         self.imu_activity_history = deque(maxlen=30)
         self.agent_activity_history = {}
         # Autocompute imu rate
         self.last_imu_time = None
         self.imu_intervals = deque(maxlen=50)
+        # Authorized agent lifecycle
+        self.last_authorized_position = None
+        self.authorized_left_scene = False
+        self.time_since_exit = None
+        self.authorized_since = None
 
         # Calibration
         self.image_width = 320
@@ -61,7 +70,6 @@ class FusionNode:
         self.w_meters = 2*self.height*np.tan(np.radians(self.fov_horizontal/2))
         self.pixels_per_meter = self.image_width/self.w_meters
         rospy.loginfo(f"Calibration: {self.pixels_per_meter:.2f} pixels/meter at {self.height}m height")
-        self.max_recorded_imu = 0
 
         # Sub
         self.fg_sub = Subscriber(
@@ -75,7 +83,8 @@ class FusionNode:
         )
 
         self.imu_sub = rospy.Subscriber(
-            "/imu/data_raw",
+            #"/imu/data_raw",
+            "/imu/data",
             Imu,
             self.imu_callback,
             queue_size=self.imu_queue_size
@@ -122,24 +131,21 @@ class FusionNode:
                     avg_interval = np.mean(list(self.imu_intervals))
                     self.imu_rate = 1.0/avg_interval
                     rospy.logdebug_throttle(5.0, f"IMU rate: {self.imu_rate:.1f} Hz")
-        
+
         self.last_imu_time = t
 
-        # Transform orientation from quaternions to euler angles
-#        q = [msg.orientation.x,
-#             msg.orientation.y,
-#             msg.orientation.z,
-#             msg.orientation.w]
-#
-#        roll, pitch, yaw = tft.euler_from_quaternion(q)
-#        degrees = np.degrees([roll, pitch, yaw])
-        # Debug
-        #print(degrees)
+        # Gravity compensation using orientation from Madgwick filter
+        q = [msg.orientation.x,
+             msg.orientation.y,
+             msg.orientation.z,
+             msg.orientation.w]
 
-        # Linear acc
-        ax = msg.linear_acceleration.x
-        ay = msg.linear_acceleration.y
-        az = msg.linear_acceleration.z - self.gravity
+        rot_matrix = tft.quaternion_matrix(q)[:3, :3]
+        gravity_sensor = rot_matrix.T @ np.array([0, 0, self.gravity])
+
+        ax = msg.linear_acceleration.x - gravity_sensor[0]
+        ay = msg.linear_acceleration.y - gravity_sensor[1]
+        az = msg.linear_acceleration.z - gravity_sensor[2]
 
         accel = np.sqrt(ax**2 + ay**2 + az**2)
 
@@ -149,12 +155,7 @@ class FusionNode:
         wz = msg.angular_velocity.z
         w = np.sqrt(wx**2+wy**2+wz**2)
 
-        #debug 
-        #print("Accel:", accel)
-        #print("Angular vel:", w)
-
         self.imu_buffer.append((t, accel, w))
-        # Debug: Log buffer size
         rospy.logdebug_throttle(2.0, f"[TIMING] IMU buffer size: {len(self.imu_buffer)}")
 
         self.prune_imu(t)
@@ -163,16 +164,14 @@ class FusionNode:
         now = agent_msg.header.stamp.to_sec()
         self.current_timestamp = now
 
-        # Debug: Log callback timing
         rospy.loginfo_throttle(2.0, f"[TIMING] Agent callback at t={now:.3f}")
 
         fg_mask = self.bridge.imgmsg_to_cv2(fg_msg, desired_encoding="mono8")
 
         imu_window = self.get_imu_window(now-self.imu_window_duration, now)
 
-        # Debug: Log IMU window info
         if imu_window:
-            rospy.loginfo_throttle(2.0, 
+            rospy.loginfo_throttle(2.0,
                 f"[TIMING] IMU window: {len(imu_window)} samples, "
                 f"span=[{imu_window[0][0]:.3f}, {imu_window[-1][0]:.3f}], "
                 f"duration={imu_window[-1][0] - imu_window[0][0]:.3f}s"
@@ -184,147 +183,143 @@ class FusionNode:
             rospy.logwarn_throttle(1.0, "[TIMING] No IMU motion computed - insufficient data")
             return
 
-        debug_info = "IMU: "
-        imu_energy = imu_motion["window_w"] #imu_motion["window_accel"] + self.imu_lambda*imu_motion["window_w"] # 
-        imu_energy = min(imu_energy/self.max_imu, 1.0) # Normalize
-        debug_info += f"{imu_energy:.2f} | Scores: "
 
-        #print("IMU energy:", imu_energy)
+        # Normalize IMU components separately for cross-modal comparison
+        accel_norm = min(imu_motion["window_accel"] / self.max_accel, 1.0)
+        gyro_norm = min(imu_motion["window_w"] / self.max_gyro, 1.0)
 
-        if imu_energy < self.imu_thresh:
-            self.select_authorized(None, imu_energy)
+        # Balanced energy for threshold check and activity history (state-agnostic)
+        imu_energy_balanced = 0.5 * accel_norm + 0.5 * gyro_norm
+
+        debug_info = f"IMU: a={accel_norm:.2f} g={gyro_norm:.2f} | Scores: "
+
+        if imu_energy_balanced < self.imu_min_activity_thresh:
+            self.select_authorized(None, imu_energy_balanced)
             return
-        
-        imu_active_binary = 1 if imu_energy > 0.15 else 0
-        self.imu_activity_history.append(imu_active_binary)
+
+        self.imu_activity_history.append(imu_energy_balanced)
 
         scores = {}
-        
+
         for agent in agent_msg.agents:
-            # Skip non-ACTIVE agents
-            if agent.state != "ACTIVE":
+            # Skip non-ACTIVE agents (CANDIDATE has unstable Kalman estimates)
+            if agent.age < 5:
                 rospy.logdebug(f"[FUSION] Skipping Agent {agent.id} (state={agent.state})")
                 continue
+            # Exploration-exploitation trade-off
+            if not self.should_evaluate_agent(agent.id):
+                rospy.logdebug(f"Skipping Agent {agent.id} (exploiting authorized)")
+                continue
+
             speed = np.sqrt(agent.vx**2 + agent.vy**2) # pixel/sec
             speed_meters = speed / self.pixels_per_meter # m/s
-            #print("Speed: ", speed)
-            #print("Speed in m/s: ", speed_meters)
 
             if agent.id not in self.agent_buffers:
                 rospy.loginfo(f"[FUSION] New agent {agent.id} detected - creating buffer")
-                print("New aid observed. Create new agent buffer.")
                 self.agent_buffers[agent.id] = deque()
                 self.authority_score[agent.id] = 0.0
                 self.agent_activity_history[agent.id] = deque(maxlen=30)
+                self.max_agent_vel[agent.id] = self.default_max_agent_vel
 
             self.last_seen_stamp[agent.id] = now
             self.agent_buffers[agent.id].append((now, speed_meters))
             self.prune_agent(agent.id, now)
 
-            # Debug: Log agent buffer size
             rospy.logdebug_throttle(2.0,
                 f"[TIMING] Agent {agent.id} buffer size: {len(self.agent_buffers[agent.id])}"
             )
 
+            # Get agent motion - normalize based on max observed agent speed
             agent_motion = self.compute_agent_motion(self.agent_buffers[agent.id])
+            if agent_motion is None:
+                continue
+
+            # Adaptive ceiling: ensure max at least reaches observed value
+            if agent_motion > self.max_agent_vel[agent.id]:
+                self.max_agent_vel[agent.id] = max(
+                    agent_motion,
+                    self.agent_vel_alpha * self.max_agent_vel[agent.id] +
+                    (1-self.agent_vel_alpha) * agent_motion
+                )
+                rospy.logdebug(f"Agent {agent.id} vel max updated: {self.max_agent_vel[agent.id]:.2f} m/s")
+
+            agent_motion = min(agent_motion/self.max_agent_vel[agent.id], 1.0) # Normalize
+
+            # Compute foreground energy
             fg_motion = self.agent_fg_motion(agent, fg_mask)
-        
-            if agent_motion is not None:
-                if agent.id not in self.max_agent_vel:
-                    self.max_agent_vel[agent.id] = self.default_max_agent_vel
 
-                if agent_motion > self.max_agent_vel[agent.id]:
-                    self.max_agent_vel[agent.id] = (
-                        self.agent_vel_alpha * self.max_agent_vel[agent.id] + 
-                        (1-self.agent_vel_alpha) * agent_motion
-                    )
-                    rospy.logdebug(f"Agent {agent.id} vel max updated: {self.max_agent_vel[agent.id]:.2f} m/s")
-                
-                agent_motion = min(agent_motion/self.max_agent_vel[agent.id], 1.0) # Normalize
-            else:
-                continue
+            # Add agent motion to activity history
+            self.agent_activity_history[agent.id].append(max(agent_motion, fg_motion))
 
-            if imu_motion is None or agent_motion is None:
-                continue
+            # --- Cross-modal energy score ---
+            # accel <-> agent_motion: both capture translational movement
+            # gyro  <-> fg_motion:    both capture in-place activity
+            accel_match = np.exp(-1.0 * (agent_motion - accel_norm)**2)
+            gyro_match = np.exp(-1.0 * (fg_motion - gyro_norm)**2)
+            #accel_match = np.exp(-abs(agent_motion-accel_norm))
+            #gyro_match = np.exp(-abs(fg_motion-gyro_norm))
+            energy_score = 0.5 * accel_match + 0.5 * gyro_match
 
+            # Activity state multipliers (vision-only classification)
+            activity_state = self.classify_activity_state(agent_motion, fg_motion)
 
-            # Determine state 
-            imu_active = imu_energy > 0.15  # Use raw value
-            agent_active = agent_motion > 0.3  # Normalized threshold
-            fg_active = fg_motion > 0.1        # Change-based threshold
-
-            visual_activity_binary = 1 if (agent_active or fg_active) else 0
-            self.agent_activity_history[agent.id].append(visual_activity_binary)
-
-            rospy.loginfo_throttle(0.5,
-                f"Agent {agent.id}: IMU={'ACT' if imu_active else 'IDLE'} "
-                f"Agent={'ACT' if agent_active else 'IDLE'} "
-                f"FG={'ACT' if fg_active else 'IDLE'} "
-                f"(imu={imu_energy:.1f}, agent={agent_motion:.2f}, fg={fg_motion:.2f})"
-            )
-
-            # Adaptive weighting based on activity type
-            if imu_active and not agent_active:
-                # Gesture scenario: IMU active but agent not moving much
-                w_agent, w_fg = 0.2, 0.8  # Prioritize foreground changes
-                rospy.loginfo_throttle(0.5, f"Agent {agent.id}: GESTURE mode")
-            elif imu_active and agent_active:
-                # Walking scenario: both active
-                w_agent, w_fg = 0.6, 0.4  # Prioritize agent motion
+            if activity_state == "WALKING":
                 rospy.loginfo_throttle(0.5, f"Agent {agent.id}: WALKING mode")
+                if agent_motion >= 0.5 and accel_norm >= 0.5:
+                    energy_score *= 1.6
+
+            elif activity_state == "GESTURE":
+                rospy.loginfo_throttle(0.5, f"Agent {agent.id}: GESTURE mode")
+                if agent_motion <= 0.4 and fg_motion > 0.25 and gyro_norm > 0.5:
+                    energy_score *= 1.5
+
+            elif activity_state == "IDLE":
+                rospy.loginfo_throttle(0.5, f"Agent {agent.id}: IDLE mode")
+                if imu_energy_balanced < 0.1 and agent_motion < 0.1 and fg_motion < 0.3:
+                    energy_score *= 1.3
+                else:
+                    energy_score *= 0.8
 
             else:
-                # Low activity or ambiguous
-                w_agent, w_fg = 0.5, 0.5
-                rospy.loginfo_throttle(0.5, f"Agent {agent.id}: DEFAULT mode")
+                rospy.loginfo_throttle(0.5, f"Agent {agent.id}: AMBIGUOUS mode")
+                energy_score *= 0.95 # Reduce a bit the confidence score - check impact
 
-            #if agent_motion > self.agent_motion_thresh:
-            #    w_agent, w_fg = 0.7, 0.3
-            #else:
-            #    w_agent, w_fg = 0.3, 0.7
+            # --- Temporal cross-correlation score ---
+            temporal_score = self.compute_temporal_score(agent.id, now)
 
+            if temporal_score is not None:
+                score = (1.0 - self.temporal_weight) * energy_score + self.temporal_weight * temporal_score
+            else:
+                score = energy_score
 
-            score = (
-                w_agent * np.exp(-abs(agent_motion-imu_energy)) +
-                w_fg*np.exp(-abs(fg_motion-imu_energy))
-            )
-
-
-
-            # Bonus: if any activity matches, boost score
-            if (imu_active and (agent_active or fg_active)):
-                score *= 1.5  # Activity alignment bonus
-            elif not imu_active and not agent_active and not fg_active:
-                score *= 1.2  # All static bonus
-            elif imu_active and not (agent_active or fg_active):
-                score *= 0.3  # Penalty: IMU moving but no visual activity
-
-            # Correlation
+            # Long-term activity correlation bonus
             correlation_bonus = self.compute_activity_correlation(agent.id)
-
             score *= (1.0 + correlation_bonus)
 
-            
-            rospy.loginfo_throttle(0.5, f"Score: {score:.2f}")
-            scores[agent.id] = min(score, 1.5)  # Cap at 1.0
-            
+            scores[agent.id] = min(score, 2.0)
+
+            rospy.loginfo_throttle(0.5,
+                f"Agent {agent.id}: score={scores[agent.id]:.2f} "
+                f"(energy={energy_score:.2f}, temporal={'%.2f' % temporal_score if temporal_score is not None else 'N/A'}, "
+                f"corr_bonus={correlation_bonus:.2f})"
+            )
+
             debug_info += f"[A{agent.id}: score={scores.get(agent.id, 0):.2f}, conf={self.authority_score.get(agent.id, 0):.2f}] "
 
         rospy.loginfo_throttle(0.5, debug_info)
 
-        self.select_authorized(scores, imu_energy)
+        self.select_authorized(scores, imu_energy_balanced)
 
         if self.currently_authorized is not None:
-            rospy.loginfo_throttle(1.0,
-                f"✓ AUTHORIZED: Agent {self.currently_authorized} "
+            rospy.loginfo( # _throttle(1.0 - made info only for debugging purposes
+                f"AUTHORIZED: Agent {self.currently_authorized} "
                 f"(conf={self.authority_score.get(self.currently_authorized, 0):.2f})"
             )
 
         self.cleanup()
-        
+
 
     def prune_imu(self, now):
-        # We keep a large imu buffer and then from the buffer we only keep the messages in a time window now-window_duration. To ensure temporal consistency we relax this margin.
         keep_duration = self.imu_window_duration + self.imu_safety_margin
         before_count = len(self.imu_buffer)
         while self.imu_buffer and (now - self.imu_buffer[0][0]) > keep_duration:
@@ -332,7 +327,7 @@ class FusionNode:
         after_count = len(self.imu_buffer)
 
         if before_count != after_count:
-            rospy.logdebug(f"[TIMING] Pruned IMU buffer: {before_count} → {after_count} samples")
+            rospy.logdebug(f"[TIMING] Pruned IMU buffer: {before_count} -> {after_count} samples")
 
 
     def prune_agent(self, aid, now):
@@ -342,12 +337,11 @@ class FusionNode:
             buf.popleft()
         after_count = len(buf)
         if before_count != after_count:
-            rospy.logdebug(f"[TIMING] Pruned Agent {aid} buffer: {before_count} → {after_count} samples")
+            rospy.logdebug(f"[TIMING] Pruned Agent {aid} buffer: {before_count} -> {after_count} samples")
 
 
     def get_imu_window(self, t_start, t_end):
         window = [msg for msg in self.imu_buffer if t_start <= msg[0] <= t_end]
-        # Assess the window is valid
         if len(window) > 0:
             window_start = window[0][0]
             window_end = window[-1][0]
@@ -364,18 +358,15 @@ class FusionNode:
             rospy.logdebug_throttle(1.0, f"[TIMING] Insufficient IMU samples: {len(imu_msgs)}")
             return None
 
-        # Check temporal density
         if len(imu_msgs) > 1:
             time_span = imu_msgs[-1][0] - imu_msgs[0][0]
             expected_samples = time_span * self.imu_rate
 
-            # Debug: Always log density check
             rospy.logdebug_throttle(2.0,
                 f"[TIMING] IMU density: {len(imu_msgs)}/{expected_samples:.0f} samples "
                 f"in {time_span:.3f}s @ {self.imu_rate:.1f}Hz"
             )
 
-            # If we receive less than half of the expected messages we trigger a warning
             if len(imu_msgs) < expected_samples * 0.5:
                 rospy.logwarn(
                     f"IMU window sparse: {len(imu_msgs)} samples in {time_span:.2f}s "
@@ -385,13 +376,10 @@ class FusionNode:
         accel = np.array([x[1] for x in imu_msgs])
         w = np.array([x[2] for x in imu_msgs])
 
-        # return RMS
         return {"window_accel": np.sqrt(np.mean(accel**2)), "window_w": np.sqrt(np.mean(w**2))}
 
     def compute_agent_motion(self, buf):
         if len(buf) < 3:
-            #print("Agent motion: not enough buffer data")
-            #print(len(buf))
             return None
         speeds = np.array([x[1] for x in buf])
         return np.sqrt(np.mean(speeds**2))
@@ -402,7 +390,7 @@ class FusionNode:
         x2, y2 = min(w, x1+agent.w), min(h, y1+agent.h)
         if x2 <= x1 or y2 <= y1 or agent.w == 0 or agent.h == 0:
             return 0.0
-        
+
         roi = fg_mask[y1:y2, x1:x2]
         current_fg_count = np.sum(roi>0)
 
@@ -415,9 +403,10 @@ class FusionNode:
         prev_count = self.prev_fg_count[agent.id]
         fg_change = abs(current_fg_count - prev_count)
 
-        # Update max observed change for normalization
+        # Adaptive ceiling: ensure max at least reaches observed value
         if fg_change > self.max_fg_change[agent.id]:
-            self.max_fg_change[agent.id] = (
+            self.max_fg_change[agent.id] = max(
+                fg_change,
                 self.fg_change_alpha * self.max_fg_change[agent.id] + (1-self.fg_change_alpha)*fg_change
             )
             rospy.loginfo(f"Agent {agent.id} FG change max updated: {self.max_fg_change[agent.id]:.1f} pixels")
@@ -425,44 +414,168 @@ class FusionNode:
         self.fg_change_history[agent.id].append(fg_change)
         self.prev_fg_count[agent.id] = current_fg_count
 
-        if len(self.fg_change_history[agent.id]) > 0:
-            fg_changes = np.array(list(self.fg_change_history[agent.id]))
-            rms_change = np.sqrt(np.mean(fg_changes**2))
-            norm_change = min(rms_change / self.max_fg_change[agent.id], 1.0)
-            return norm_change
+        fg_changes = np.array(list(self.fg_change_history[agent.id]))
+        rms_change = np.sqrt(np.mean(fg_changes**2))
+        norm_change = min(rms_change / self.max_fg_change[agent.id], 1.0)
+        return norm_change
 
-        return 0.0
+    def classify_activity_state(self, agent_motion, fg_motion):
+        # Vision-only: avoids circular dependency with IMU weighting
+        if agent_motion >= 0.6:
+            return "WALKING"
+        elif 0.1 < agent_motion < 0.6 and fg_motion >= 0.25:
+            return "GESTURE"
+        elif agent_motion < 0.1 and fg_motion < 0.4:
+            return "IDLE"
+        else:
+            return "AMBIGUOUS"
+
+    def compute_temporal_score(self, agent_id, now):
+        """Cross-correlate IMU angular velocity with agent speed within the scoring window.
+        Captures whether motion bursts happen at the same moments."""
+        t_start = now - self.imu_window_duration
+
+        # IMU samples (angular velocity) in window
+        imu_samples = [(t, a) for t, a, _ in self.imu_buffer if t_start <= t <= now]
+        if len(imu_samples) < 5:
+            return None
+
+        # Agent speed samples in window
+        if agent_id not in self.agent_buffers:
+            return None
+        agent_samples = [(t, v) for t, v in self.agent_buffers[agent_id] if t >= t_start]
+        if len(agent_samples) < 3:
+            return None
+
+        imu_times = np.array([s[0] for s in imu_samples])
+        imu_vals = np.array([s[1] for s in imu_samples])
+
+        agent_times = np.array([s[0] for s in agent_samples])
+        agent_vals = np.array([s[1] for s in agent_samples])
+
+        # Resample agent (~10Hz) to IMU timestamps (~50Hz)
+        agent_interp = np.interp(imu_times, agent_times, agent_vals)
+
+        # Zero-mean normalize
+        imu_zm = imu_vals - np.mean(imu_vals)
+        agent_zm = agent_interp - np.mean(agent_interp)
+
+        std_imu = np.std(imu_zm)
+        std_agent = np.std(agent_zm)
+        if std_imu < 1e-6 or std_agent < 1e-6:
+            return 0.0
+
+        # Cross-correlation with +/-100ms lag tolerance
+        max_lag = max(1, int(0.1 * self.imu_rate))
+        best_corr = 0.0
+        n = len(imu_zm)
+
+        for lag in range(-max_lag, max_lag + 1):
+            if lag >= 0:
+                seg_imu = imu_zm[lag:]
+                seg_agent = agent_zm[:n - lag]
+            else:
+                seg_imu = imu_zm[:n + lag]
+                seg_agent = agent_zm[-lag:]
+
+            if len(seg_imu) < 3:
+                continue
+
+            corr = np.dot(seg_imu, seg_agent) / (len(seg_imu) * std_imu * std_agent)
+            best_corr = max(best_corr, corr)
+
+        return min(best_corr, 1.0)
 
     def select_authorized(self, scores, imu_energy):
         if not scores:
-            if imu_energy < self.imu_thresh:
-                self.currently_authorized = None
-                self.decay_authority(0.9995)
-            self.publish_result(-1, 0.0)
-            return
+            if self.currently_authorized is not None and not self.authorized_left_scene:
+                rospy.logwarn("Authorized agent lost - marking as exited")
+                self.authorized_left_scene = True
+                self.time_since_exit = rospy.Time.now()
 
-        if scores is None and self.currently_authorized is None:
+            self.currently_authorized = None
+            self.authorized_since = None
+
+            # Decay all authority scores
+            self.decay_authority(0.9995)
             self.publish_result(-1, 0.0)
             return
 
         best_agent = max(scores, key=scores.get)
-        self.authority_score[best_agent] = 0.95*self.authority_score.get(best_agent, 0.0) + 0.05*scores[best_agent]
+        best_score = scores[best_agent]
+        # When authorized agent leaves scene require a higher conf threshold - reentry scenario
+        if self.authorized_left_scene and self.time_since_exit is not None:
+            time_since_exit = (rospy.Time.now() - self.time_since_exit).to_sec()
+            if time_since_exit < 5.0:
+                rospy.loginfo(
+                    f"Recent exit detected ({time_since_exit:.1f}s ago) - "
+                    f"requiring {self.reentry_confidence_thresh:.1f} confidence for re-authorization"
+                )
+
+                if best_score < self.reentry_confidence_thresh:
+                    self.decay_authority(0.9995)
+                    self.publish_result(-1, 0.0)
+                    return
+                else:
+                    rospy.loginfo(f"Re-authorizing Agent {best_agent} after exit")
+                    self.authorized_left_scene = False
+                    self.time_since_exit = None
+            else:
+                self.authorized_left_scene = False
+                self.time_since_exit = None
+
+        # If there is an authorized agent, require significant improvement to de-authorize it and authorize another
+        if self.currently_authorized is not None and self.currently_authorized in scores:
+            auth_duration = 0.0
+            if self.authorized_since is not None:
+                auth_duration = (rospy.Time.now() - self.authorized_since).to_sec()
+
+            if auth_duration > self.hysteresis_delay and best_agent != self.currently_authorized:
+                current_agent_score = scores[self.currently_authorized]
+
+                # 30% extra confidence
+                if best_score < current_agent_score*1.3:
+                    rospy.logdebug(
+                        f"Agent {best_agent} scored {best_score:.2f} but not 30% better "
+                        f"than current Agent {self.currently_authorized} ({current_agent_score:.2f})"
+                    )
+                    best_agent = self.currently_authorized
+                    best_score = current_agent_score
+                else:
+                    rospy.loginfo(
+                        f"Switching: Agent {best_agent} ({best_score:.2f}) >> "
+                        f"Agent {self.currently_authorized} ({current_agent_score:.2f})"
+                    )
+
+        self.authority_score[best_agent] = 0.9*self.authority_score.get(best_agent, 0.0) + 0.1*scores[best_agent]
         confidence = self.authority_score[best_agent]
 
-        if imu_energy < self.imu_thresh: # Double penalty when static
-            self.decay_authority(0.9998)
-            confidence = self.authority_score[best_agent]
-
         if confidence > self.confidence_thresh:
-            self.currently_authorized = best_agent
+            if best_agent != self.currently_authorized:
+                # New authorization or switch
+                rospy.loginfo(f"Authorizing Agent {best_agent} (conf={confidence:.2f})")
+                self.currently_authorized = best_agent
+                self.authorized_since = rospy.Time.now()
+
+                # Clear exit flags if this is a new authorization after exit
+                if self.authorized_left_scene:
+                    self.authorized_left_scene = False
+                    self.time_since_exit = None
             self.publish_result(best_agent, confidence)
         else:
             if self.currently_authorized is not None and confidence >= self.tolerant_confidence_thresh:
                 self.publish_result(self.currently_authorized, confidence)
                 self.decay_authority(0.9995)
             elif self.currently_authorized is not None and confidence < self.tolerant_confidence_thresh:
-                self.publish_result(-1, confidence)
+                rospy.logwarn(
+                    f"Agent {self.currently_authorized} confidence dropped to {confidence:.2f} - deauthorizing"
+                )
+
                 self.currently_authorized = None
+                self.authorized_since = None
+                # Don't set authorized_left_scene here — a confidence dip is NOT a physical exit.
+                # The exit flag is only set when the agent disappears from the tracker (cleanup).
+                self.publish_result(-1, confidence)
             else:
                 self.publish_result(-1, confidence)
 
@@ -484,12 +597,31 @@ class FusionNode:
         agent_hist = agent_hist[-min_len:]
         imu_hist = imu_hist[-min_len:]
 
-        matches = sum(a==1 for a, i in zip(agent_hist, imu_hist))
-        correlation = matches / min_len
+        if np.std(agent_hist) < 0.01 or np.std(imu_hist) < 0.01:
+            return 0.0
 
-        bonus = max(0, (correlation-0.5)*1.0)
+        correlation = np.corrcoef(agent_hist, imu_hist)[0,1]
+
+        bonus = max(0, correlation) * 0.5
 
         return bonus
+
+    def should_evaluate_agent(self, agent_id):
+        if self.currently_authorized is None:
+            return True
+
+        if agent_id == self.currently_authorized:
+            return True
+
+        auth_conf = self.authority_score.get(self.currently_authorized, 0.0)
+
+        if auth_conf > 1.3:
+            return np.random.random() < 0.2
+        elif auth_conf > 0.8:
+            return np.random.random() < 0.5
+        else:
+            return True
+
 
     def cleanup(self):
         if not hasattr(self, 'current_timestamp'):
@@ -501,7 +633,6 @@ class FusionNode:
         for aid, last_timestamp in self.last_seen_stamp.items():
             time_since_seen = now - last_timestamp
 
-            # Debug: Log agent timing
             rospy.logdebug_throttle(2.0,
                 f"[TIMING] Agent {aid}: last seen {time_since_seen:.3f}s ago"
             )
@@ -523,9 +654,18 @@ class FusionNode:
             del self.agent_buffers[aid]
             del self.max_fg_change[aid]
             del self.max_agent_vel[aid]
+            if aid in self.agent_activity_history:
+                del self.agent_activity_history[aid]
+            if aid in self.fg_change_history:
+                del self.fg_change_history[aid]
+            if aid in self.prev_fg_count:
+                del self.prev_fg_count[aid]
             if self.currently_authorized == aid:
                 rospy.logwarn(f"[FUSION] Authorized agent {aid} deleted - deauthorizing")
                 self.currently_authorized = None
+                self.authorized_left_scene = True
+                self.authorized_since = None
+                self.time_since_exit = rospy.Time.now()
 
 
     def publish_result(self, agent_id, confidence):
