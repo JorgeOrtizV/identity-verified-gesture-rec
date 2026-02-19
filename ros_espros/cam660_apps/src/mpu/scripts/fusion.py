@@ -292,13 +292,16 @@ class FusionNode:
             # --- Dual-channel temporal cross-correlation score ---
             temporal_score = self.compute_temporal_score(agent.id, now)
 
+            # Long-term activity correlation bonus (split channels)
+            correlation_bonus = self.compute_activity_correlation(agent.id)
+
+
             if temporal_score is not None:
                 score = (1.0 - self.temporal_weight) * energy_score + self.temporal_weight * temporal_score
             else:
                 score = energy_score
+                correlation_bonus = min(correlation_bonus, 0.15)
 
-            # Long-term activity correlation bonus (split channels)
-            correlation_bonus = self.compute_activity_correlation(agent.id)
             score *= (1.0 + correlation_bonus)
 
             scores[agent.id] = min(score, 2.0)
@@ -511,18 +514,23 @@ class FusionNode:
         return min(best_corr, 1.0)
 
     def select_authorized(self, scores, imu_energy):
+        # Case 1: No scores (IMU still, no agents passed filters, or no agents visible)
+        # Keep current authorization, just decay. Let cleanup() handle physical exits.
         if not scores:
-            if self.currently_authorized is not None and not self.authorized_left_scene:
-                rospy.logwarn("Authorized agent lost - marking as exited")
-                self.authorized_left_scene = True
-                self.time_since_exit = rospy.Time.now()
-
-            self.currently_authorized = None
-            self.authorized_since = None
-
-            # Decay all authority scores
             self.decay_authority(0.9995)
-            self.publish_result(-1, 0.0)
+            if self.currently_authorized is not None:
+                auth_conf = self.authority_score.get(self.currently_authorized, 0.0)
+                if auth_conf >= self.tolerant_confidence_thresh:
+                    self.publish_result(self.currently_authorized, auth_conf)
+                else:
+                    rospy.logwarn(
+                        f"Agent {self.currently_authorized} confidence decayed to {auth_conf:.2f} - deauthorizing"
+                    )
+                    self.currently_authorized = None
+                    self.authorized_since = None
+                    self.publish_result(-1, auth_conf)
+            else:
+                self.publish_result(-1, 0.0)
             return
 
         # Update ALL evaluated agents' authority scores (not just best)
@@ -532,7 +540,7 @@ class FusionNode:
         best_agent = max(scores, key=scores.get)
         best_score = scores[best_agent]
 
-        # When authorized agent leaves scene require a higher conf threshold - reentry scenario
+        # Case 3: Reentry - authorized agent left scene, require higher conf
         if self.authorized_left_scene and self.time_since_exit is not None:
             time_since_exit = (rospy.Time.now() - self.time_since_exit).to_sec()
             if time_since_exit < 5.0:
@@ -552,23 +560,26 @@ class FusionNode:
                 self.authorized_left_scene = False
                 self.time_since_exit = None
 
-        # Hysteresis: prevent rapid switching away from established authorized agent
-        if self.currently_authorized is not None and self.currently_authorized in scores:
+        # Case 4: Hysteresis - prevent rapid switching
+        if self.currently_authorized is not None and best_agent != self.currently_authorized:
             auth_duration = 0.0
             if self.authorized_since is not None:
                 auth_duration = (rospy.Time.now() - self.authorized_since).to_sec()
 
-            # Switch cooldown: block switches for N seconds after any switch (doesn't reset like hysteresis)
             cooldown_active = False
             if self.last_switch_time is not None:
                 time_since_switch = (rospy.Time.now() - self.last_switch_time).to_sec()
                 cooldown_active = time_since_switch < self.switch_cooldown
 
-            if best_agent != self.currently_authorized and (auth_duration > self.hysteresis_delay or cooldown_active):
-                current_agent_score = scores[self.currently_authorized]
+            if auth_duration > self.hysteresis_delay or cooldown_active:
+                # Compare against authorized agent's frame score if available,
+                # otherwise use its authority_score as baseline
+                if self.currently_authorized in scores:
+                    current_agent_score = scores[self.currently_authorized]
+                else:
+                    current_agent_score = self.authority_score.get(self.currently_authorized, 0.0)
 
-                # 30% extra confidence
-                if best_score < current_agent_score*1.3:
+                if best_score < current_agent_score * 1.3:
                     rospy.logdebug(
                         f"Agent {best_agent} scored {best_score:.2f} but not 30% better "
                         f"than current Agent {self.currently_authorized} ({current_agent_score:.2f})"
@@ -581,36 +592,37 @@ class FusionNode:
                         f"Agent {self.currently_authorized} ({current_agent_score:.2f})"
                     )
 
-        confidence = self.authority_score[best_agent]
+        # Case 2: Authorization decision
+        confidence = self.authority_score.get(best_agent, 0.0)
 
         if confidence > self.confidence_thresh:
             if best_agent != self.currently_authorized:
-                # New authorization or switch
                 rospy.loginfo(f"Authorizing Agent {best_agent} (conf={confidence:.2f})")
                 self.currently_authorized = best_agent
                 self.authorized_since = rospy.Time.now()
                 self.last_switch_time = rospy.Time.now()
 
-                # Clear exit flags if this is a new authorization after exit
                 if self.authorized_left_scene:
                     self.authorized_left_scene = False
                     self.time_since_exit = None
             self.publish_result(best_agent, confidence)
         else:
-            # Check CURRENTLY AUTHORIZED agent's own confidence (not best_agent's)
+            # Case 5 & 6: No agent above threshold
             if self.currently_authorized is not None:
                 auth_conf = self.authority_score.get(self.currently_authorized, 0.0)
                 if auth_conf >= self.tolerant_confidence_thresh:
+                    # Case 5: keep trusting currently authorized
                     self.publish_result(self.currently_authorized, auth_conf)
                 else:
+                    # Case 6: confidence too low, deauthorize
                     rospy.logwarn(
                         f"Agent {self.currently_authorized} confidence dropped to {auth_conf:.2f} - deauthorizing"
                     )
                     self.currently_authorized = None
                     self.authorized_since = None
-                    # Don't set authorized_left_scene here — a confidence dip is NOT a physical exit.
                     self.publish_result(-1, auth_conf)
             else:
+                # Case 6: nobody authorized, nobody above threshold
                 self.publish_result(-1, confidence)
 
     def decay_authority(self, decay):
