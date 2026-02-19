@@ -1,0 +1,91 @@
+<launch>
+
+    <node pkg="mpu"
+          type="fusion.py"
+          name="fusion"
+          output="screen">
+
+        <!-- Calibration -->
+        <param name="image_width"       value="320" />
+        <param name="fov_horizontal"    value="108" />   <!-- WF lens degrees -->
+        <param name="camera_height"     value="1.9" />   <!-- meters above ground -->
+
+        <!-- IMU -->
+        <param name="imu_window_duration" value="0.4" />
+        <param name="imu_safety_margin"   value="0.3" />
+        <param name="imu_rate"            value="50" />   <!-- Hz, auto-updated at runtime -->
+        <param name="imu_queue_size"      value="200" />
+        <param name="max_gyro"            value="3.5" />
+        <param name="max_accel"           value="9.0" />
+        <param name="imu_thresh"          value="0.05" />
+
+        <!-- Vision -->
+        <param name="vision_window_duration" value="1.0" />
+        <param name="visual_queue_size"      value="10" />
+        <param name="sync_slop"              value="0.05" />  <!-- seconds -->
+        <param name="default_max_fg_change"  value="100" />
+        <param name="fg_update_alpha"        value="0.99" />
+        <param name="fg_change_history_len"  value="10" />
+
+        <!-- Agent tracking -->
+        <param name="min_agent_age"           value="5" />
+        <param name="max_agent_vel"           value="5.0" />
+        <param name="agent_vel_alpha"         value="0.98" />
+        <param name="agent_inactive_reset_sec" value="0.5" />
+        <param name="agent_delete_timeout_sec" value="3.0" />
+
+        <!-- Scoring -->
+        <param name="gaussian_scale"       value="1.0" />
+        <param name="energy_accel_weight"  value="0.5" />   <!-- gyro weight = 1 - this -->
+        <param name="temporal_weight"      value="0.6" />
+        <param name="temporal_lag_tolerance" value="0.1" /> <!-- seconds -->
+        <param name="max_fusion_score"     value="2.0" />
+
+        <!-- Activity state classification (vision-only) -->
+        <param name="state_walking_motion"     value="0.6" />
+        <param name="state_gesture_motion_low" value="0.1" />
+        <param name="state_gesture_fg"         value="0.25" />
+        <param name="state_idle_motion"        value="0.1" />
+        <param name="state_idle_fg"            value="0.4" />
+
+        <!-- Activity state multipliers -->
+        <param name="walking_multiplier"       value="1.3" />
+        <param name="walking_bonus_motion"     value="0.5" />
+        <param name="walking_bonus_accel"      value="0.5" />
+        <param name="gesture_multiplier"       value="1.5" />
+        <param name="gesture_bonus_motion"     value="0.4" />
+        <param name="gesture_bonus_fg"         value="0.25" />
+        <param name="gesture_bonus_gyro"       value="0.5" />
+        <param name="idle_match_multiplier"    value="1.3" />
+        <param name="idle_mismatch_multiplier" value="0.8" />
+        <param name="idle_bonus_imu"           value="0.1" />
+        <param name="idle_bonus_motion"        value="0.1" />
+        <param name="idle_bonus_fg"            value="0.3" />
+        <param name="ambiguous_multiplier"     value="0.95" />
+
+        <!-- Long-term correlation -->
+        <param name="activity_history_len"       value="30" />
+        <param name="corr_bonus_scale"           value="0.25" />
+        <param name="max_corr_bonus_no_temporal" value="0.15" />
+        <param name="correlation_min_history"    value="10" />
+
+        <!-- Authorization -->
+        <param name="confidence_thresh"          value="0.8" />
+        <param name="tolerant_confidence_thresh" value="0.6" />
+        <param name="reentry_confidence_thresh"  value="1.2" />
+        <param name="reentry_window"             value="5.0" />   <!-- seconds -->
+        <param name="ema_alpha"                  value="0.9" />   <!-- authority EMA smoothing -->
+        <param name="no_scores_decay"            value="0.9995" />
+        <param name="hysteresis_delay"           value="5.0" />   <!-- seconds before hysteresis kicks in -->
+        <param name="switch_cooldown"            value="3.0" />   <!-- seconds -->
+        <param name="switch_margin"              value="1.3" />   <!-- 30% improvement required to switch -->
+
+        <!-- Exploration-exploitation -->
+        <param name="exploit_high_conf" value="1.3" />
+        <param name="exploit_high_prob" value="0.2" />
+        <param name="exploit_med_conf"  value="0.8" />
+        <param name="exploit_med_prob"  value="0.5" />
+
+    </node>
+
+</launch>

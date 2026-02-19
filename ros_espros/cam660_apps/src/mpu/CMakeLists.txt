@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(tof_preprocessing)
+project(mpu)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -9,9 +9,10 @@ project(tof_preprocessing)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
+  geometry_msgs
   rospy
   sensor_msgs
-  std_msgs
+  tf2_ros
   message_generation
 )
 
@@ -51,10 +52,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  Blob.msg
-  BlobArray.msg
-  AgentMsg.msg
-  AgentArray.msg
+  Conf.msg
+  ConfArray.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -74,7 +73,6 @@ add_message_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  sensor_msgs
   std_msgs
 )
 
@@ -109,8 +107,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES tof_preprocessing
-#  CATKIN_DEPENDS cv_bridge rospy sensor_msgs std_msgs
+#  LIBRARIES mpu
+#  CATKIN_DEPENDS cv_bridge geometry_msgs rospy sensor_msgs tf2_ros
 #  DEPENDS system_lib
 )
 
@@ -127,7 +125,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/tof_preprocessing.cpp
+#   src/${PROJECT_NAME}/mpu.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -138,7 +136,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/tof_preprocessing_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/mpu_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -165,13 +163,8 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/depth_subscriber.py
-  scripts/preprocessing.py
-  scripts/vis_fg_mask.py
-  scripts/vis_depth_clean.py
-  scripts/vis_blobs.py
-  scripts/tracking.py
-  scripts/vis_kalman.py
+  scripts/mpu_reader.py
+  scripts/fusion.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -208,7 +201,7 @@ catkin_install_python(PROGRAMS
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_tof_preprocessing.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_mpu.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

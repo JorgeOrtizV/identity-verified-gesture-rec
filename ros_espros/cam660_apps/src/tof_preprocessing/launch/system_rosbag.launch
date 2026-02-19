@@ -11,7 +11,7 @@
 
 	<!-- Start MPU -->
 	<!-- Dont start this node if playing a rosbag -->
-	<include file="$(find mpu)/launch/mpu_reader.launch"/>
+	<!-- <include file="$(find mpu)/launch/mpu_reader.launch"/> -->
 
 	<!-- Fusion node -->
 	<node pkg="imu_filter_madgwick"

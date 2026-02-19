@@ -1,0 +1,9 @@
+<launch>
+    <node pkg="mpu"
+          type="mpu_reader.py"
+          name="mpu_reader"
+          output="screen">
+
+    </node>
+</launch>
+

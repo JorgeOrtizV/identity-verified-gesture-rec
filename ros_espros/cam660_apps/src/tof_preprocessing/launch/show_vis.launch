@@ -17,6 +17,13 @@
           output="screen">
     </node>
 
+    <node pkg="mpu"
+          type="vis_conf.py"
+          name="vis_conf"
+          output="screen">
+    </node>
+
+
 </launch>
 
 
