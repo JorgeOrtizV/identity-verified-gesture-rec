@@ -26,8 +26,6 @@ class FusionNode:
         self.reentry_confidence_thresh = rospy.get_param("~reentry_confidence_thresh", 1.2)
         self.visual_queue_size = rospy.get_param("~visual_queue_size", 10)
         self.imu_queue_size = rospy.get_param("~imu_queue_size", 200)
-        self.agent_motion_thresh = rospy.get_param("~agent_motion_thresh", 0.15)
-        self.imu_lambda = rospy.get_param("~imu_lambda", 0.4)
         self.imu_min_activity_thresh = rospy.get_param("~imu_thresh", 0.05) # Normally I get a 0.02 when totally static
         self.imu_rate = rospy.get_param("~imu_rate", 50) # Hz - updated with time
         self.max_gyro = rospy.get_param("~max_gyro", 3.5)
@@ -37,12 +35,14 @@ class FusionNode:
         self.default_max_fg_change = rospy.get_param("~default_max_fg_change", 100)
         self.fg_change_alpha = rospy.get_param("~fg_update_alpha", 0.99)
         self.hysteresis_delay = rospy.get_param("~hysteresis_delay", 5.0)
+        self.switch_cooldown = rospy.get_param("~switch_cooldown", 3.0)
         self.temporal_weight = rospy.get_param("~temporal_weight", 0.6)
         self.gravity = 9.80665
 
         # Init
         self.imu_buffer = deque()
         self.agent_buffers = {}
+        self.fg_buffers = {}
         self.authority_score = {}
         self.currently_authorized = None
         self.last_seen_stamp = {}
@@ -51,9 +51,11 @@ class FusionNode:
         self.fg_change_history = {}
         self.max_fg_change = {}
         self.max_agent_vel = {}
-        # Activity history correlation
-        self.imu_activity_history = deque(maxlen=30)
-        self.agent_activity_history = {}
+        # Activity history correlation (split channels) - Instead of computing correlation with max value of visual motion, always compare gyro with fg and accel with agent vel
+        self.imu_accel_history = deque(maxlen=30)
+        self.imu_gyro_history = deque(maxlen=30)
+        self.agent_motion_history = {}
+        self.agent_fg_history = {}
         # Autocompute imu rate
         self.last_imu_time = None
         self.imu_intervals = deque(maxlen=50)
@@ -62,6 +64,7 @@ class FusionNode:
         self.authorized_left_scene = False
         self.time_since_exit = None
         self.authorized_since = None
+        self.last_switch_time = None
 
         # Calibration
         self.image_width = 320
@@ -108,12 +111,6 @@ class FusionNode:
         self.pub_conf = rospy.Publisher(
             "/fusion/authorized_agent_confidence",
             Float32,
-            queue_size=1
-        )
-
-        self.pub_debug = rospy.Publisher(
-            "/fusion/debug_info",
-            String,
             queue_size=1
         )
 
@@ -188,21 +185,23 @@ class FusionNode:
         accel_norm = min(imu_motion["window_accel"] / self.max_accel, 1.0)
         gyro_norm = min(imu_motion["window_w"] / self.max_gyro, 1.0)
 
-        # Balanced energy for threshold check and activity history (state-agnostic)
+        # Balanced energy for threshold check (state-agnostic)
         imu_energy_balanced = 0.5 * accel_norm + 0.5 * gyro_norm
 
         debug_info = f"IMU: a={accel_norm:.2f} g={gyro_norm:.2f} | Scores: "
 
+        # If IMU is not significant, avoid calculations.
         if imu_energy_balanced < self.imu_min_activity_thresh:
             self.select_authorized(None, imu_energy_balanced)
             return
 
-        self.imu_activity_history.append(imu_energy_balanced)
+        self.imu_accel_history.append(accel_norm)
+        self.imu_gyro_history.append(gyro_norm)
 
         scores = {}
 
         for agent in agent_msg.agents:
-            # Skip non-ACTIVE agents (CANDIDATE has unstable Kalman estimates)
+            # Skip young agents, but not all candidates to avoid loosing walking information
             if agent.age < 5:
                 rospy.logdebug(f"[FUSION] Skipping Agent {agent.id} (state={agent.state})")
                 continue
@@ -217,8 +216,10 @@ class FusionNode:
             if agent.id not in self.agent_buffers:
                 rospy.loginfo(f"[FUSION] New agent {agent.id} detected - creating buffer")
                 self.agent_buffers[agent.id] = deque()
+                self.fg_buffers[agent.id] = deque()
                 self.authority_score[agent.id] = 0.0
-                self.agent_activity_history[agent.id] = deque(maxlen=30)
+                self.agent_motion_history[agent.id] = deque(maxlen=30)
+                self.agent_fg_history[agent.id] = deque(maxlen=30)
                 self.max_agent_vel[agent.id] = self.default_max_agent_vel
 
             self.last_seen_stamp[agent.id] = now
@@ -234,7 +235,7 @@ class FusionNode:
             if agent_motion is None:
                 continue
 
-            # Adaptive ceiling: ensure max at least reaches observed value
+            # Adaptive ceiling: ensure max at least reaches previously observed value
             if agent_motion > self.max_agent_vel[agent.id]:
                 self.max_agent_vel[agent.id] = max(
                     agent_motion,
@@ -248,16 +249,20 @@ class FusionNode:
             # Compute foreground energy
             fg_motion = self.agent_fg_motion(agent, fg_mask)
 
-            # Add agent motion to activity history
-            self.agent_activity_history[agent.id].append(max(agent_motion, fg_motion))
+            # Store fg_motion in timestamped buffer for temporal correlation
+            self.fg_buffers[agent.id].append((now, fg_motion))
+            while self.fg_buffers[agent.id] and (now - self.fg_buffers[agent.id][0][0]) > self.vision_window_duration:
+                self.fg_buffers[agent.id].popleft()
+
+            # Add to split activity histories
+            self.agent_motion_history[agent.id].append(agent_motion)
+            self.agent_fg_history[agent.id].append(fg_motion)
 
             # --- Cross-modal energy score ---
             # accel <-> agent_motion: both capture translational movement
             # gyro  <-> fg_motion:    both capture in-place activity
             accel_match = np.exp(-1.0 * (agent_motion - accel_norm)**2)
             gyro_match = np.exp(-1.0 * (fg_motion - gyro_norm)**2)
-            #accel_match = np.exp(-abs(agent_motion-accel_norm))
-            #gyro_match = np.exp(-abs(fg_motion-gyro_norm))
             energy_score = 0.5 * accel_match + 0.5 * gyro_match
 
             # Activity state multipliers (vision-only classification)
@@ -266,12 +271,12 @@ class FusionNode:
             if activity_state == "WALKING":
                 rospy.loginfo_throttle(0.5, f"Agent {agent.id}: WALKING mode")
                 if agent_motion >= 0.5 and accel_norm >= 0.5:
-                    energy_score *= 1.6
+                    energy_score *= 1.3
 
             elif activity_state == "GESTURE":
                 rospy.loginfo_throttle(0.5, f"Agent {agent.id}: GESTURE mode")
                 if agent_motion <= 0.4 and fg_motion > 0.25 and gyro_norm > 0.5:
-                    energy_score *= 1.5
+                    energy_score *= 1.5 # Change to 1.3 - test
 
             elif activity_state == "IDLE":
                 rospy.loginfo_throttle(0.5, f"Agent {agent.id}: IDLE mode")
@@ -282,9 +287,9 @@ class FusionNode:
 
             else:
                 rospy.loginfo_throttle(0.5, f"Agent {agent.id}: AMBIGUOUS mode")
-                energy_score *= 0.95 # Reduce a bit the confidence score - check impact
+                energy_score *= 0.95
 
-            # --- Temporal cross-correlation score ---
+            # --- Dual-channel temporal cross-correlation score ---
             temporal_score = self.compute_temporal_score(agent.id, now)
 
             if temporal_score is not None:
@@ -292,7 +297,7 @@ class FusionNode:
             else:
                 score = energy_score
 
-            # Long-term activity correlation bonus
+            # Long-term activity correlation bonus (split channels)
             correlation_bonus = self.compute_activity_correlation(agent.id)
             score *= (1.0 + correlation_bonus)
 
@@ -431,57 +436,76 @@ class FusionNode:
             return "AMBIGUOUS"
 
     def compute_temporal_score(self, agent_id, now):
-        """Cross-correlate IMU angular velocity with agent speed within the scoring window.
-        Captures whether motion bursts happen at the same moments."""
+        """Dual-channel temporal cross-correlation:
+        Channel 1: IMU accel <-> agent speed (translational)
+        Channel 2: IMU gyro  <-> fg_motion  (rotational/in-place)
+        Returns average of available channels."""
         t_start = now - self.imu_window_duration
 
-        # IMU samples (angular velocity) in window
-        imu_samples = [(t, a) for t, a, _ in self.imu_buffer if t_start <= t <= now]
+        # IMU samples in window (accel and gyro)
+        imu_samples = [(t, a, w) for t, a, w in self.imu_buffer if t_start <= t <= now]
         if len(imu_samples) < 5:
             return None
 
-        # Agent speed samples in window
-        if agent_id not in self.agent_buffers:
-            return None
-        agent_samples = [(t, v) for t, v in self.agent_buffers[agent_id] if t >= t_start]
-        if len(agent_samples) < 3:
-            return None
-
         imu_times = np.array([s[0] for s in imu_samples])
-        imu_vals = np.array([s[1] for s in imu_samples])
+        imu_accel = np.array([s[1] for s in imu_samples])
+        imu_gyro = np.array([s[2] for s in imu_samples])
 
-        agent_times = np.array([s[0] for s in agent_samples])
-        agent_vals = np.array([s[1] for s in agent_samples])
+        channel_scores = []
 
-        # Resample agent (~10Hz) to IMU timestamps (~50Hz)
-        agent_interp = np.interp(imu_times, agent_times, agent_vals)
+        # Channel 1: accel <-> agent speed
+        if agent_id in self.agent_buffers:
+            agent_samples = [(t, v) for t, v in self.agent_buffers[agent_id] if t >= t_start]
+            if len(agent_samples) >= 3:
+                agent_times = np.array([s[0] for s in agent_samples])
+                agent_vals = np.array([s[1] for s in agent_samples])
+                # IMU and agent sample at different frequencies.
+                agent_interp = np.interp(imu_times, agent_times, agent_vals)
+                corr = self._cross_correlate(imu_accel, agent_interp)
+                if corr is not None:
+                    channel_scores.append(corr)
 
-        # Zero-mean normalize
-        imu_zm = imu_vals - np.mean(imu_vals)
-        agent_zm = agent_interp - np.mean(agent_interp)
+        # Channel 2: gyro <-> fg_motion
+        if agent_id in self.fg_buffers:
+            fg_samples = [(t, v) for t, v in self.fg_buffers[agent_id] if t >= t_start]
+            if len(fg_samples) >= 3:
+                fg_times = np.array([s[0] for s in fg_samples])
+                fg_vals = np.array([s[1] for s in fg_samples])
+                fg_interp = np.interp(imu_times, fg_times, fg_vals)
+                corr = self._cross_correlate(imu_gyro, fg_interp)
+                if corr is not None:
+                    channel_scores.append(corr)
 
-        std_imu = np.std(imu_zm)
-        std_agent = np.std(agent_zm)
-        if std_imu < 1e-6 or std_agent < 1e-6:
+        if not channel_scores:
+            return None
+        return np.mean(channel_scores)
+
+    def _cross_correlate(self, signal_a, signal_b):
+        """Normalized cross-correlation with +/-100ms lag tolerance.
+        Returns best non-negative correlation (0.0 to 1.0)."""
+        a_zm = signal_a - np.mean(signal_a)
+        b_zm = signal_b - np.mean(signal_b)
+        std_a = np.std(a_zm)
+        std_b = np.std(b_zm)
+        if std_a < 1e-6 or std_b < 1e-6:
             return 0.0
 
-        # Cross-correlation with +/-100ms lag tolerance
         max_lag = max(1, int(0.1 * self.imu_rate))
         best_corr = 0.0
-        n = len(imu_zm)
+        n = len(a_zm)
 
         for lag in range(-max_lag, max_lag + 1):
             if lag >= 0:
-                seg_imu = imu_zm[lag:]
-                seg_agent = agent_zm[:n - lag]
+                seg_a = a_zm[lag:]
+                seg_b = b_zm[:n - lag]
             else:
-                seg_imu = imu_zm[:n + lag]
-                seg_agent = agent_zm[-lag:]
+                seg_a = a_zm[:n + lag]
+                seg_b = b_zm[-lag:]
 
-            if len(seg_imu) < 3:
+            if len(seg_a) < 3:
                 continue
 
-            corr = np.dot(seg_imu, seg_agent) / (len(seg_imu) * std_imu * std_agent)
+            corr = np.dot(seg_a, seg_b) / (len(seg_a) * std_a * std_b)
             best_corr = max(best_corr, corr)
 
         return min(best_corr, 1.0)
@@ -501,8 +525,13 @@ class FusionNode:
             self.publish_result(-1, 0.0)
             return
 
+        # Update ALL evaluated agents' authority scores (not just best)
+        for aid, s in scores.items():
+            self.authority_score[aid] = 0.9 * self.authority_score.get(aid, 0.0) + 0.1 * s
+
         best_agent = max(scores, key=scores.get)
         best_score = scores[best_agent]
+
         # When authorized agent leaves scene require a higher conf threshold - reentry scenario
         if self.authorized_left_scene and self.time_since_exit is not None:
             time_since_exit = (rospy.Time.now() - self.time_since_exit).to_sec()
@@ -513,7 +542,6 @@ class FusionNode:
                 )
 
                 if best_score < self.reentry_confidence_thresh:
-                    self.decay_authority(0.9995)
                     self.publish_result(-1, 0.0)
                     return
                 else:
@@ -524,13 +552,19 @@ class FusionNode:
                 self.authorized_left_scene = False
                 self.time_since_exit = None
 
-        # If there is an authorized agent, require significant improvement to de-authorize it and authorize another
+        # Hysteresis: prevent rapid switching away from established authorized agent
         if self.currently_authorized is not None and self.currently_authorized in scores:
             auth_duration = 0.0
             if self.authorized_since is not None:
                 auth_duration = (rospy.Time.now() - self.authorized_since).to_sec()
 
-            if auth_duration > self.hysteresis_delay and best_agent != self.currently_authorized:
+            # Switch cooldown: block switches for N seconds after any switch (doesn't reset like hysteresis)
+            cooldown_active = False
+            if self.last_switch_time is not None:
+                time_since_switch = (rospy.Time.now() - self.last_switch_time).to_sec()
+                cooldown_active = time_since_switch < self.switch_cooldown
+
+            if best_agent != self.currently_authorized and (auth_duration > self.hysteresis_delay or cooldown_active):
                 current_agent_score = scores[self.currently_authorized]
 
                 # 30% extra confidence
@@ -547,7 +581,6 @@ class FusionNode:
                         f"Agent {self.currently_authorized} ({current_agent_score:.2f})"
                     )
 
-        self.authority_score[best_agent] = 0.9*self.authority_score.get(best_agent, 0.0) + 0.1*scores[best_agent]
         confidence = self.authority_score[best_agent]
 
         if confidence > self.confidence_thresh:
@@ -556,6 +589,7 @@ class FusionNode:
                 rospy.loginfo(f"Authorizing Agent {best_agent} (conf={confidence:.2f})")
                 self.currently_authorized = best_agent
                 self.authorized_since = rospy.Time.now()
+                self.last_switch_time = rospy.Time.now()
 
                 # Clear exit flags if this is a new authorization after exit
                 if self.authorized_left_scene:
@@ -563,19 +597,19 @@ class FusionNode:
                     self.time_since_exit = None
             self.publish_result(best_agent, confidence)
         else:
-            if self.currently_authorized is not None and confidence >= self.tolerant_confidence_thresh:
-                self.publish_result(self.currently_authorized, confidence)
-                self.decay_authority(0.9995)
-            elif self.currently_authorized is not None and confidence < self.tolerant_confidence_thresh:
-                rospy.logwarn(
-                    f"Agent {self.currently_authorized} confidence dropped to {confidence:.2f} - deauthorizing"
-                )
-
-                self.currently_authorized = None
-                self.authorized_since = None
-                # Don't set authorized_left_scene here — a confidence dip is NOT a physical exit.
-                # The exit flag is only set when the agent disappears from the tracker (cleanup).
-                self.publish_result(-1, confidence)
+            # Check CURRENTLY AUTHORIZED agent's own confidence (not best_agent's)
+            if self.currently_authorized is not None:
+                auth_conf = self.authority_score.get(self.currently_authorized, 0.0)
+                if auth_conf >= self.tolerant_confidence_thresh:
+                    self.publish_result(self.currently_authorized, auth_conf)
+                else:
+                    rospy.logwarn(
+                        f"Agent {self.currently_authorized} confidence dropped to {auth_conf:.2f} - deauthorizing"
+                    )
+                    self.currently_authorized = None
+                    self.authorized_since = None
+                    # Don't set authorized_left_scene here — a confidence dip is NOT a physical exit.
+                    self.publish_result(-1, auth_conf)
             else:
                 self.publish_result(-1, confidence)
 
@@ -584,25 +618,39 @@ class FusionNode:
             self.authority_score[aid] *= decay
 
     def compute_activity_correlation(self, agent_id):
-        if len(self.imu_activity_history) < 10:
+        if len(self.imu_accel_history) < 10:
             return 0.0
 
-        if agent_id not in self.agent_activity_history:
+        if agent_id not in self.agent_motion_history:
             return 0.0
 
-        agent_hist = list(self.agent_activity_history[agent_id])
-        imu_hist = list(self.imu_activity_history)
-
-        min_len = min(len(agent_hist), len(imu_hist))
-        agent_hist = agent_hist[-min_len:]
-        imu_hist = imu_hist[-min_len:]
-
-        if np.std(agent_hist) < 0.01 or np.std(imu_hist) < 0.01:
+        # Channel 1: accel <-> agent_motion
+        accel_hist = list(self.imu_accel_history)
+        motion_hist = list(self.agent_motion_history[agent_id])
+        min_len = min(len(accel_hist), len(motion_hist))
+        if min_len < 5:
             return 0.0
 
-        correlation = np.corrcoef(agent_hist, imu_hist)[0,1]
+        corr_accel = 0.0
+        a_h = accel_hist[-min_len:]
+        m_h = motion_hist[-min_len:]
+        if np.std(a_h) > 0.01 and np.std(m_h) > 0.01:
+            corr_accel = max(0, np.corrcoef(a_h, m_h)[0, 1])
 
-        bonus = max(0, correlation) * 0.5
+        # Channel 2: gyro <-> fg_motion
+        corr_gyro = 0.0
+        if agent_id in self.agent_fg_history and len(self.imu_gyro_history) >= 10:
+            gyro_hist = list(self.imu_gyro_history)
+            fg_hist = list(self.agent_fg_history[agent_id])
+            min_len2 = min(len(gyro_hist), len(fg_hist))
+            if min_len2 >= 5:
+                g_h = gyro_hist[-min_len2:]
+                f_h = fg_hist[-min_len2:]
+                if np.std(g_h) > 0.01 and np.std(f_h) > 0.01:
+                    corr_gyro = max(0, np.corrcoef(g_h, f_h)[0, 1])
+
+        # Average of available channels
+        bonus = 0.5 * (corr_accel + corr_gyro) * 0.5
 
         return bonus
 
@@ -650,12 +698,16 @@ class FusionNode:
 
         for aid in to_delete:
             del self.last_seen_stamp[aid]
-            del self.authority_score[aid]
             del self.agent_buffers[aid]
+            if aid in self.fg_buffers:
+                del self.fg_buffers[aid]
+            del self.authority_score[aid]
             del self.max_fg_change[aid]
             del self.max_agent_vel[aid]
-            if aid in self.agent_activity_history:
-                del self.agent_activity_history[aid]
+            if aid in self.agent_motion_history:
+                del self.agent_motion_history[aid]
+            if aid in self.agent_fg_history:
+                del self.agent_fg_history[aid]
             if aid in self.fg_change_history:
                 del self.fg_change_history[aid]
             if aid in self.prev_fg_count:
