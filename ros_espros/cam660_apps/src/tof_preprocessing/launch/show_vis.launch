@@ -23,6 +23,12 @@
           output="screen">
     </node>
 
+    <node pkg="gesture"
+          type="vis_gesture.py"
+          name="vis_gesture"
+          output="screen">
+    </node>
+
 
 </launch>
 

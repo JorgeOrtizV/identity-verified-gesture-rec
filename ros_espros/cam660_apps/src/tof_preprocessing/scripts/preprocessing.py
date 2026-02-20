@@ -70,8 +70,10 @@ class DepthPreprocessingNode:
         # set parameters
         # Min depth to track
         self.min_depth = rospy.get_param("~min_depth", 150) # mm
-        # Max depth to track - Found that is better to no filter out pixels based on depth, therefore a high value is selected
+        # Max depth to track - Found that is better to no filter out pixels based on depth for bg model, therefore a high value is selected
         self.max_depth = rospy.get_param("~max_depth", 6000)
+        # Max depth for foreground pixels (filters out ground-level objects like chairs)
+        self.fg_depth_thresh = rospy.get_param("~fg_depth_thresh", 1500) # mm, 1600 in multi, 1530 in single
         # Frames used to build a background model (initialization)
         self.bg_frames = rospy.get_param("~bg_frames", 50)
         # Slow update - background_update()
@@ -103,8 +105,12 @@ class DepthPreprocessingNode:
         self.full_update = False
         self.static_scene_counter = 0
 
-        # Foreground model
-        self.fg_age = np.zeros((240, 320), dtype=np.uint16)
+        # Image dimensions (set from first frame)
+        self.img_h = None
+        self.img_w = None
+
+        # Foreground model (initialized on first frame)
+        self.fg_age = None
         
         # Tracking model
         self.tracks = {}
@@ -150,6 +156,12 @@ class DepthPreprocessingNode:
         depth = self.bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")
         depth = depth.astype(np.float32)
 
+        # Initialize dimensions from first frame
+        if self.img_h is None:
+            self.img_h, self.img_w = depth.shape[:2]
+            self.fg_age = np.zeros((self.img_h, self.img_w), dtype=np.uint16)
+            rospy.loginfo(f"Image dimensions: {self.img_w}x{self.img_h}")
+
         self.frame_count+=1
         
         depth_clean = self.clean_depth(depth)
@@ -161,16 +173,16 @@ class DepthPreprocessingNode:
 
         # Detect foreground
         fg_mask = self.foreground_segmentation(depth_clean)
-        # For some reason sometimes fg doesn't get updated when small artifacts, remove them by force
-        fg_mask = self.remove_small_artifacts(fg_mask)
+        # Remove foreground pixels beyond depth threshold (chairs, ground objects)
+        fg_mask[(depth_clean > self.fg_depth_thresh) | (depth_clean == 0)] = 0
+        # Remove small artifacts and extract blobs in single connected components pass
+        fg_mask, blobs = self.extract_blobs(fg_mask)
         # Foreground aging
         self.fg_age[fg_mask>0] += 1
         self.fg_age[fg_mask==0] = 0
-        # Blob detection
-        blobs = self.extract_blobs(fg_mask)
         # Blob update
         self.track_mask = np.zeros_like(fg_mask, dtype=bool)
-        self.bridge_cleanup_mask = np.zeros((240, 320), dtype=bool)
+        self.bridge_cleanup_mask = np.zeros((self.img_h, self.img_w), dtype=bool)
         self.update_tracks(blobs, depth_clean)
 
         # In case we have a super blob we have to split and clean the bridge areas
@@ -180,8 +192,8 @@ class DepthPreprocessingNode:
             fg_mask[self.bridge_cleanup_mask] = 0
             self.fg_age[self.bridge_cleanup_mask] = 0
         
-        # Background update
-        self.update_background(depth, fg_mask)
+        # Background update (use depth_clean to match bg model built from denoised data)
+        self.update_background(depth_clean, fg_mask)
 
         # Publish data
         self.publish_blobs(msg.header)
@@ -195,7 +207,7 @@ class DepthPreprocessingNode:
 
     def denoise(self, depth):
         depth_filled = np.nan_to_num(depth, nan=0.0)
-        return cv2.medianBlur(depth_filled, 5) # Try with 3 kernel size
+        return cv2.medianBlur(depth_filled, 3) # 5 in multi, 3 in single
 
     def update_background_init(self, depth):
         self.bg_buffer.append(depth)
@@ -213,32 +225,53 @@ class DepthPreprocessingNode:
 
         fg = fg.astype(np.uint8)*255
 
-        kernel_open = np.ones((7,7), np.uint8)
+        # Opening: remove noise (3x3 to preserve thin arms ~5-6px wide)
+        kernel_open = np.ones((3,3), np.uint8) # (5,5) in multiagent, (3,3) in single agent
         fg = cv2.morphologyEx(fg, cv2.MORPH_OPEN, kernel_open)
-        #fg = cv2.morphologyEx(fg, cv2.MORPH_CLOSE, kernel)
-        # Add a second closing to avoid having blobs in the middle of a white area
-        # Elliptical kernel is less likely to connect diagonal blobs
-        kernel_ellipse = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
-        fg = cv2.morphologyEx(fg, cv2.MORPH_CLOSE, kernel_ellipse)
+
+        # Per-component closing: fill holes within each blob without merging nearby agents
+        fg = self.per_component_close(fg)
 
         return fg
 
-    def remove_small_artifacts(self, fg_mask):
+    def per_component_close(self, fg_mask):
         num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(fg_mask, connectivity=8)
-        cleaned = np.zeros_like(fg_mask)
+        result = np.zeros_like(fg_mask)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (17, 17))
 
         for i in range(1, num_labels):
-            if stats[i, cv2.CC_STAT_AREA] >= self.min_blob_size:
-                cleaned[labels==i] = 255
+            if stats[i, cv2.CC_STAT_AREA] < self.min_blob_size:
+                continue
 
-        return cleaned
+            # Extract ROI with padding for closing to work at edges
+            x = stats[i, cv2.CC_STAT_LEFT]
+            y = stats[i, cv2.CC_STAT_TOP]
+            w = stats[i, cv2.CC_STAT_WIDTH]
+            h = stats[i, cv2.CC_STAT_HEIGHT]
+            pad = 5
+            x1, y1 = max(0, x - pad), max(0, y - pad)
+            x2, y2 = min(self.img_w, x + w + pad), min(self.img_h, y + h + pad)
+
+            # Close only this component within its ROI
+            roi_mask = (labels[y1:y2, x1:x2] == i).astype(np.uint8) * 255
+            closed = cv2.morphologyEx(roi_mask, cv2.MORPH_CLOSE, kernel)
+            result[y1:y2, x1:x2] = np.maximum(result[y1:y2, x1:x2], closed)
+
+        return result
 
     def extract_blobs(self, fg_mask):
-        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(fg_mask)
+        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(fg_mask, connectivity=8)
+        cleaned = np.zeros_like(fg_mask)
         blobs = []
 
         for i in range(1, num_labels):
             area = stats[i, cv2.CC_STAT_AREA]
+            # Remove small flickering artifacts
+            if area < self.min_blob_size:
+                continue
+            cleaned[labels == i] = 255
+
+            # Only track blobs above minimum blob area
             if area < self.min_blob_area:
                 continue
 
@@ -251,13 +284,13 @@ class DepthPreprocessingNode:
                 "area" : area
             })
 
-        return blobs
+        return cleaned, blobs
 
     def update_tracks(self, blobs, depth_map):
         updated_tracks = {}
         inactive_blobs = 0
 
-        all_bridges = np.zeros((240, 320), dtype=bool)
+        all_bridges = np.zeros((self.img_h, self.img_w), dtype=bool)
         for blob in blobs:
             matched_id = None
             min_dist = float("inf")
@@ -400,7 +433,7 @@ class DepthPreprocessingNode:
         rospy.loginfo(f"Peaks map to {len(unique_tracks)} tracks: {unique_tracks}")
 
         # Split blob using watershed with peaks as seeds
-        markers = np.zeros((240, 320), dtype=np.int32)
+        markers = np.zeros((self.img_h, self.img_w), dtype=np.int32)
 
         for peak_idx, track_id in peak_to_track.items():
             py, px = peak_coords[peak_idx]
@@ -413,7 +446,7 @@ class DepthPreprocessingNode:
 
         # Extract sub-blobs for each track
         sub_blobs = []
-        combined_sub_mask = np.zeros((240, 320), dtype=bool)
+        combined_sub_mask = np.zeros((self.img_h, self.img_w), dtype=bool)
 
         for track_id in unique_tracks:
             marker_value = track_id + 1
@@ -528,7 +561,7 @@ class DepthPreprocessingNode:
         rospy.loginfo(f"Depth peaks map to {len(unique_tracks)} tracks")
 
         # Use watershed on inverted depth to split
-        markers = np.zeros((240, 320), dtype=np.int32)
+        markers = np.zeros((self.img_h, self.img_w), dtype=np.int32)
 
         for peak_idx, track_id in peak_to_track.items():
             py, px = peak_coords[peak_idx]
@@ -542,7 +575,7 @@ class DepthPreprocessingNode:
 
         # Extract sub-blobs
         sub_blobs = []
-        combined_sub_mask = np.zeros((240, 320), dtype=bool)
+        combined_sub_mask = np.zeros((self.img_h, self.img_w), dtype=bool)
 
         for track_id in unique_tracks:
             marker_value = track_id + 1

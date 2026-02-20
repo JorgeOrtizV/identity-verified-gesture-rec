@@ -1,0 +1,43 @@
+<launch>
+
+	<!-- Gesture name -->
+	<arg name="record_gesture_name" default="" />
+
+        <!-- Start gesture node with gesture mode-->
+        <include file="$(find gesture)/launch/gesture.launch">
+		<arg name="record_mode" value="true"/>
+		<arg name="record_gesture_name" value="$(arg record_gesture_name)" />
+	</include>
+
+	<!-- Record data in a rosbag -->
+	<node pkg="rosbag"
+	      type="record"
+	      name="rosbag_record_gesture_data"
+	      args="-o $(find gesture)/templates_bags/$(arg record_gesture_name)/
+		   /cam660_node/distance_image_raw
+		   /imu/data_raw
+		   /imu/data" />
+
+        <!-- Start Camera node -->
+	<node pkg="espros_cam660"
+              type="cam660_node"
+              name="cam660_node"
+              output="screen" />
+
+        <!-- Start MPU -->
+        <include file="$(find mpu)/launch/mpu_reader.launch"/>
+
+        <node pkg="imu_filter_madgwick"
+              type="imu_filter_node"
+              name="imu_filter_node"
+              output="screen">
+
+        <param name="use_mag" value="false" />
+        <param name="publish_tf" value="false" />
+        <param name="world_frame" value="enu" />
+        <param name="frequency" value="50" />
+
+        </node>
+
+</launch>
+

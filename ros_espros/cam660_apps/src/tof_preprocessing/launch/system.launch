@@ -9,6 +9,12 @@
 	<!-- Tracking node -->
 	<include file="$(find tof_preprocessing)/launch/tracking.launch"/>
 
+	<!-- Start camera node -->
+	<node pkg="espros_cam660"
+              type="cam660_node"
+              name="cam660_node"
+              output="screen" />
+
 	<!-- Start MPU -->
 	<!-- Dont start this node if playing a rosbag -->
 	<include file="$(find mpu)/launch/mpu_reader.launch"/>
@@ -27,6 +33,11 @@
 	</node> 
 
 	<include file="$(find mpu)/launch/fusion.launch"/>
+
+	<!-- Gesture node -->
+	<include file="$(find gesture)/launch/gesture.launch">
+		<arg name="identity_verification" value="true" />
+	</include>
 
 
 </launch>

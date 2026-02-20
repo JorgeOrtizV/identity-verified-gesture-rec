@@ -1,0 +1,44 @@
+<launch>
+
+    <arg name="record_mode"            default="false" />
+    <arg name="record_gesture_name"    default="" />
+    <arg name="identity_verification"  default="false" />
+
+    <node pkg="gesture"
+          type="gesture_node.py"
+          name="gesture"
+          output="screen">
+
+        <!-- IMU -->
+        <param name="imu_rate"    value="50" />
+
+        <!-- Rolling buffer -->
+        <param name="buffer_duration" value="3.0" />
+
+        <!-- Segmentation -->
+        <param name="onset_thresh"      value="0.3" />
+        <param name="offset_thresh"     value="0.15" />
+        <param name="onset_count"       value="3" />
+        <param name="offset_count"      value="8" />
+        <param name="lookback_samples"  value="5" />
+        <param name="min_gesture_len"   value="15" />   <!-- ~0.3s at 50Hz -->
+        <param name="max_gesture_len"   value="200" />  <!-- ~4.0s at 50Hz -->
+        <param name="energy_accel_weight" value="0.5" />
+        <param name="max_accel"         value="9.0" />
+        <param name="max_gyro"          value="3.5" />
+
+        <!-- DTW -->
+        <param name="dtw_threshold"   value="0.75" />
+	<param name="strict_threshold" value="0.55" />
+        <param name="dtw_band_ratio"  value="0.5" />
+
+        <!-- Recording (set via launch args) -->
+        <param name="record_mode"         value="$(arg record_mode)" />
+        <param name="record_gesture_name" value="$(arg record_gesture_name)" />
+
+        <!-- Identity verification -->
+        <param name="identity_verification" value="$(arg identity_verification)" />
+
+    </node>
+
+</launch>

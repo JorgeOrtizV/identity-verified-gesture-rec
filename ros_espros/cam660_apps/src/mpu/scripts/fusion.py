@@ -782,7 +782,8 @@ class FusionNode:
             del self.authority_score[aid]
             del self.max_fg_change[aid]
             del self.max_agent_vel[aid]
-            del self.agent_activity[aid]
+            if aid in self.agent_activity:
+                del self.agent_activity[aid]
             if aid in self.agent_motion_history:
                 del self.agent_motion_history[aid]
             if aid in self.agent_fg_history:
