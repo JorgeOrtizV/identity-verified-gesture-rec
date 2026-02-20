@@ -1,10 +1,19 @@
 <launch>
 
+	<!-- Set up arguments for foreground single and multi agent cases -->
+        <arg name="open_kernel_size" default="3" />
+        <arg name="median_kernel" default="3" />
+        <arg name="fg_depth_thresh" default="1500" />
+
 	<!-- Visualization node -->
 	<include file="$(find tof_preprocessing)/launch/show_vis.launch"/>
 
 	<!-- Preprocessing node -->
-	<include file="$(find tof_preprocessing)/launch/preprocessing.launch"/>
+	<include file="$(find tof_preprocessing)/launch/preprocessing.launch">
+                <arg name="open_kernel_size" value="$(arg open_kernel_size)" />
+                <arg name="median_kernel" value="$(arg median_kernel)" />
+                <arg name="fg_depth_thresh" value="$(arg fg_depth_thresh)" />
+        </include>
 
 	<!-- Tracking node -->
 	<include file="$(find tof_preprocessing)/launch/tracking.launch"/>

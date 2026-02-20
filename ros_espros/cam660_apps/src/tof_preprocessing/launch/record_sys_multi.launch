@@ -1,0 +1,18 @@
+<launch>
+
+	<!-- Record data in a rosbag -->
+        <node pkg="rosbag"
+              type="record"
+              name="rosbag_record_gesture_data"
+              args="-o $(find tof_preprocessing)/system_rosbags/multiagent/ --all" />
+
+        <!-- Start Camera node -->
+        <node pkg="espros_cam660"
+              type="cam660_node"
+              name="cam660_node"
+              output="screen" />
+
+	<!-- Start MPU -->
+        <include file="$(find mpu)/launch/mpu_reader.launch"/>
+
+</launch>

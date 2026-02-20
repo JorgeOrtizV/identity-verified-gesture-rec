@@ -57,7 +57,7 @@ class FusionNode:
 
         # --- Activity state classification thresholds (vision-only) ---
         self.state_walking_motion = rospy.get_param("~state_walking_motion", 0.6)
-        self.state_gesture_motion_low = rospy.get_param("~state_gesture_motion_low", 0.1)
+        self.state_gesture_motion_low = rospy.get_param("~state_gesture_motion_low", 0.05)
         self.state_gesture_fg = rospy.get_param("~state_gesture_fg", 0.25)
         self.state_idle_motion = rospy.get_param("~state_idle_motion", 0.1)
         self.state_idle_fg = rospy.get_param("~state_idle_fg", 0.4)
@@ -69,13 +69,13 @@ class FusionNode:
         self.gesture_multiplier = rospy.get_param("~gesture_multiplier", 1.5)
         self.gesture_bonus_motion = rospy.get_param("~gesture_bonus_motion", 0.4)
         self.gesture_bonus_fg = rospy.get_param("~gesture_bonus_fg", 0.25)
-        self.gesture_bonus_gyro = rospy.get_param("~gesture_bonus_gyro", 0.5)
+        self.gesture_bonus_gyro = rospy.get_param("~gesture_bonus_gyro", 0.3) #0.5 before, not reaching GESTURE state a lot.
         self.idle_match_multiplier = rospy.get_param("~idle_match_multiplier", 1.3)
         self.idle_mismatch_multiplier = rospy.get_param("~idle_mismatch_multiplier", 0.8)
         self.idle_bonus_imu = rospy.get_param("~idle_bonus_imu", 0.1)
         self.idle_bonus_motion = rospy.get_param("~idle_bonus_motion", 0.1)
         self.idle_bonus_fg = rospy.get_param("~idle_bonus_fg", 0.3)
-        self.ambiguous_multiplier = rospy.get_param("~ambiguous_multiplier", 0.95)
+        self.ambiguous_multiplier = rospy.get_param("~ambiguous_multiplier", 1.0) # No penalty for the moment, analyze if going back to penalty model (maybe 0.99 because we reach ambiguous very often)
 
         # --- Long-term correlation ---
         self.activity_history_len = rospy.get_param("~activity_history_len", 30)
@@ -360,6 +360,7 @@ class FusionNode:
             correlation_bonus = self.compute_activity_correlation(agent.id)
 
             if temporal_score is not None:
+                temporal_score = max(temporal_score, energy_score*0.5) # Avoid temporal score to drag down overall score
                 score = (1.0 - self.temporal_weight) * energy_score + self.temporal_weight * temporal_score
             else:
                 score = energy_score
@@ -484,6 +485,12 @@ class FusionNode:
                 self.fg_change_alpha * self.max_fg_change[agent.id] + (1-self.fg_change_alpha)*fg_change
             )
             rospy.loginfo(f"Agent {agent.id} FG change max updated: {self.max_fg_change[agent.id]:.1f} pixels")
+        else:
+            # Slow decay towards current observed range
+            self.max_fg_change[agent.id] = max(                                                                                                                         
+                self.default_max_fg_change,                                                                                                                                                    
+                self.max_fg_change[agent.id] * 0.999                                                                                                                                           
+            ) 
 
         self.fg_change_history[agent.id].append(fg_change)
         self.prev_fg_count[agent.id] = current_fg_count

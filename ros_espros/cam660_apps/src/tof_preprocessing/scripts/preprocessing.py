@@ -97,6 +97,9 @@ class DepthPreprocessingNode:
         self.min_depth_values = rospy.get_param("~min_depth_values", 100)
         self.depth_variation_thresh = rospy.get_param("~depth_variation_thresh", 300)
         self.peaks_threshold = rospy.get_param("~peaks_threshold", 0.4)
+        # Single and multiagent parameters
+        self.median_kernel = rospy.get_param("~median_kernel", 3)
+        self.open_kernel_size = rospy.get_param("~open_kernel_size", 3)
 
         # Background model
         self.bg_buffer = []
@@ -207,7 +210,7 @@ class DepthPreprocessingNode:
 
     def denoise(self, depth):
         depth_filled = np.nan_to_num(depth, nan=0.0)
-        return cv2.medianBlur(depth_filled, 3) # 5 in multi, 3 in single
+        return cv2.medianBlur(depth_filled, self.median_kernel) # 5 in multi, 3 in single
 
     def update_background_init(self, depth):
         self.bg_buffer.append(depth)
@@ -226,7 +229,7 @@ class DepthPreprocessingNode:
         fg = fg.astype(np.uint8)*255
 
         # Opening: remove noise (3x3 to preserve thin arms ~5-6px wide)
-        kernel_open = np.ones((3,3), np.uint8) # (5,5) in multiagent, (3,3) in single agent
+        kernel_open = np.ones((self.open_kernel_size,self.open_kernel_size), np.uint8) # (5,5) in multiagent, (3,3) in single agent
         fg = cv2.morphologyEx(fg, cv2.MORPH_OPEN, kernel_open)
 
         # Per-component closing: fill holes within each blob without merging nearby agents

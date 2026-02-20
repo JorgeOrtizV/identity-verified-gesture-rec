@@ -43,7 +43,7 @@
 
         <!-- Activity state classification (vision-only) -->
         <param name="state_walking_motion"     value="0.6" />
-        <param name="state_gesture_motion_low" value="0.1" />
+        <param name="state_gesture_motion_low" value="0.05" />
         <param name="state_gesture_fg"         value="0.25" />
         <param name="state_idle_motion"        value="0.1" />
         <param name="state_idle_fg"            value="0.4" />
@@ -55,13 +55,13 @@
         <param name="gesture_multiplier"       value="1.5" />
         <param name="gesture_bonus_motion"     value="0.4" />
         <param name="gesture_bonus_fg"         value="0.25" />
-        <param name="gesture_bonus_gyro"       value="0.5" />
+        <param name="gesture_bonus_gyro"       value="0.3" />
         <param name="idle_match_multiplier"    value="1.3" />
         <param name="idle_mismatch_multiplier" value="0.8" />
         <param name="idle_bonus_imu"           value="0.1" />
         <param name="idle_bonus_motion"        value="0.1" />
         <param name="idle_bonus_fg"            value="0.3" />
-        <param name="ambiguous_multiplier"     value="0.95" />
+        <param name="ambiguous_multiplier"     value="1.0" />
 
         <!-- Long-term correlation -->
         <param name="activity_history_len"       value="30" />

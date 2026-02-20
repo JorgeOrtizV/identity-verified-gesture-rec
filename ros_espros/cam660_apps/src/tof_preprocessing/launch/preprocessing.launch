@@ -1,4 +1,9 @@
 <launch>
+	<!-- Set up arguments for foreground single and multi agent cases -->
+        <arg name="open_kernel_size" default="3" />
+        <arg name="median_kernel" default="3" />
+        <arg name="fg_depth_thresh" default="1500" />
+
     <node pkg="tof_preprocessing"
           type="preprocessing.py"
           name="depth_preprocessing"
@@ -26,6 +31,10 @@
 	<param name="fg_bbox_mem" value="20" />
 	<param name="fg_motion_threshold" value="1.5" />
 	<param name="fg_bbox_motion_threshold" value="500" />
+
+	<param name="fg_depth_thresh" value="$(arg fg_depth_thresh)" />
+	<param name="median_kernel" value="$(arg median_kernel)" />
+	<param name="open_kernel_size" value="$(arg open_kernel_size)"/>
 
     </node>
 </launch>
