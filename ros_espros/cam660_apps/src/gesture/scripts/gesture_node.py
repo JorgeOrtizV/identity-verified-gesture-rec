@@ -4,6 +4,7 @@ import rospy
 import numpy as np
 import os
 import tf.transformations as tft
+from scipy.spatial.distance import cdist
 
 from sensor_msgs.msg import Imu
 from std_msgs.msg import String, Int32
@@ -35,8 +36,8 @@ class GestureNode:
         # --- DTW ---
         self.template_dir = rospy.get_param("~template_dir",
             os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "templates"))
-        self.dtw_threshold = rospy.get_param("~dtw_threshold", 0.75)
-        self.strict_threshold = rospy.get_param("~strict_threshold", 0.55)
+        self.dtw_threshold = rospy.get_param("~dtw_threshold", 0.8)
+        self.strict_threshold = rospy.get_param("~strict_threshold", 0.6)
         self.dtw_band_ratio = rospy.get_param("~dtw_band_ratio", 0.5)  # Sakoe-Chiba band
 
         # --- Recording mode ---
@@ -213,32 +214,47 @@ class GestureNode:
     def classify(self, gesture):
         best_name = None
         best_dist = float('inf')
+        best_pos = None
         results = []
+        band = max(1, int(self.dtw_band_ratio * max(len(gesture), 1)))
+        early_stop = False
 
         for name, templates in self.templates.items():
             if name == "ood":
                 continue
             dists = []
             for template in templates:
+                # Skip templates where length mismatch exceeds band (DTW would return inf)
+                if abs(len(gesture) - len(template)) > band:
+                    continue
                 d = self.dtw_distance(gesture, template)
                 dists.append(d)
-                # Speed up: If we find a very small distane then just stop iterating and return match
+                # Speed up: If we find a very small distance then just stop iterating and return match
                 if d < self.strict_threshold:
+                    early_stop = True
                     break
+            if not dists:
+                continue
             avg_dist = np.mean(dists)
             min_dist = np.min(dists)
+            pos = np.argmin(dists)
             results.append((name, min_dist, avg_dist))
 
             if min_dist < best_dist:
                 best_dist = min_dist
                 best_name = name
+                best_pos = pos
+
+            # Global early termination: skip remaining classes if strong match found
+            if early_stop:
+                break
 
         # Log all distances for debugging
         for name, min_d, avg_d in results:
             rospy.loginfo(f"  DTW '{name}': min={min_d:.2f}, avg={avg_d:.2f}")
 
         if best_name is not None and best_dist < self.dtw_threshold:
-            rospy.loginfo(f"RECOGNIZED: '{best_name}' (distance={best_dist:.2f})")
+            rospy.loginfo(f"RECOGNIZED: '{best_name}' (distance={best_dist:.2f}) - matching file: {(best_pos+1):03d}") # Also print the matched file for debugging purposes
             self.gesture_pub.publish(best_name)
         else:
             rospy.loginfo(f"No match (best='{best_name}', dist={best_dist:.2f}, thresh={self.dtw_threshold})")
@@ -248,6 +264,9 @@ class GestureNode:
         n, m = len(s1), len(s2)
         band = max(1, int(self.dtw_band_ratio * max(n, m)))
 
+        # Precompute all pairwise Euclidean distances in one C-level call
+        D = cdist(s1, s2, 'euclidean')
+
         cost = np.full((n + 1, m + 1), np.inf)
         cost[0, 0] = 0.0
 
@@ -255,8 +274,7 @@ class GestureNode:
             j_start = max(1, i - band)
             j_end = min(m, i + band)
             for j in range(j_start, j_end + 1):
-                d = np.linalg.norm(s1[i - 1] - s2[j - 1])
-                cost[i, j] = d + min(cost[i-1, j], cost[i, j-1], cost[i-1, j-1])
+                cost[i, j] = D[i - 1, j - 1] + min(cost[i-1, j], cost[i, j-1], cost[i-1, j-1])
 
         return cost[n, m] / (n + m)
 

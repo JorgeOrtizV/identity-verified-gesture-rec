@@ -28,8 +28,8 @@
         <param name="max_gyro"          value="3.5" />
 
         <!-- DTW -->
-        <param name="dtw_threshold"   value="0.75" />
-	<param name="strict_threshold" value="0.55" />
+        <param name="dtw_threshold"   value="0.8" />
+	    <param name="strict_threshold" value="0.6" />
         <param name="dtw_band_ratio"  value="0.5" />
 
         <!-- Recording (set via launch args) -->

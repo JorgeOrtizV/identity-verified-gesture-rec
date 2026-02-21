@@ -4,6 +4,7 @@ import sys
 import os
 
 import numpy as np
+from scipy.spatial.distance import cdist
 
 class TestGesture:
     def __init__(self, test_dir):
@@ -68,14 +69,20 @@ class TestGesture:
         best_dist = float('inf')
         results = []
         output = ""
+        band = max(1, int(self.dtw_band_ratio * max(len(gesture), 1)))
 
         for name, templates in self.templates.items():
             if name == "ood":
                 continue
             dists = []
             for template in templates:
+                # Skip templates where length mismatch exceeds band (DTW would return inf)
+                if abs(len(gesture) - len(template)) > band:
+                    continue
                 d = self.dtw_distance(gesture, template)
                 dists.append(d)
+            if not dists:
+                continue
             avg_dist = np.mean(dists)
             min_dist = np.min(dists)
             results.append((name, min_dist, avg_dist))
@@ -101,6 +108,9 @@ class TestGesture:
         n, m = len(s1), len(s2)
         band = max(1, int(self.dtw_band_ratio * max(n, m)))
 
+        # Precompute all pairwise Euclidean distances in one C-level call
+        D = cdist(s1, s2, 'euclidean')
+
         cost = np.full((n + 1, m + 1), np.inf)
         cost[0, 0] = 0.0
 
@@ -108,8 +118,7 @@ class TestGesture:
             j_start = max(1, i - band)
             j_end = min(m, i + band)
             for j in range(j_start, j_end + 1):
-                d = np.linalg.norm(s1[i - 1] - s2[j - 1])
-                cost[i, j] = d + min(cost[i-1, j], cost[i, j-1], cost[i-1, j-1])
+                cost[i, j] = D[i - 1, j - 1] + min(cost[i-1, j], cost[i, j-1], cost[i-1, j-1])
 
         return cost[n, m] / (n + m)
 

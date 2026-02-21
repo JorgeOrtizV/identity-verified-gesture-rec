@@ -1,0 +1,17 @@
+# Record
+roslaunch gesture record_gesture.launch record_gesture_name:=arm_up_down
+
+# Recognize
+roslaunch gesture gesture_recognition.launch
+
+# Enable identity verification
+roslaunch gesture gesture.launch identity_verification:=true
+
+# Launch system for multiagent
+roslaunch tof_preprocessing system_rosbag.launch fg_depth_thresh:=1600 median_kernel:=5 open_kernel_size:=5
+
+# Record for multiagent
+./record_sys_multi.sh 
+
+# Record for single agent
+./record_sys.sh 

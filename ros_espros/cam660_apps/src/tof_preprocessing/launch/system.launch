@@ -37,7 +37,7 @@
         <param name="use_mag" value="false" />
         <param name="publish_tf" value="false" />
         <param name="world_frame" value="enu" />
-	<param name="frequency" value="50" />
+		<param name="frequency" value="50" />
 
 	</node> 
 

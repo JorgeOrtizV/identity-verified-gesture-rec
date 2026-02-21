@@ -33,9 +33,15 @@
         <param name="world_frame" value="enu" />
 	<param name="frequency" value="50" />
 
-	</node> 
+	</node>
+
+	<!-- Gesture node (before fusion so templates load while fusion initializes) -->
+        <include file="$(find gesture)/launch/gesture.launch">
+                <arg name="identity_verification" value="true" />
+        </include>
 
 	<include file="$(find mpu)/launch/fusion.launch"/>
+
 
 
 </launch>

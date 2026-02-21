@@ -15,6 +15,8 @@ class GestureSubscriber:
         self.authorized_id = None
         self.recognized_gesture = None
         self.gesture_state = None
+        self.gesture_display_duration = rospy.get_param("~gesture_display_duration", 3.0)
+        self.gesture_recognized_time = None
 
         # Sub
         self.fg_sub = Subscriber(
@@ -63,6 +65,7 @@ class GestureSubscriber:
 
     def gesture_class_callback(self, msg):
         self.recognized_gesture = msg.data
+        self.gesture_recognized_time = rospy.Time.now()
 
     def gesture_state_callback(self, msg):
         self.gesture_state = msg.data
@@ -82,7 +85,13 @@ class GestureSubscriber:
 
             cv2.rectangle(vis, (x, y), (x+w, y+h), (255,0,0), 2)
 
-            label = f"{self.recognized_gesture} | {self.gesture_state}"
+            if self.gesture_recognized_time is not None:
+                elapsed = (rospy.Time.now() - self.gesture_recognized_time).to_sec()
+                if elapsed > self.gesture_display_duration:
+                    self.recognized_gesture = None
+
+            label_gesture = self.recognized_gesture if self.recognized_gesture else "---"
+            label = f"{label_gesture} | {self.gesture_state}"
             cv2.putText(
                 vis, label, (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,0,0), 1
             )

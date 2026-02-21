@@ -27,6 +27,8 @@
           type="vis_gesture.py"
           name="vis_gesture"
           output="screen">
+
+          <param name="gesture_display_duration" value="3.0" />
     </node>
 
 

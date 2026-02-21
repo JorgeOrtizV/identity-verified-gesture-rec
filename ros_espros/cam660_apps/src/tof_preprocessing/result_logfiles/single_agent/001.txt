@@ -1,0 +1,610 @@
+[INFO] [1771619437.543071]: Calibration: 61.18 pixels/meter at 1.9m height
+[INFO] [1771619437.548837]: Fusion node ready
+[INFO] [1771619442.750506]: [TIMING] Agent callback at t=1771585862.298
+[INFO] [1771619442.751914]: [TIMING] IMU window: 20 samples, span=[1771585861.932, 1771585862.239], duration=0.307s
+[INFO] [1771619442.753371]: IMU: a=0.31 g=0.69 | Scores: 
+[INFO] [1771619442.768252]: [FUSION] New agent 0 detected - creating buffer
+[INFO] [1771619442.835701]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619442.837384]: Agent 0: score=0.82 (energy=0.82, temporal=0.81, corr_bonus=0.00)
+[INFO] [1771619442.889689]: Agent 0: GESTURE mode
+[INFO] [1771619443.178479]: Agent 0 FG change max updated: 137.0 pixels
+[INFO] [1771619443.293004]: Agent 0 FG change max updated: 158.0 pixels
+[INFO] [1771619443.294869]: IMU: a=0.26 g=0.22 | Scores: [A0: score=0.65, conf=0.50] 
+[INFO] [1771619443.350787]: Agent 0: score=0.65 (energy=0.93, temporal=0.46, corr_bonus=0.00)
+[INFO] [1771619443.408080]: Agent 0: GESTURE mode
+[INFO] [1771619443.695824]: Agent 0 FG change max updated: 168.0 pixels
+[INFO] [1771619443.753515]: Agent 0 FG change max updated: 379.0 pixels
+[INFO] [1771619443.814257]: IMU: a=0.22 g=0.69 | Scores: [A0: score=0.70, conf=0.65] 
+[INFO] [1771619443.867875]: Agent 0 FG change max updated: 423.0 pixels
+[INFO] [1771619443.869853]: Agent 0: score=0.71 (energy=0.95, temporal=0.55, corr_bonus=0.00)
+[INFO] [1771619443.928436]: Agent 0 FG change max updated: 689.0 pixels
+[INFO] [1771619443.929673]: Agent 0: GESTURE mode
+[INFO] [1771619444.096988]: Agent 0 FG change max updated: 693.0 pixels
+[INFO] [1771619444.156787]: Agent 0 FG change max updated: 698.0 pixels
+[INFO] [1771619444.211515]: Agent 0: WALKING mode
+[INFO] [1771619444.268622]: Agent 0 FG change max updated: 889.0 pixels
+[INFO] [1771619444.327219]: IMU: a=0.53 g=0.86 | Scores: [A0: score=1.01, conf=0.73] 
+[INFO] [1771619444.383384]: Agent 0: score=0.85 (energy=1.20, temporal=0.60, corr_bonus=0.01)
+[INFO] [1771619444.555839]: Authorizing Agent 0 (conf=0.81)
+[INFO] [1771619444.556880]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619444.612035]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619444.670030]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619444.725979]: Agent 0: WALKING mode
+[INFO] [1771619444.727991]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619444.782521]: [TIMING] Agent callback at t=1771585864.595
+[INFO] [1771619444.783891]: [TIMING] IMU window: 20 samples, span=[1771585864.287, 1771585864.594], duration=0.307s
+[INFO] [1771619444.785881]: AUTHORIZED: Agent 0 (conf=0.82)
+[INFO] [1771619444.842031]: IMU: a=0.40 g=0.43 | Scores: [A0: score=0.87, conf=0.82] 
+[INFO] [1771619444.843209]: AUTHORIZED: Agent 0 (conf=0.82)
+[INFO] [1771619444.898631]: Agent 0: score=1.09 (energy=1.26, temporal=0.63, corr_bonus=0.24)
+[INFO] [1771619444.899823]: AUTHORIZED: Agent 0 (conf=0.85)
+[INFO] [1771619444.956872]: AUTHORIZED: Agent 0 (conf=0.88)
+[INFO] [1771619445.014330]: AUTHORIZED: Agent 0 (conf=0.90)
+[INFO] [1771619445.071641]: AUTHORIZED: Agent 0 (conf=0.93)
+[INFO] [1771619445.127877]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619445.185880]: AUTHORIZED: Agent 0 (conf=0.99)
+[INFO] [1771619445.240247]: Agent 0: WALKING mode
+[INFO] [1771619445.242289]: AUTHORIZED: Agent 0 (conf=1.00)
+[INFO] [1771619445.298027]: AUTHORIZED: Agent 0 (conf=0.98)
+[INFO] [1771619445.355852]: IMU: a=0.22 g=0.13 | Scores: [A0: score=0.82, conf=0.98] 
+[INFO] [1771619445.357117]: AUTHORIZED: Agent 0 (conf=0.96)
+[INFO] [1771619445.411829]: Agent 0: score=0.79 (energy=0.85, temporal=0.42, corr_bonus=0.34)
+[INFO] [1771619445.412955]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619445.469314]: AUTHORIZED: Agent 0 (conf=0.93)
+[INFO] [1771619445.525461]: AUTHORIZED: Agent 0 (conf=0.92)
+[INFO] [1771619445.584224]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619445.639275]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619445.641200]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619445.697870]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619445.753504]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619445.810856]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619445.868188]: IMU: a=0.23 g=0.15 | Scores: [A0: score=0.92, conf=0.91] 
+[INFO] [1771619445.869442]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619445.924507]: Agent 0: score=0.95 (energy=0.97, temporal=0.48, corr_bonus=0.40)
+[INFO] [1771619445.925599]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619445.981854]: AUTHORIZED: Agent 0 (conf=0.92)
+[INFO] [1771619446.037171]: Agent 0: GESTURE mode
+[INFO] [1771619446.039288]: AUTHORIZED: Agent 0 (conf=0.94)
+[INFO] [1771619446.095661]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619446.152214]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619446.154848]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619446.212424]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619446.265637]: AUTHORIZED: Agent 0 (conf=0.94)
+[INFO] [1771619446.322407]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619446.380234]: IMU: a=0.29 g=0.79 | Scores: [A0: score=0.98, conf=0.95] 
+[INFO] [1771619446.381397]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619446.436159]: Agent 0: score=0.79 (energy=0.89, temporal=0.55, corr_bonus=0.15)
+[INFO] [1771619446.437338]: AUTHORIZED: Agent 0 (conf=0.94)
+[INFO] [1771619446.493057]: AUTHORIZED: Agent 0 (conf=0.92)
+[INFO] [1771619446.550702]: AUTHORIZED: Agent 0 (conf=0.90)
+[INFO] [1771619446.607617]: AUTHORIZED: Agent 0 (conf=0.88)
+[INFO] [1771619446.663893]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619446.665803]: AUTHORIZED: Agent 0 (conf=0.86)
+[INFO] [1771619446.725627]: AUTHORIZED: Agent 0 (conf=0.86)
+[INFO] [1771619446.779222]: AUTHORIZED: Agent 0 (conf=0.84)
+[INFO] [1771619446.834846]: [TIMING] Agent callback at t=1771585866.647
+[INFO] [1771619446.836086]: [TIMING] IMU window: 21 samples, span=[1771585866.335, 1771585866.643], duration=0.308s
+[INFO] [1771619446.838138]: AUTHORIZED: Agent 0 (conf=0.82)
+[INFO] [1771619446.893225]: IMU: a=0.76 g=0.73 | Scores: [A0: score=0.60, conf=0.82] 
+[INFO] [1771619446.894232]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619446.952607]: Agent 0: score=0.65 (energy=0.82, temporal=0.49, corr_bonus=0.05)
+[INFO] [1771619446.953755]: AUTHORIZED: Agent 0 (conf=0.78)
+[INFO] [1771619447.007994]: AUTHORIZED: Agent 0 (conf=0.77)
+[INFO] [1771619447.064650]: AUTHORIZED: Agent 0 (conf=0.77)
+[INFO] [1771619447.121413]: AUTHORIZED: Agent 0 (conf=0.76)
+[INFO] [1771619447.177378]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619447.179396]: AUTHORIZED: Agent 0 (conf=0.75)
+[INFO] [1771619447.236241]: AUTHORIZED: Agent 0 (conf=0.75)
+[INFO] [1771619447.291419]: Agent 0: GESTURE mode
+[INFO] [1771619447.293365]: AUTHORIZED: Agent 0 (conf=0.77)
+[INFO] [1771619447.348975]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619447.406701]: IMU: a=0.49 g=0.55 | Scores: [A0: score=0.83, conf=0.80] 
+[INFO] [1771619447.407968]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619447.465197]: Agent 0: score=0.87 (energy=0.92, temporal=0.84, corr_bonus=0.00)
+[INFO] [1771619447.466264]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619447.520259]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619447.576446]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619447.637279]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619447.689518]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619447.691699]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619447.748420]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619447.804765]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619447.862236]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619447.918533]: IMU: a=0.40 g=0.23 | Scores: [A0: score=0.78, conf=0.80] 
+[INFO] [1771619447.919654]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619447.979652]: Agent 0: score=0.82 (energy=1.00, temporal=0.50, corr_bonus=0.18)
+[INFO] [1771619447.980995]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619448.032923]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619448.089565]: AUTHORIZED: Agent 0 (conf=0.82)
+[INFO] [1771619448.146695]: AUTHORIZED: Agent 0 (conf=0.84)
+[INFO] [1771619448.202293]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619448.204355]: AUTHORIZED: Agent 0 (conf=0.87)
+[INFO] [1771619448.262916]: AUTHORIZED: Agent 0 (conf=0.89)
+[INFO] [1771619448.317511]: AUTHORIZED: Agent 0 (conf=0.90)
+[INFO] [1771619448.374572]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619448.431184]: IMU: a=0.37 g=0.48 | Scores: [A0: score=0.92, conf=0.91] 
+[INFO] [1771619448.432201]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619448.487089]: Agent 0: score=0.83 (energy=0.87, temporal=0.43, corr_bonus=0.37)
+[INFO] [1771619448.488265]: AUTHORIZED: Agent 0 (conf=0.90)
+[INFO] [1771619448.545040]: AUTHORIZED: Agent 0 (conf=0.89)
+[INFO] [1771619448.602551]: AUTHORIZED: Agent 0 (conf=0.88)
+[INFO] [1771619448.658591]: AUTHORIZED: Agent 0 (conf=0.86)
+[INFO] [1771619448.716816]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619448.719366]: AUTHORIZED: Agent 0 (conf=0.85)
+[INFO] [1771619448.773448]: AUTHORIZED: Agent 0 (conf=0.83)
+[INFO] [1771619448.829541]: AUTHORIZED: Agent 0 (conf=0.84)
+[INFO] [1771619448.884737]: [TIMING] Agent callback at t=1771585868.698
+[INFO] [1771619448.886093]: [TIMING] IMU window: 21 samples, span=[1771585868.384, 1771585868.690], duration=0.307s
+[INFO] [1771619448.888742]: AUTHORIZED: Agent 0 (conf=0.84)
+[INFO] [1771619448.945253]: IMU: a=0.52 g=0.61 | Scores: [A0: score=0.83, conf=0.84] 
+[INFO] [1771619448.946445]: AUTHORIZED: Agent 0 (conf=0.84)
+[INFO] [1771619449.000696]: Agent 0: score=0.64 (energy=0.83, temporal=0.45, corr_bonus=0.07)
+[INFO] [1771619449.001766]: AUTHORIZED: Agent 0 (conf=0.82)
+[INFO] [1771619449.058548]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619449.114744]: AUTHORIZED: Agent 0 (conf=0.79)
+[INFO] [1771619449.172162]: AUTHORIZED: Agent 0 (conf=0.78)
+[INFO] [1771619449.227401]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619449.229373]: AUTHORIZED: Agent 0 (conf=0.79)
+[INFO] [1771619449.286515]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619449.342808]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619449.400037]: AUTHORIZED: Agent 0 (conf=0.78)
+[INFO] [1771619449.457075]: IMU: a=0.84 g=0.76 | Scores: [A0: score=0.57, conf=0.78] 
+[INFO] [1771619449.458094]: AUTHORIZED: Agent 0 (conf=0.76)
+[INFO] [1771619449.513394]: Agent 0: score=0.54 (energy=0.70, temporal=0.35, corr_bonus=0.10)
+[INFO] [1771619449.514657]: AUTHORIZED: Agent 0 (conf=0.74)
+[INFO] [1771619449.570998]: AUTHORIZED: Agent 0 (conf=0.72)
+[INFO] [1771619449.627409]: AUTHORIZED: Agent 0 (conf=0.72)
+[INFO] [1771619449.684909]: AUTHORIZED: Agent 0 (conf=0.72)
+[INFO] [1771619449.740459]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619449.743120]: AUTHORIZED: Agent 0 (conf=0.72)
+[INFO] [1771619449.798846]: AUTHORIZED: Agent 0 (conf=0.74)
+[INFO] [1771619449.858557]: AUTHORIZED: Agent 0 (conf=0.72)
+[INFO] [1771619449.912535]: AUTHORIZED: Agent 0 (conf=0.71)
+[INFO] [1771619449.969803]: IMU: a=0.52 g=0.92 | Scores: [A0: score=0.61, conf=0.71] 
+[INFO] [1771619449.971056]: AUTHORIZED: Agent 0 (conf=0.70)
+[INFO] [1771619450.026021]: Agent 0: score=0.65 (energy=0.80, temporal=0.40, corr_bonus=0.15)
+[INFO] [1771619450.027119]: AUTHORIZED: Agent 0 (conf=0.70)
+[INFO] [1771619450.083390]: AUTHORIZED: Agent 0 (conf=0.69)
+[INFO] [1771619450.140228]: AUTHORIZED: Agent 0 (conf=0.72)
+[INFO] [1771619450.197005]: AUTHORIZED: Agent 0 (conf=0.74)
+[INFO] [1771619450.253649]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619450.255681]: AUTHORIZED: Agent 0 (conf=0.74)
+[INFO] [1771619450.311529]: AUTHORIZED: Agent 0 (conf=0.74)
+[INFO] [1771619450.369674]: AUTHORIZED: Agent 0 (conf=0.76)
+[INFO] [1771619450.425725]: AUTHORIZED: Agent 0 (conf=0.79)
+[INFO] [1771619450.485594]: IMU: a=0.28 g=0.09 | Scores: [A0: score=1.07, conf=0.79] 
+[INFO] [1771619450.486820]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619450.538591]: Agent 0: score=1.10 (energy=1.00, temporal=0.83, corr_bonus=0.22)
+[INFO] [1771619450.539752]: AUTHORIZED: Agent 0 (conf=0.84)
+[INFO] [1771619450.596133]: AUTHORIZED: Agent 0 (conf=0.87)
+[INFO] [1771619450.651880]: AUTHORIZED: Agent 0 (conf=0.90)
+[INFO] [1771619450.709754]: AUTHORIZED: Agent 0 (conf=0.94)
+[INFO] [1771619450.765202]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619450.767162]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619450.823814]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619450.880787]: AUTHORIZED: Agent 0 (conf=0.97)
+[INFO] [1771619450.935435]: [TIMING] Agent callback at t=1771585870.748
+[INFO] [1771619450.936630]: [TIMING] IMU window: 19 samples, span=[1771585870.431, 1771585870.738], duration=0.307s
+[INFO] [1771619450.938704]: AUTHORIZED: Agent 0 (conf=0.97)
+[INFO] [1771619450.995601]: IMU: a=0.16 g=0.10 | Scores: [A0: score=0.96, conf=0.97] 
+[INFO] [1771619450.996700]: AUTHORIZED: Agent 0 (conf=0.97)
+[INFO] [1771619451.051163]: Agent 0: IDLE mode
+[INFO] [1771619451.053043]: Agent 0: score=0.76 (energy=0.79, temporal=0.39, corr_bonus=0.37)
+[INFO] [1771619451.054000]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619451.109012]: AUTHORIZED: Agent 0 (conf=0.93)
+[INFO] [1771619451.166255]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619451.223372]: AUTHORIZED: Agent 0 (conf=0.88)
+[INFO] [1771619451.278501]: AUTHORIZED: Agent 0 (conf=0.86)
+[INFO] [1771619451.335882]: AUTHORIZED: Agent 0 (conf=0.86)
+[INFO] [1771619451.391614]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619451.393522]: AUTHORIZED: Agent 0 (conf=0.85)
+[INFO] [1771619451.449606]: Agent 0: GESTURE mode
+[INFO] [1771619451.451872]: AUTHORIZED: Agent 0 (conf=0.87)
+[INFO] [1771619451.507910]: IMU: a=0.79 g=1.00 | Scores: [A0: score=1.07, conf=0.87] 
+[INFO] [1771619451.509005]: AUTHORIZED: Agent 0 (conf=0.89)
+[INFO] [1771619451.562462]: Agent 0: score=0.95 (energy=1.03, temporal=0.61, corr_bonus=0.22)
+[INFO] [1771619451.563647]: AUTHORIZED: Agent 0 (conf=0.89)
+[INFO] [1771619451.620576]: AUTHORIZED: Agent 0 (conf=0.90)
+[INFO] [1771619451.678199]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619451.734817]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619451.790509]: AUTHORIZED: Agent 0 (conf=0.93)
+[INFO] [1771619451.847368]: AUTHORIZED: Agent 0 (conf=0.96)
+[INFO] [1771619451.905747]: AUTHORIZED: Agent 0 (conf=0.99)
+[INFO] [1771619451.960240]: Agent 0: GESTURE mode
+[INFO] [1771619451.962308]: AUTHORIZED: Agent 0 (conf=1.00)
+[INFO] [1771619452.018153]: IMU: a=0.56 g=0.86 | Scores: [A0: score=1.07, conf=1.00] 
+[INFO] [1771619452.019167]: AUTHORIZED: Agent 0 (conf=1.01)
+[INFO] [1771619452.074475]: Agent 0: score=1.15 (energy=1.07, temporal=0.78, corr_bonus=0.29)
+[INFO] [1771619452.075618]: AUTHORIZED: Agent 0 (conf=1.02)
+[INFO] [1771619452.134946]: AUTHORIZED: Agent 0 (conf=1.03)
+[INFO] [1771619452.188335]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619452.190366]: AUTHORIZED: Agent 0 (conf=1.03)
+[INFO] [1771619452.246176]: AUTHORIZED: Agent 0 (conf=1.03)
+[INFO] [1771619452.304451]: AUTHORIZED: Agent 0 (conf=1.04)
+[INFO] [1771619452.359277]: AUTHORIZED: Agent 0 (conf=1.07)
+[INFO] [1771619452.417320]: AUTHORIZED: Agent 0 (conf=1.08)
+[INFO] [1771619452.471393]: Agent 0: GESTURE mode
+[INFO] [1771619452.473454]: AUTHORIZED: Agent 0 (conf=1.10)
+[INFO] [1771619452.530386]: IMU: a=0.70 g=0.35 | Scores: [A0: score=1.25, conf=1.10] 
+[INFO] [1771619452.531443]: AUTHORIZED: Agent 0 (conf=1.11)
+[INFO] [1771619452.586473]: Agent 0: score=1.25 (energy=1.33, temporal=0.67, corr_bonus=0.34)
+[INFO] [1771619452.587685]: AUTHORIZED: Agent 0 (conf=1.13)
+[INFO] [1771619452.644102]: AUTHORIZED: Agent 0 (conf=1.14)
+[INFO] [1771619452.700164]: AUTHORIZED: Agent 0 (conf=1.15)
+[INFO] [1771619452.758216]: AUTHORIZED: Agent 0 (conf=1.16)
+[INFO] [1771619452.814147]: AUTHORIZED: Agent 0 (conf=1.13)
+[INFO] [1771619452.872182]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619452.874901]: AUTHORIZED: Agent 0 (conf=1.12)
+[INFO] [1771619452.928111]: AUTHORIZED: Agent 0 (conf=1.10)
+[INFO] [1771619452.984597]: [TIMING] Agent callback at t=1771585872.796
+[INFO] [1771619452.986284]: [TIMING] IMU window: 21 samples, span=[1771585872.479, 1771585872.786], duration=0.307s
+[INFO] [1771619452.989108]: AUTHORIZED: Agent 0 (conf=1.08)
+[INFO] [1771619453.042471]: IMU: a=0.25 g=0.04 | Scores: [A0: score=0.93, conf=1.08] 
+[INFO] [1771619453.043647]: AUTHORIZED: Agent 0 (conf=1.06)
+[INFO] [1771619453.098562]: Agent 0: score=1.04 (energy=1.00, temporal=0.71, corr_bonus=0.26)
+[INFO] [1771619453.099818]: AUTHORIZED: Agent 0 (conf=1.06)
+[INFO] [1771619453.155654]: AUTHORIZED: Agent 0 (conf=1.06)
+[INFO] [1771619453.214135]: AUTHORIZED: Agent 0 (conf=1.07)
+[INFO] [1771619453.270379]: AUTHORIZED: Agent 0 (conf=1.08)
+[INFO] [1771619453.326850]: AUTHORIZED: Agent 0 (conf=1.07)
+[INFO] [1771619453.384237]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619453.386726]: AUTHORIZED: Agent 0 (conf=1.08)
+[INFO] [1771619453.441337]: AUTHORIZED: Agent 0 (conf=1.07)
+[INFO] [1771619453.497296]: AUTHORIZED: Agent 0 (conf=1.07)
+[INFO] [1771619453.554589]: Agent 0: IDLE mode
+[INFO] [1771619453.556489]: IMU: a=0.26 g=0.07 | Scores: [A0: score=0.99, conf=1.07] 
+[INFO] [1771619453.557294]: AUTHORIZED: Agent 0 (conf=1.06)
+[INFO] [1771619453.610537]: Agent 0: score=0.93 (energy=0.77, temporal=0.62, corr_bonus=0.36)
+[INFO] [1771619453.611823]: AUTHORIZED: Agent 0 (conf=1.05)
+[INFO] [1771619453.668246]: AUTHORIZED: Agent 0 (conf=1.04)
+[INFO] [1771619453.724777]: AUTHORIZED: Agent 0 (conf=1.01)
+[INFO] [1771619453.782514]: AUTHORIZED: Agent 0 (conf=0.98)
+[INFO] [1771619453.838541]: AUTHORIZED: Agent 0 (conf=0.97)
+[INFO] [1771619453.897435]: AUTHORIZED: Agent 0 (conf=0.97)
+[INFO] [1771619453.953567]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619453.956029]: AUTHORIZED: Agent 0 (conf=0.96)
+[INFO] [1771619454.010191]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619454.067075]: IMU: a=0.47 g=0.37 | Scores: [A0: score=0.87, conf=0.95] 
+[INFO] [1771619454.068276]: AUTHORIZED: Agent 0 (conf=0.94)
+[INFO] [1771619454.123518]: Agent 0: score=0.87 (energy=0.98, temporal=0.49, corr_bonus=0.26)
+[INFO] [1771619454.124738]: AUTHORIZED: Agent 0 (conf=0.94)
+[INFO] [1771619454.180779]: AUTHORIZED: Agent 0 (conf=0.93)
+[INFO] [1771619454.239054]: AUTHORIZED: Agent 0 (conf=0.92)
+[INFO] [1771619454.295315]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619454.353076]: AUTHORIZED: Agent 0 (conf=0.92)
+[INFO] [1771619454.408709]: AUTHORIZED: Agent 0 (conf=0.92)
+[INFO] [1771619454.466092]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619454.468212]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619454.522551]: AUTHORIZED: Agent 0 (conf=0.90)
+[INFO] [1771619454.579564]: IMU: a=0.22 g=0.14 | Scores: [A0: score=0.81, conf=0.90] 
+[INFO] [1771619454.580594]: AUTHORIZED: Agent 0 (conf=0.89)
+[INFO] [1771619454.636688]: Agent 0: score=0.81 (energy=0.98, temporal=0.49, corr_bonus=0.18)
+[INFO] [1771619454.637874]: AUTHORIZED: Agent 0 (conf=0.88)
+[INFO] [1771619454.695151]: AUTHORIZED: Agent 0 (conf=0.87)
+[INFO] [1771619454.750438]: AUTHORIZED: Agent 0 (conf=0.87)
+[INFO] [1771619454.807908]: AUTHORIZED: Agent 0 (conf=0.87)
+[INFO] [1771619454.864782]: AUTHORIZED: Agent 0 (conf=0.86)
+[INFO] [1771619454.920981]: Agent 0: GESTURE mode
+[INFO] [1771619454.923588]: AUTHORIZED: Agent 0 (conf=0.85)
+[INFO] [1771619454.979184]: AUTHORIZED: Agent 0 (conf=0.84)
+[INFO] [1771619455.034683]: [TIMING] Agent callback at t=1771585874.848
+[INFO] [1771619455.035892]: [TIMING] IMU window: 20 samples, span=[1771585874.527, 1771585874.834], duration=0.307s
+[INFO] [1771619455.037976]: AUTHORIZED: Agent 0 (conf=0.83)
+[INFO] [1771619455.093048]: IMU: a=0.20 g=0.09 | Scores: [A0: score=0.77, conf=0.83] 
+[INFO] [1771619455.094070]: AUTHORIZED: Agent 0 (conf=0.83)
+[INFO] [1771619455.150810]: Agent 0: score=0.67 (energy=0.95, temporal=0.48, corr_bonus=0.00)
+[INFO] [1771619455.152181]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619455.207676]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619455.264966]: AUTHORIZED: Agent 0 (conf=0.79)
+[INFO] [1771619455.323668]: AUTHORIZED: Agent 0 (conf=0.79)
+[INFO] [1771619455.379365]: AUTHORIZED: Agent 0 (conf=0.79)
+[INFO] [1771619455.435442]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619455.437553]: AUTHORIZED: Agent 0 (conf=0.78)
+[INFO] [1771619455.493179]: Agent 0: GESTURE mode
+[INFO] [1771619455.495204]: AUTHORIZED: Agent 0 (conf=0.77)
+[INFO] [1771619455.550936]: AUTHORIZED: Agent 0 (conf=0.75)
+[INFO] [1771619455.608931]: IMU: a=0.09 g=0.09 | Scores: [A0: score=0.63, conf=0.75] 
+[INFO] [1771619455.610086]: AUTHORIZED: Agent 0 (conf=0.74)
+[INFO] [1771619455.665270]: Agent 0: score=0.79 (energy=0.90, temporal=0.72, corr_bonus=0.00)
+[INFO] [1771619455.666400]: AUTHORIZED: Agent 0 (conf=0.75)
+[INFO] [1771619455.724075]: AUTHORIZED: Agent 0 (conf=0.75)
+[INFO] [1771619455.781032]: AUTHORIZED: Agent 0 (conf=0.76)
+[INFO] [1771619455.839557]: AUTHORIZED: Agent 0 (conf=0.78)
+[INFO] [1771619455.897724]: AUTHORIZED: Agent 0 (conf=0.79)
+[INFO] [1771619455.953870]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619456.011498]: Agent 0: GESTURE mode
+[INFO] [1771619456.013459]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619456.070137]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619456.128894]: IMU: a=0.18 g=0.61 | Scores: [A0: score=0.79, conf=0.80] 
+[INFO] [1771619456.130011]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619456.186508]: Agent 0: score=0.81 (energy=0.93, temporal=0.48, corr_bonus=0.23)
+[INFO] [1771619456.187866]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619456.245989]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619456.300898]: Agent 0: WALKING mode
+[INFO] [1771619456.302937]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619456.359954]: AUTHORIZED: Agent 0 (conf=0.84)
+[INFO] [1771619456.419186]: AUTHORIZED: Agent 0 (conf=0.86)
+[INFO] [1771619456.476037]: AUTHORIZED: Agent 0 (conf=0.87)
+[INFO] [1771619456.536754]: AUTHORIZED: Agent 0 (conf=0.88)
+[INFO] [1771619456.592021]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619456.651122]: IMU: a=0.23 g=0.52 | Scores: [A0: score=1.09, conf=0.91] 
+[INFO] [1771619456.652429]: AUTHORIZED: Agent 0 (conf=0.93)
+[INFO] [1771619456.708603]: Agent 0: score=1.21 (energy=0.91, temporal=0.83, corr_bonus=0.40)
+[INFO] [1771619456.709888]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619456.767284]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619456.824326]: Agent 0: GESTURE mode
+[INFO] [1771619456.826263]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619456.882581]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619456.940338]: Agent 0 FG change max updated: 800.0 pixels
+[INFO] [1771619456.942855]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619456.998068]: Agent 0 FG change max updated: 935.0 pixels
+[INFO] [1771619457.000116]: AUTHORIZED: Agent 0 (conf=0.94)
+[INFO] [1771619457.056457]: [TIMING] Agent callback at t=1771585876.868
+[INFO] [1771619457.057854]: [TIMING] IMU window: 20 samples, span=[1771585876.472, 1771585876.780], duration=0.308s
+[INFO] [1771619457.060309]: AUTHORIZED: Agent 0 (conf=0.94)
+[INFO] [1771619457.115765]: AUTHORIZED: Agent 0 (conf=0.96)
+[INFO] [1771619457.173204]: Agent 0 FG change max updated: 1038.0 pixels
+[INFO] [1771619457.174340]: Agent 0: WALKING mode
+[INFO] [1771619457.175953]: IMU: a=0.29 g=0.48 | Scores: [A0: score=0.88, conf=0.96] 
+[INFO] [1771619457.176685]: AUTHORIZED: Agent 0 (conf=0.95)
+[INFO] [1771619457.232368]: Agent 0: score=0.86 (energy=0.91, temporal=0.47, corr_bonus=0.33)
+[INFO] [1771619457.233541]: AUTHORIZED: Agent 0 (conf=0.94)
+[INFO] [1771619457.290400]: AUTHORIZED: Agent 0 (conf=0.93)
+[INFO] [1771619457.348560]: AUTHORIZED: Agent 0 (conf=0.91)
+[INFO] [1771619457.405519]: AUTHORIZED: Agent 0 (conf=0.89)
+[INFO] [1771619457.463889]: AUTHORIZED: Agent 0 (conf=0.87)
+[INFO] [1771619457.521534]: AUTHORIZED: Agent 0 (conf=0.87)
+[INFO] [1771619457.580416]: AUTHORIZED: Agent 0 (conf=0.87)
+[INFO] [1771619457.637655]: AUTHORIZED: Agent 0 (conf=0.88)
+[INFO] [1771619457.693895]: Agent 0: WALKING mode
+[INFO] [1771619457.695842]: IMU: a=0.17 g=0.19 | Scores: [A0: score=0.78, conf=0.88] 
+[INFO] [1771619457.696670]: AUTHORIZED: Agent 0 (conf=0.87)
+[INFO] [1771619457.754078]: Agent 0: score=0.78 (energy=0.79, temporal=0.76, corr_bonus=0.01)
+[INFO] [1771619457.755117]: AUTHORIZED: Agent 0 (conf=0.86)
+[INFO] [1771619457.811009]: AUTHORIZED: Agent 0 (conf=0.83)
+[INFO] [1771619457.868031]: AUTHORIZED: Agent 0 (conf=0.81)
+[INFO] [1771619457.924846]: AUTHORIZED: Agent 0 (conf=0.80)
+[INFO] [1771619457.982512]: AUTHORIZED: Agent 0 (conf=0.78)
+[INFO] [1771619458.039617]: AUTHORIZED: Agent 0 (conf=0.77)
+[INFO] [1771619458.096251]: AUTHORIZED: Agent 0 (conf=0.77)
+[INFO] [1771619458.153966]: AUTHORIZED: Agent 0 (conf=0.76)
+[INFO] [1771619458.209609]: Agent 0: WALKING mode
+[INFO] [1771619458.211622]: IMU: a=0.47 g=0.68 | Scores: [A0: score=0.57, conf=0.76] 
+[0m[INFO] [1771619436.918150647]: Starting ImuFilter[0m
+[0m[INFO] [1771619436.922368424]: Using dt computed from message headers[0m
+[0m[INFO] [1771619436.922418560]: The gravity vector is kept in the IMU message.[0m
+[0m[INFO] [1771619436.928218547]: Imu filter gain set to 0.100000[0m
+[0m[INFO] [1771619436.928249112]: Gyro drift bias set to 0.000000[0m
+[0m[INFO] [1771619436.928265183]: Magnetometer bias values: 0.000000 0.000000 0.000000[0m
+[0m[INFO] [1771619439.659415044]: First IMU message received.[0m
+[INFO] [1771619437.403995]: Gesture node ready (mode=RECOGNIZE + identity verification)
+[INFO] [1771619437.405255]:   Loaded 40 templates for 'arm_up_down'
+[INFO] [1771619437.405952]:   Loaded 40 templates for 'circle'
+[INFO] [1771619440.069857]: [SEG] ONSET detected (8 samples with lookback)
+[INFO] [1771619444.062076]: [SEG] ONSET detected (8 samples with lookback)
+[INFO] [1771619445.188410]: [SEG] OFFSET: 53 samples captured
+[INFO] [1771619446.325580]:   DTW 'arm_up_down': min=1.18, avg=inf
+[INFO] [1771619446.326686]:   DTW 'circle': min=1.45, avg=inf
+[INFO] [1771619446.327385]: No match (best='arm_up_down', dist=1.18, thresh=0.75)
+[INFO] [1771619446.329589]: [SEG] ONSET detected (8 samples with lookback)
+[INFO] [1771619447.954432]: [SEG] OFFSET: 100 samples captured
+[INFO] [1771619450.133787]:   DTW 'arm_up_down': min=1.41, avg=inf
+[INFO] [1771619450.134727]:   DTW 'circle': min=0.73, avg=inf
+[INFO] [1771619450.135469]: RECOGNIZED: 'circle' (distance=0.73) - matching file: 007
+[INFO] [1771619450.137678]: [SEG] ONSET detected (8 samples with lookback)
+[INFO] [1771619450.513365]: [SEG] OFFSET: 117 samples captured
+[INFO] [1771619453.065171]:   DTW 'arm_up_down': min=1.47, avg=inf
+[INFO] [1771619453.066036]:   DTW 'circle': min=1.33, avg=inf
+[INFO] [1771619453.066731]: No match (best='circle', dist=1.33, thresh=0.75)
+[INFO] [1771619453.068729]: [SEG] ONSET detected (8 samples with lookback)
+[INFO] [1771619453.072008]: [SEG] OFFSET: 89 samples captured
+[INFO] [1771619454.974605]:   DTW 'arm_up_down': min=0.62, avg=inf
+[INFO] [1771619454.975615]:   DTW 'circle': min=1.29, avg=inf
+[INFO] [1771619454.976405]: RECOGNIZED: 'arm_up_down' (distance=0.62) - matching file: 023
+[INFO] [1771619454.979774]: [SEG] ONSET detected (8 samples with lookback)
+[INFO] [1771619455.121783]: [SEG] OFFSET: 75 samples captured
+[INFO] [1771619456.708874]:   DTW 'arm_up_down': min=1.34, avg=1.46
+[INFO] [1771619456.710130]:   DTW 'circle': min=1.37, avg=inf
+[INFO] [1771619456.710957]: No match (best='arm_up_down', dist=1.34, thresh=0.75)
+[INFO] [1771619456.713397]: [SEG] ONSET detected (8 samples with lookback)
+[INFO] [1771619442.749225]: Created Agent: 0. Detected spawn location: (223.0, 78.0) -> CENTER
+[INFO] [1771619437.509984]: Confidence visualization node ready
+[INFO] [1771619458.212587]: AUTHORIZED: Agent 0 (conf=0.74)
+[INFO] [1771619458.273994]: Agent 0: score=0.57 (energy=0.80, temporal=0.40, corr_bonus=0.02)
+[INFO] [1771619458.277332]: AUTHORIZED: Agent 0 (conf=0.72)
+[INFO] [1771619458.333090]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619458.339658]: AUTHORIZED: Agent 0 (conf=0.70)
+[INFO] [1771619458.393491]: AUTHORIZED: Agent 0 (conf=0.68)
+[INFO] [1771619458.451723]: AUTHORIZED: Agent 0 (conf=0.66)
+[INFO] [1771619458.514473]: AUTHORIZED: Agent 0 (conf=0.64)
+[INFO] [1771619458.565008]: AUTHORIZED: Agent 0 (conf=0.62)
+[INFO] [1771619458.622357]: AUTHORIZED: Agent 0 (conf=0.61)
+[INFO] [1771619458.738745]: IMU: a=0.51 g=1.00 | Scores: [A0: score=0.46, conf=0.59] 
+[INFO] [1771619458.795443]: Agent 0: score=0.45 (energy=0.65, temporal=0.32, corr_bonus=0.00)
+[INFO] [1771619458.849837]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619459.070510]: [TIMING] Agent callback at t=1771585878.881
+[INFO] [1771619459.072068]: [TIMING] IMU window: 19 samples, span=[1771585878.521, 1771585878.828], duration=0.307s
+[INFO] [1771619459.251523]: IMU: a=0.39 g=0.59 | Scores: [A0: score=0.59, conf=0.55] 
+[INFO] [1771619459.310372]: Agent 0: score=0.59 (energy=0.84, temporal=0.42, corr_bonus=0.00)
+[INFO] [1771619459.363650]: Agent 0: AMBIGUOUS mode
+[INFO] [1771619459.762833]: IMU: a=0.22 g=0.42 | Scores: 
+[INFO] [1771619460.270317]: IMU: a=0.09 g=0.10 | Scores: 
+[INFO] [1771619437.581310]: Depth preprocessing node initialized
+[INFO] [1771619439.597243]: Image dimensions: 320x240
+[INFO] [1771619442.740794]: Background model initialized
+[INFO] [1771619437.574079]: Gesture visualization node ready
+[INFO] [1771619437.497006]: Kalman visualization node ready
+... logging to /home/jorge/.ros/log/e07d3a6c-fdba-11f0-9785-45804f7b207e/roslaunch-jorge-pc-1111669.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;/home/jorge/Documents/ros_espros/cam660_apps/src/tof_preprocessing/launch/system_rosbag.launch
+[1mstarted roslaunch server http://jorge-pc:44501/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /depth_preprocessing/bg_beta2: 0.9
+ * /depth_preprocessing/bg_beta: 0.999
+ * /depth_preprocessing/bg_frames: 50
+ * /depth_preprocessing/depth_variation_thresh: 300
+ * /depth_preprocessing/fg_age_threshold: 50
+ * /depth_preprocessing/fg_bbox_mem: 20
+ * /depth_preprocessing/fg_bbox_motion_threshold: 500
+ * /depth_preprocessing/fg_blob_mem: 60
+ * /depth_preprocessing/fg_depth_thresh: 1500
+ * /depth_preprocessing/fg_motion_threshold: 1.5
+ * /depth_preprocessing/fg_threshold: 200
+ * /depth_preprocessing/max_depth: 6000
+ * /depth_preprocessing/median_kernel: 3
+ * /depth_preprocessing/min_blob_area: 3000
+ * /depth_preprocessing/min_blob_size: 300
+ * /depth_preprocessing/min_depth: 150
+ * /depth_preprocessing/min_depth_values: 100
+ * /depth_preprocessing/open_kernel_size: 3
+ * /depth_preprocessing/peaks_threshold: 0.4
+ * /depth_preprocessing/static_scene_thresh: 30
+ * /depth_preprocessing/track_dist_thresh: 50
+ * /depth_preprocessing/track_timeout: 15
+ * /fusion/activity_history_len: 30
+ * /fusion/agent_delete_timeout_sec: 3.0
+ * /fusion/agent_inactive_reset_sec: 0.5
+ * /fusion/agent_vel_alpha: 0.98
+ * /fusion/ambiguous_multiplier: 1.0
+ * /fusion/camera_height: 1.9
+ * /fusion/confidence_thresh: 0.8
+ * /fusion/corr_bonus_scale: 0.25
+ * /fusion/correlation_min_history: 10
+ * /fusion/default_max_fg_change: 100
+ * /fusion/ema_alpha: 0.9
+ * /fusion/energy_accel_weight: 0.5
+ * /fusion/exploit_high_conf: 1.3
+ * /fusion/exploit_high_prob: 0.2
+ * /fusion/exploit_med_conf: 0.8
+ * /fusion/exploit_med_prob: 0.5
+ * /fusion/fg_change_history_len: 10
+ * /fusion/fg_update_alpha: 0.99
+ * /fusion/fov_horizontal: 108
+ * /fusion/gaussian_scale: 1.0
+ * /fusion/gesture_bonus_fg: 0.25
+ * /fusion/gesture_bonus_gyro: 0.3
+ * /fusion/gesture_bonus_motion: 0.4
+ * /fusion/gesture_multiplier: 1.5
+ * /fusion/hysteresis_delay: 5.0
+ * /fusion/idle_bonus_fg: 0.3
+ * /fusion/idle_bonus_imu: 0.1
+ * /fusion/idle_bonus_motion: 0.1
+ * /fusion/idle_match_multiplier: 1.3
+ * /fusion/idle_mismatch_multiplier: 0.8
+ * /fusion/image_width: 320
+ * /fusion/imu_queue_size: 200
+ * /fusion/imu_rate: 50
+ * /fusion/imu_safety_margin: 0.3
+ * /fusion/imu_thresh: 0.05
+ * /fusion/imu_window_duration: 0.4
+ * /fusion/max_accel: 9.0
+ * /fusion/max_agent_vel: 5.0
+ * /fusion/max_corr_bonus_no_temporal: 0.15
+ * /fusion/max_fusion_score: 2.0
+ * /fusion/max_gyro: 3.5
+ * /fusion/min_agent_age: 5
+ * /fusion/no_scores_decay: 0.9995
+ * /fusion/reentry_confidence_thresh: 1.2
+ * /fusion/reentry_window: 5.0
+ * /fusion/state_gesture_fg: 0.25
+ * /fusion/state_gesture_motion_low: 0.05
+ * /fusion/state_idle_fg: 0.4
+ * /fusion/state_idle_motion: 0.1
+ * /fusion/state_walking_motion: 0.6
+ * /fusion/switch_cooldown: 3.0
+ * /fusion/switch_margin: 1.3
+ * /fusion/sync_slop: 0.05
+ * /fusion/temporal_lag_tolerance: 0.1
+ * /fusion/temporal_weight: 0.6
+ * /fusion/tolerant_confidence_thresh: 0.6
+ * /fusion/vision_window_duration: 1.0
+ * /fusion/visual_queue_size: 10
+ * /fusion/walking_bonus_accel: 0.5
+ * /fusion/walking_bonus_motion: 0.5
+ * /fusion/walking_multiplier: 1.3
+ * /gesture/buffer_duration: 3.0
+ * /gesture/dtw_band_ratio: 0.5
+ * /gesture/dtw_threshold: 0.75
+ * /gesture/energy_accel_weight: 0.5
+ * /gesture/identity_verification: True
+ * /gesture/imu_rate: 50
+ * /gesture/lookback_samples: 5
+ * /gesture/max_accel: 9.0
+ * /gesture/max_gesture_len: 200
+ * /gesture/max_gyro: 3.5
+ * /gesture/min_gesture_len: 15
+ * /gesture/offset_count: 8
+ * /gesture/offset_thresh: 0.15
+ * /gesture/onset_count: 3
+ * /gesture/onset_thresh: 0.3
+ * /gesture/record_gesture_name: 
+ * /gesture/record_mode: False
+ * /gesture/strict_threshold: 0.55
+ * /imu_filter_node/frequency: 50
+ * /imu_filter_node/publish_tf: False
+ * /imu_filter_node/use_mag: False
+ * /imu_filter_node/world_frame: enu
+ * /rosdistro: noetic
+ * /rosversion: 1.17.4
+ * /tracking/agent_cleanup_conf: 0.3
+ * /tracking/agent_legal_age: 10
+ * /tracking/agent_low_conf_thresh: 0.7
+ * /tracking/avg_conf_thresh: 0.7
+ * /tracking/bbox_alpha: 0.7
+ * /tracking/boundary_thresh: 40
+ * /tracking/duplicate_centroid_thresh: 30
+ * /tracking/hit_thresh: 10
+ * /tracking/iou_center_spawn_thresh: 0.25
+ * /tracking/iou_thresh: 0.6
+ * /tracking/loose_close_centroid_thresh: 60
+ * /tracking/maha_thresh: 9.21
+ * /tracking/miss_count_thresh: 5
+ * /tracking/proximity_thresh: 80
+ * /tracking/size_ratio_thresh: 0.35
+ * /tracking/static_scene_threshold: 20
+ * /tracking/strict_close_centroids_thresh: 20
+
+NODES
+  /
+    depth_preprocessing (tof_preprocessing/preprocessing.py)
+    fusion (mpu/fusion.py)
+    gesture (gesture/gesture_node.py)
+    imu_filter_node (imu_filter_madgwick/imu_filter_node)
+    tracking (tof_preprocessing/tracking.py)
+    vis_blobs (tof_preprocessing/vis_blobs.py)
+    vis_conf (mpu/vis_conf.py)
+    vis_depth_clean (tof_preprocessing/vis_depth_clean.py)
+    vis_gesture (gesture/vis_gesture.py)
+    vis_kalman (tof_preprocessing/vis_kalman.py)
+
+[1mROS_MASTER_URI=http://localhost:11311[0m
+]2;/home/jorge/Documents/ros_espros/cam660_apps/src/tof_preprocessing/launch/system_rosbag.launch http://localhost:11311
+[1mprocess[vis_depth_clean-1]: started with pid [1111694][0m
+[1mprocess[vis_blobs-2]: started with pid [1111695][0m
+[1mprocess[vis_kalman-3]: started with pid [1111696][0m
+[1mprocess[vis_conf-4]: started with pid [1111697][0m
+[1mprocess[vis_gesture-5]: started with pid [1111698][0m
+[1mprocess[depth_preprocessing-6]: started with pid [1111699][0m
+[1mprocess[tracking-7]: started with pid [1111700][0m
+[1mprocess[imu_filter_node-8]: started with pid [1111701][0m
+[1mprocess[fusion-9]: started with pid [1111702][0m
+[1mprocess[gesture-10]: started with pid [1111704][0m
+[gesture-10] killing on exit
+[fusion-9] killing on exit
+[imu_filter_node-8] killing on exit
+[vis_conf-4] killing on exit
+[tracking-7] killing on exit
+[depth_preprocessing-6] killing on exit
+[vis_gesture-5] killing on exit
+[vis_kalman-3] killing on exit
+[vis_blobs-2] killing on exit
+[vis_depth_clean-1] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m
