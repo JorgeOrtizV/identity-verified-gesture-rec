@@ -353,18 +353,49 @@ class DepthPreprocessingNode:
                 updated_tracks[self.next_track_id] = track
                 self.next_track_id += 1
             else:
-                # Matching existing track found
-                track = self.tracks[matched_id]
-                track.centroid = blob["centroid"]
-                track.bbox = blob["bbox"]
-                track.bbox_history.append(blob["bbox"])
-                track.centroid_history.append(blob["centroid"])
-                track.age+=1
-                track.last_seen = self.frame_count
-                track.update_static_flag()
-                if track.is_static:
-                    inactive_blobs+=1
-                updated_tracks[matched_id] = track
+                # Matching existing track found — but check if blob is a merged
+                # superblob that swallowed another track. This happens when two
+                # people are close and the fg_mask merges them into one component.
+                # The greedy matcher picks the nearest track, leaving the other
+                # track unmatched (and eventually dropped).
+                split_done = False
+                if blob["area"] > 8000 and len(self.tracks) > len(blobs):
+                    split_result = None
+                    if depth_map is not None:
+                        split_result = self.split_blob_depth(blob, self.tracks, depth_map)
+                    if split_result is None:
+                        split_result = self.split_blob_dt(blob, self.tracks)
+                    if split_result:
+                        sub_blobs, bridge_mask = split_result
+                        rospy.loginfo(f"Split matched superblob into {len(sub_blobs)} sub-blobs")
+                        all_bridges |= bridge_mask
+                        for sub_blob, track_id in sub_blobs:
+                            track = self.tracks[track_id]
+                            track.centroid = sub_blob["centroid"]
+                            track.bbox = sub_blob["bbox"]
+                            track.bbox_history.append(sub_blob["bbox"])
+                            track.centroid_history.append(sub_blob["centroid"])
+                            track.age += 1
+                            track.last_seen = self.frame_count
+                            track.update_static_flag()
+                            if track.is_static:
+                                inactive_blobs += 1
+                            updated_tracks[track_id] = track
+                            self.track_mask |= (sub_blob["mask"] & ~all_bridges)
+                        split_done = True
+
+                if not split_done:
+                    track = self.tracks[matched_id]
+                    track.centroid = blob["centroid"]
+                    track.bbox = blob["bbox"]
+                    track.bbox_history.append(blob["bbox"])
+                    track.centroid_history.append(blob["centroid"])
+                    track.age+=1
+                    track.last_seen = self.frame_count
+                    track.update_static_flag()
+                    if track.is_static:
+                        inactive_blobs+=1
+                    updated_tracks[matched_id] = track
             # Don't update zones where there-s a blob
             self.track_mask |= blob["mask"]
 

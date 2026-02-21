@@ -190,19 +190,43 @@ class AgentTrackerNode:
                 blob_to_agents[c] = []
             blob_to_agents[c].append(r)
 
-        # Find all agents close to each blob
-        for blob_idx in range(len(blobs)):
-            close_agents = []
-            for agent_idx in range(len(agents)):
-                if cost_matrix[agent_idx, blob_idx] < self.maha_thresh:
-                    close_agents.append(agent_idx)
+        # Only check for superblobs when Hungarian left agents unmatched
+        # (indicating blobs may have merged). When all agents have valid
+        # 1-to-1 matches, the wide Mahalanobis gate can falsely flag
+        # separate blobs as superblobs and override the correct assignment.
+        matched_by_hungarian = set()
+        for agent_list in blob_to_agents.values():
+            matched_by_hungarian.update(agent_list)
 
-            # If more than two agents are close to a blob we override hungarian assignment
-            if len(close_agents) >= 2:
-                blob_to_agents[blob_idx] = close_agents
+        if len(matched_by_hungarian) < len(agents):
+            for blob_idx in range(len(blobs)):
+                close_agents = []
+                for agent_idx in range(len(agents)):
+                    if cost_matrix[agent_idx, blob_idx] < self.maha_thresh:
+                        close_agents.append(agent_idx)
+
+                # If more than two agents are close to a blob we override hungarian assignment
+                # but only if all agents are spatially inside the blob bbox (real superblob).
+                # An inflated Mahalanobis gate can make a distant agent appear "close"
+                # even when it's far outside the blob — that's a false superblob.
+                if len(close_agents) >= 2:
+                    blob = blobs[blob_idx]
+                    margin = 20  # pixels
+                    all_inside = True
+                    for aidx in close_agents:
+                        cx, cy = agents[aidx].get_centroid()
+                        if not (blob.x - margin <= cx <= blob.x + blob.w + margin and
+                                blob.y - margin <= cy <= blob.y + blob.h + margin):
+                            all_inside = False
+                            break
+                    if all_inside:
+                        blob_to_agents[blob_idx] = close_agents
+                    else:
+                        rospy.loginfo(f"Rejected false superblob: not all agents inside blob bbox")
 
         matched_agents = set()
         matched_blobs = set()
+        superblob_detected = False
 
         for blob_idx, agent_indices in blob_to_agents.items():
             matched_blobs.add(blob_idx)
@@ -216,10 +240,11 @@ class AgentTrackerNode:
                 matched_agents.add(agent.id)
 
             elif len(agent_indices) >= 2:
+                superblob_detected = True
                 rospy.logwarn(f"Potential superblob: {len(agent_indices)} agents → blob {blob_idx}")
 
                 avg_confidence = np.mean([agents[idx].confidence for idx in agent_indices])
-                
+
                 # Use prediction instead of corrupted observation
                 if avg_confidence > self.avg_conf_thresh:
                     rospy.loginfo("Using predictions, ignoring superblob observation")
@@ -247,9 +272,13 @@ class AgentTrackerNode:
             if agent.id not in matched_agents:
                 agent.mark_missed()
 
-        # Create new agents for unmatchd blobs
+        # Create new agents for unmatched blobs
+        # Suppress during superblob frames to avoid creating agents from fragments
         for i, blob in enumerate(blobs):
             if i not in matched_blobs:
+                if superblob_detected:
+                    rospy.loginfo("Suppressing agent creation during superblob frame")
+                    continue
                 self.create_agent(blob, agents)
 
         # Merge duplicate agents
@@ -400,7 +429,7 @@ class AgentTrackerNode:
                     # Very close centroids - Assess performance
                     elif centroid_dist < self.strict_close_centroids_thresh:
                         should_merge = True
-                        merge_Reason = "very_close_centroids"
+                        merge_reason = "very_close_centroids"
                     elif size_ratio < self.size_ratio_thresh and centroid_dist < self.loose_close_centroid_thresh:
                         should_merge = True
                         merge_reason = "fragement_detection"
