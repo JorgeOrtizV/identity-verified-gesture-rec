@@ -94,12 +94,15 @@ class DepthPreprocessingNode:
         self.fg_age_threshold = rospy.get_param("~fg_age_threshold", 50)
         self.static_scene_thresh = rospy.get_param("~static_scene_thresh", 30)
         # Split blobs
+        self.split_area_thresh = rospy.get_param("~split_area_thresh", 8000)
+        self.split_ratio_thresh = rospy.get_param("~split_ratio_thresh", 1.4)
         self.min_depth_values = rospy.get_param("~min_depth_values", 100)
         self.depth_variation_thresh = rospy.get_param("~depth_variation_thresh", 300)
         self.peaks_threshold = rospy.get_param("~peaks_threshold", 0.4)
         # Single and multiagent parameters
         self.median_kernel = rospy.get_param("~median_kernel", 3)
         self.open_kernel_size = rospy.get_param("~open_kernel_size", 3)
+        self.close_kernel_size = rospy.get_param("~close_kernel_size", 17)
 
         # Background model
         self.bg_buffer = []
@@ -240,7 +243,7 @@ class DepthPreprocessingNode:
     def per_component_close(self, fg_mask):
         num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(fg_mask, connectivity=8)
         result = np.zeros_like(fg_mask)
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (17, 17))
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (self.close_kernel_size, self.close_kernel_size)) # (17, 17)
 
         for i in range(1, num_labels):
             if stats[i, cv2.CC_STAT_AREA] < self.min_blob_size:
@@ -307,11 +310,13 @@ class DepthPreprocessingNode:
             if matched_id is None:
                 # If distances are too far away, we could be merging two blobs into one
                 x,y, w, h = blob["bbox"]
+                if min(w, h) == 0:
+                    continue
                 aspect_ratio = max(w,h) / min(w,h) # When two agents are combined laterally distance ratio spikes
                 # Debug
                 #print("Area:", blob["area"])
                 #print("Ratio:", aspect_ratio)
-                if blob["area"] > 8000 and aspect_ratio > 1.4: #Important factor is the area
+                if blob["area"] > self.split_area_thresh and aspect_ratio > self.split_ratio_thresh: #Important factor is the area - 8000, 1.4
                     rospy.loginfo("TRIGGERING BLOB SPLITTING ROUTINE")
                     # Find peaks inside the blob
                     # Try depth-based split first (if depth available) - Proven to be more robust than distance transform splitting
@@ -403,6 +408,7 @@ class DepthPreprocessingNode:
             if tid not in updated_tracks and self.frame_count-track.last_seen < self.track_timeout:
                 updated_tracks[tid] = track
 
+        # Aggressive background update when scene is static for a while
         if inactive_blobs == len(blobs):
             self.static_scene_counter += 1 
         else:
@@ -471,10 +477,10 @@ class DepthPreprocessingNode:
 
         for peak_idx, track_id in peak_to_track.items():
             py, px = peak_coords[peak_idx]
-            # Use track_id + 1 as marker (avoid 0 which is background)
+            # Use track_id + 1 as marker - 0 is background
             markers[py, px] = track_id + 1
 
-        # Watershed needs 3-channel image
+        # 3-channel image for watershed
         mask_3ch = cv2.cvtColor(mask_uint8, cv2.COLOR_GRAY2BGR)
         markers = cv2.watershed(mask_3ch, markers)
 

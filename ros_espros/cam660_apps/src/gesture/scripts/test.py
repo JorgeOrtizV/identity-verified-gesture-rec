@@ -10,6 +10,7 @@ class TestGesture:
     def __init__(self, test_dir):
         self.templates = {}
         self.template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "templates")
+        self.gesture_group = test_dir
         self.test_dir = os.path.join(self.template_dir, test_dir)
 
         # Calibration
@@ -38,7 +39,7 @@ class TestGesture:
             if fname.endswith(".npy"):
                 print(f"Evaluating {fname}")
                 gesture = np.load(os.path.join(self.test_dir, fname))
-                print(self.classify(gesture))
+                print(self.classify(gesture, fname))
                 
 
 
@@ -58,45 +59,58 @@ class TestGesture:
             for fname in sorted(os.listdir(gesture_path)):
                 if fname.endswith(".npy"):
                     tmpl = np.load(os.path.join(gesture_path, fname))
-                    templates.append(tmpl)
+                    templates.append((tmpl, fname))
 
             if templates:
                 self.templates[gesture_name] = templates
 
     # DTW classification
-    def classify(self, gesture):
+    def classify(self, gesture, gesture_fname):
         best_name = None
         best_dist = float('inf')
+        best_pos = None
         results = []
         output = ""
         band = max(1, int(self.dtw_band_ratio * max(len(gesture), 1)))
+        early_stop = False
 
         for name, templates in self.templates.items():
             if name == "ood":
                 continue
             dists = []
-            for template in templates:
+            for template, fname in templates:
                 # Skip templates where length mismatch exceeds band (DTW would return inf)
                 if abs(len(gesture) - len(template)) > band:
                     continue
+                # Skip if comparing same file
+                if name == self.gesture_group and fname == gesture_fname:
+                    continue
                 d = self.dtw_distance(gesture, template)
                 dists.append(d)
+                if d < 0.6:
+                    early_stop = True
+                    break
             if not dists:
                 continue
             avg_dist = np.mean(dists)
             min_dist = np.min(dists)
+            pos = np.argmin(dists)
             results.append((name, min_dist, avg_dist))
 
             if min_dist < best_dist:
                 best_dist = min_dist
                 best_name = name
+                best_pos = pos
 
+            if early_stop:
+                break
+                
         # Log all distances for debugging
         for name, min_d, avg_d in results:
             output+=f"  DTW '{name}': min={min_d:.2f}, avg={avg_d:.2f}\n"
 
         if best_name is not None and best_dist < self.dtw_threshold:
-            output+=f"RECOGNIZED: '{best_name}' (distance={best_dist:.2f})\n"
+            output+=f"RECOGNIZED: '{best_name}' (distance={best_dist:.2f}) - matching file: {(best_pos+1):03d}\n"
         else:
             output+=f"No match (best='{best_name}', dist={best_dist:.2f}, thresh={self.dtw_threshold})\n"
 
@@ -121,9 +135,6 @@ class TestGesture:
                 cost[i, j] = D[i - 1, j - 1] + min(cost[i-1, j], cost[i, j-1], cost[i-1, j-1])
 
         return cost[n, m] / (n + m)
-
-
-
 
 
 if __name__ == "__main__":

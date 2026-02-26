@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>metrics</name>
+  <version>0.0.0</version>
+  <description>Automated metric collection and accuracy computation for the ToF agent system</description>
+
+  <maintainer email="jorge@todo.todo">jorge</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>tof_preprocessing</exec_depend>
+  <exec_depend>mpu</exec_depend>
+
+  <export>
+  </export>
+</package>

@@ -1,0 +1,513 @@
+Loaded 180 templates for 'arm_up_down'
+Loaded 180 templates for 'circle'
+
+Evaluating template_077.npy
+  DTW 'arm_up_down': min=1.13, avg=1.36
+  DTW 'circle': min=1.19, avg=1.50
+No match (best='arm_up_down', dist=1.13, thresh=0.75)
+
+Evaluating template_027.npy
+  DTW 'arm_up_down': min=1.34, avg=1.62
+  DTW 'circle': min=1.14, avg=1.41
+No match (best='circle', dist=1.14, thresh=0.75)
+
+Evaluating template_063.npy
+  DTW 'arm_up_down': min=1.44, avg=1.65
+  DTW 'circle': min=1.08, avg=1.64
+No match (best='circle', dist=1.08, thresh=0.75)
+
+Evaluating template_055.npy
+  DTW 'arm_up_down': min=1.39, avg=1.64
+  DTW 'circle': min=1.23, avg=1.62
+No match (best='circle', dist=1.23, thresh=0.75)
+
+Evaluating template_089.npy
+  DTW 'arm_up_down': min=1.18, avg=1.36
+  DTW 'circle': min=1.23, avg=1.51
+No match (best='arm_up_down', dist=1.18, thresh=0.75)
+
+Evaluating template_048.npy
+  DTW 'arm_up_down': min=1.35, avg=1.52
+  DTW 'circle': min=1.44, avg=1.60
+No match (best='arm_up_down', dist=1.35, thresh=0.75)
+
+Evaluating template_020.npy
+  DTW 'arm_up_down': min=1.17, avg=1.37
+  DTW 'circle': min=1.39, avg=1.61
+No match (best='arm_up_down', dist=1.17, thresh=0.75)
+
+Evaluating template_072.npy
+  DTW 'arm_up_down': min=1.14, avg=1.36
+  DTW 'circle': min=1.01, avg=1.31
+No match (best='circle', dist=1.01, thresh=0.75)
+
+Evaluating template_095.npy
+  DTW 'arm_up_down': min=1.39, avg=1.75
+  DTW 'circle': min=1.30, avg=1.62
+No match (best='circle', dist=1.30, thresh=0.75)
+
+Evaluating template_039.npy
+  DTW 'arm_up_down': min=1.35, avg=1.56
+  DTW 'circle': min=0.97, avg=1.29
+No match (best='circle', dist=0.97, thresh=0.75)
+
+Evaluating template_023.npy
+  DTW 'arm_up_down': min=1.18, avg=1.54
+  DTW 'circle': min=1.15, avg=1.49
+No match (best='circle', dist=1.15, thresh=0.75)
+
+Evaluating template_057.npy
+  DTW 'arm_up_down': min=1.27, avg=1.57
+  DTW 'circle': min=1.51, avg=1.72
+No match (best='arm_up_down', dist=1.27, thresh=0.75)
+
+Evaluating template_068.npy
+  DTW 'arm_up_down': min=1.44, avg=1.63
+  DTW 'circle': min=1.19, avg=1.55
+No match (best='circle', dist=1.19, thresh=0.75)
+
+Evaluating template_032.npy
+  DTW 'arm_up_down': min=1.27, avg=1.43
+  DTW 'circle': min=1.19, avg=1.46
+No match (best='circle', dist=1.19, thresh=0.75)
+
+Evaluating template_014.npy
+  DTW 'arm_up_down': min=1.29, avg=1.48
+  DTW 'circle': min=0.83, avg=1.24
+No match (best='circle', dist=0.83, thresh=0.75)
+
+Evaluating template_074.npy
+  DTW 'arm_up_down': min=1.16, avg=1.38
+  DTW 'circle': min=1.12, avg=1.43
+No match (best='circle', dist=1.12, thresh=0.75)
+
+Evaluating template_045.npy
+  DTW 'arm_up_down': min=1.11, avg=1.31
+  DTW 'circle': min=1.27, avg=1.49
+No match (best='arm_up_down', dist=1.11, thresh=0.75)
+
+Evaluating template_002.npy
+  DTW 'arm_up_down': min=1.25, avg=1.46
+  DTW 'circle': min=1.24, avg=1.51
+No match (best='circle', dist=1.24, thresh=0.75)
+
+Evaluating template_054.npy
+  DTW 'arm_up_down': min=1.38, avg=1.69
+  DTW 'circle': min=1.03, avg=1.51
+No match (best='circle', dist=1.03, thresh=0.75)
+
+Evaluating template_069.npy
+  DTW 'arm_up_down': min=1.40, avg=1.62
+  DTW 'circle': min=1.24, avg=1.57
+No match (best='circle', dist=1.24, thresh=0.75)
+
+Evaluating template_028.npy
+  DTW 'arm_up_down': min=1.38, avg=1.63
+  DTW 'circle': min=1.50, avg=1.75
+No match (best='arm_up_down', dist=1.38, thresh=0.75)
+
+Evaluating template_066.npy
+  DTW 'arm_up_down': min=1.30, avg=1.64
+  DTW 'circle': min=1.35, avg=1.63
+No match (best='arm_up_down', dist=1.30, thresh=0.75)
+
+Evaluating template_017.npy
+  DTW 'arm_up_down': min=1.27, avg=1.58
+  DTW 'circle': min=1.15, avg=1.43
+No match (best='circle', dist=1.15, thresh=0.75)
+
+Evaluating template_041.npy
+  DTW 'arm_up_down': min=0.91, avg=1.15
+  DTW 'circle': min=1.23, avg=1.47
+No match (best='arm_up_down', dist=0.91, thresh=0.75)
+
+Evaluating template_015.npy
+  DTW 'arm_up_down': min=1.11, avg=1.43
+  DTW 'circle': min=1.31, avg=1.53
+No match (best='arm_up_down', dist=1.11, thresh=0.75)
+
+Evaluating template_093.npy
+  DTW 'arm_up_down': min=1.37, avg=1.53
+  DTW 'circle': min=1.14, avg=1.39
+No match (best='circle', dist=1.14, thresh=0.75)
+
+Evaluating template_034.npy
+  DTW 'arm_up_down': min=1.33, avg=1.51
+  DTW 'circle': min=1.35, avg=1.53
+No match (best='arm_up_down', dist=1.33, thresh=0.75)
+
+Evaluating template_006.npy
+  DTW 'arm_up_down': min=1.16, avg=1.39
+  DTW 'circle': min=1.35, avg=1.66
+No match (best='arm_up_down', dist=1.16, thresh=0.75)
+
+Evaluating template_073.npy
+  DTW 'arm_up_down': min=1.23, avg=1.43
+  DTW 'circle': min=1.00, avg=1.30
+No match (best='circle', dist=1.00, thresh=0.75)
+
+Evaluating template_019.npy
+  DTW 'arm_up_down': min=1.28, avg=1.50
+  DTW 'circle': min=1.36, avg=1.55
+No match (best='arm_up_down', dist=1.28, thresh=0.75)
+
+Evaluating template_029.npy
+  DTW 'arm_up_down': min=1.19, avg=1.60
+  DTW 'circle': min=1.20, avg=1.52
+No match (best='arm_up_down', dist=1.19, thresh=0.75)
+
+Evaluating template_022.npy
+  DTW 'arm_up_down': min=1.15, avg=1.47
+  DTW 'circle': min=1.37, avg=1.68
+No match (best='arm_up_down', dist=1.15, thresh=0.75)
+
+Evaluating template_033.npy
+  DTW 'arm_up_down': min=1.48, avg=1.64
+  DTW 'circle': min=1.22, avg=1.43
+No match (best='circle', dist=1.22, thresh=0.75)
+
+Evaluating template_044.npy
+  DTW 'arm_up_down': min=1.49, avg=1.63
+  DTW 'circle': min=1.36, avg=1.62
+No match (best='circle', dist=1.36, thresh=0.75)
+
+Evaluating template_038.npy
+  DTW 'arm_up_down': min=1.06, avg=1.45
+  DTW 'circle': min=1.20, avg=1.44
+No match (best='arm_up_down', dist=1.06, thresh=0.75)
+
+Evaluating template_092.npy
+  DTW 'arm_up_down': min=1.32, avg=1.48
+  DTW 'circle': min=1.21, avg=1.50
+No match (best='circle', dist=1.21, thresh=0.75)
+
+Evaluating template_010.npy
+  DTW 'arm_up_down': min=1.29, avg=1.48
+  DTW 'circle': min=1.04, avg=1.32
+No match (best='circle', dist=1.04, thresh=0.75)
+
+Evaluating template_050.npy
+  DTW 'arm_up_down': min=1.25, avg=1.41
+  DTW 'circle': min=1.30, avg=1.54
+No match (best='arm_up_down', dist=1.25, thresh=0.75)
+
+Evaluating template_026.npy
+  DTW 'arm_up_down': min=1.11, avg=1.61
+  DTW 'circle': min=1.15, avg=1.65
+No match (best='arm_up_down', dist=1.11, thresh=0.75)
+
+Evaluating template_042.npy
+  DTW 'arm_up_down': min=0.71, avg=0.98
+  DTW 'circle': min=1.30, avg=1.59
+RECOGNIZED: 'arm_up_down' (distance=0.71) - matching file: 098
+
+Evaluating template_021.npy
+  DTW 'arm_up_down': min=1.13, avg=1.35
+  DTW 'circle': min=1.27, avg=1.52
+No match (best='arm_up_down', dist=1.13, thresh=0.75)
+
+Evaluating template_081.npy
+  DTW 'arm_up_down': min=1.20, avg=1.44
+  DTW 'circle': min=0.91, avg=1.24
+No match (best='circle', dist=0.91, thresh=0.75)
+
+Evaluating template_079.npy
+  DTW 'arm_up_down': min=1.13, avg=1.31
+  DTW 'circle': min=1.06, avg=1.38
+No match (best='circle', dist=1.06, thresh=0.75)
+
+Evaluating template_037.npy
+  DTW 'arm_up_down': min=0.83, avg=1.14
+  DTW 'circle': min=1.28, avg=1.58
+No match (best='arm_up_down', dist=0.83, thresh=0.75)
+
+Evaluating template_049.npy
+  DTW 'arm_up_down': min=1.20, avg=1.41
+  DTW 'circle': min=1.28, avg=1.50
+No match (best='arm_up_down', dist=1.20, thresh=0.75)
+
+Evaluating template_094.npy
+  DTW 'arm_up_down': min=1.28, avg=1.44
+  DTW 'circle': min=1.27, avg=1.56
+No match (best='circle', dist=1.27, thresh=0.75)
+
+Evaluating template_052.npy
+  DTW 'arm_up_down': min=1.46, avg=1.62
+  DTW 'circle': min=1.09, avg=1.41
+No match (best='circle', dist=1.09, thresh=0.75)
+
+Evaluating template_008.npy
+  DTW 'arm_up_down': min=1.12, avg=1.46
+  DTW 'circle': min=0.95, avg=1.28
+No match (best='circle', dist=0.95, thresh=0.75)
+
+Evaluating template_051.npy
+  DTW 'arm_up_down': min=1.31, avg=1.50
+  DTW 'circle': min=1.40, avg=1.63
+No match (best='arm_up_down', dist=1.31, thresh=0.75)
+
+Evaluating template_062.npy
+  DTW 'arm_up_down': min=1.05, avg=1.49
+  DTW 'circle': min=1.34, avg=1.59
+No match (best='arm_up_down', dist=1.05, thresh=0.75)
+
+Evaluating template_016.npy
+  DTW 'arm_up_down': min=1.32, avg=1.56
+  DTW 'circle': min=1.16, avg=1.38
+No match (best='circle', dist=1.16, thresh=0.75)
+
+Evaluating template_098.npy
+  DTW 'arm_up_down': min=1.50, avg=1.65
+  DTW 'circle': min=1.39, avg=1.59
+No match (best='circle', dist=1.39, thresh=0.75)
+
+Evaluating template_090.npy
+  DTW 'arm_up_down': min=1.48, avg=1.62
+  DTW 'circle': min=1.43, avg=1.61
+No match (best='circle', dist=1.43, thresh=0.75)
+
+Evaluating template_084.npy
+  DTW 'arm_up_down': min=1.16, avg=1.37
+  DTW 'circle': min=1.42, avg=1.62
+No match (best='arm_up_down', dist=1.16, thresh=0.75)
+
+Evaluating template_083.npy
+  DTW 'arm_up_down': min=1.27, avg=1.47
+  DTW 'circle': min=1.19, avg=1.43
+No match (best='circle', dist=1.19, thresh=0.75)
+
+Evaluating template_053.npy
+  DTW 'arm_up_down': min=1.14, avg=1.29
+  DTW 'circle': min=1.30, avg=1.59
+No match (best='arm_up_down', dist=1.14, thresh=0.75)
+
+Evaluating template_005.npy
+  DTW 'arm_up_down': min=1.31, avg=1.56
+  DTW 'circle': min=0.96, avg=1.33
+No match (best='circle', dist=0.96, thresh=0.75)
+
+Evaluating template_056.npy
+  DTW 'arm_up_down': min=1.35, avg=1.52
+  DTW 'circle': min=1.11, avg=1.36
+No match (best='circle', dist=1.11, thresh=0.75)
+
+Evaluating template_087.npy
+  DTW 'arm_up_down': min=1.32, avg=1.50
+  DTW 'circle': min=1.25, avg=1.57
+No match (best='circle', dist=1.25, thresh=0.75)
+
+Evaluating template_046.npy
+  DTW 'arm_up_down': min=1.37, avg=1.56
+  DTW 'circle': min=1.34, avg=1.57
+No match (best='circle', dist=1.34, thresh=0.75)
+
+Evaluating template_007.npy
+  DTW 'arm_up_down': min=1.28, avg=1.53
+  DTW 'circle': min=1.32, avg=1.54
+No match (best='arm_up_down', dist=1.28, thresh=0.75)
+
+Evaluating template_085.npy
+  DTW 'arm_up_down': min=1.13, avg=1.42
+  DTW 'circle': min=0.90, avg=1.23
+No match (best='circle', dist=0.90, thresh=0.75)
+
+Evaluating template_099.npy
+  DTW 'arm_up_down': min=1.21, avg=1.56
+  DTW 'circle': min=1.58, avg=1.78
+No match (best='arm_up_down', dist=1.21, thresh=0.75)
+
+Evaluating template_025.npy
+  DTW 'arm_up_down': min=1.12, avg=1.57
+  DTW 'circle': min=1.13, avg=1.64
+No match (best='arm_up_down', dist=1.12, thresh=0.75)
+
+Evaluating template_030.npy
+  DTW 'arm_up_down': min=1.13, avg=1.58
+  DTW 'circle': min=1.18, avg=1.53
+No match (best='arm_up_down', dist=1.13, thresh=0.75)
+
+Evaluating template_004.npy
+  DTW 'arm_up_down': min=1.29, avg=1.49
+  DTW 'circle': min=1.28, avg=1.51
+No match (best='circle', dist=1.28, thresh=0.75)
+
+Evaluating template_082.npy
+  DTW 'arm_up_down': min=1.16, avg=1.37
+  DTW 'circle': min=1.20, avg=1.57
+No match (best='arm_up_down', dist=1.16, thresh=0.75)
+
+Evaluating template_011.npy
+  DTW 'arm_up_down': min=0.95, avg=1.12
+  DTW 'circle': min=1.25, avg=1.51
+No match (best='arm_up_down', dist=0.95, thresh=0.75)
+
+Evaluating template_065.npy
+  DTW 'arm_up_down': min=1.58, avg=1.76
+  DTW 'circle': min=1.29, avg=1.62
+No match (best='circle', dist=1.29, thresh=0.75)
+
+Evaluating template_047.npy
+  DTW 'arm_up_down': min=1.52, avg=1.67
+  DTW 'circle': min=1.50, avg=1.70
+No match (best='circle', dist=1.50, thresh=0.75)
+
+Evaluating template_003.npy
+  DTW 'arm_up_down': min=1.21, avg=1.54
+  DTW 'circle': min=0.99, avg=1.28
+No match (best='circle', dist=0.99, thresh=0.75)
+
+Evaluating template_078.npy
+  DTW 'arm_up_down': min=1.07, avg=1.31
+  DTW 'circle': min=1.27, avg=1.54
+No match (best='arm_up_down', dist=1.07, thresh=0.75)
+
+Evaluating template_058.npy
+  DTW 'arm_up_down': min=0.96, avg=1.47
+  DTW 'circle': min=1.45, avg=1.72
+No match (best='arm_up_down', dist=0.96, thresh=0.75)
+
+Evaluating template_070.npy
+  DTW 'arm_up_down': min=1.56, avg=1.70
+  DTW 'circle': min=1.24, avg=1.59
+No match (best='circle', dist=1.24, thresh=0.75)
+
+Evaluating template_086.npy
+  DTW 'arm_up_down': min=1.23, avg=1.44
+  DTW 'circle': min=1.03, avg=1.39
+No match (best='circle', dist=1.03, thresh=0.75)
+
+Evaluating template_096.npy
+  DTW 'arm_up_down': min=1.40, avg=1.59
+  DTW 'circle': min=1.34, avg=1.51
+No match (best='circle', dist=1.34, thresh=0.75)
+
+Evaluating template_064.npy
+  DTW 'arm_up_down': min=1.33, avg=1.52
+  DTW 'circle': min=1.37, avg=1.56
+No match (best='arm_up_down', dist=1.33, thresh=0.75)
+
+Evaluating template_012.npy
+  DTW 'arm_up_down': min=1.24, avg=1.46
+  DTW 'circle': min=1.36, avg=1.54
+No match (best='arm_up_down', dist=1.24, thresh=0.75)
+
+Evaluating template_013.npy
+  DTW 'arm_up_down': min=1.28, avg=1.44
+  DTW 'circle': min=1.18, avg=1.44
+No match (best='circle', dist=1.18, thresh=0.75)
+
+Evaluating template_040.npy
+  DTW 'arm_up_down': min=1.39, avg=1.58
+  DTW 'circle': min=1.40, avg=1.62
+No match (best='arm_up_down', dist=1.39, thresh=0.75)
+
+Evaluating template_102.npy
+  DTW 'arm_up_down': min=1.40, avg=1.58
+  DTW 'circle': min=1.39, avg=1.55
+No match (best='circle', dist=1.39, thresh=0.75)
+
+Evaluating template_061.npy
+  DTW 'arm_up_down': min=1.25, avg=1.54
+  DTW 'circle': min=1.14, avg=1.69
+No match (best='circle', dist=1.14, thresh=0.75)
+
+Evaluating template_071.npy
+  DTW 'arm_up_down': min=1.26, avg=1.44
+  DTW 'circle': min=1.27, avg=1.49
+No match (best='arm_up_down', dist=1.26, thresh=0.75)
+
+Evaluating template_043.npy
+  DTW 'arm_up_down': min=1.11, avg=1.26
+  DTW 'circle': min=1.25, avg=1.63
+No match (best='arm_up_down', dist=1.11, thresh=0.75)
+
+Evaluating template_018.npy
+  DTW 'arm_up_down': min=1.44, avg=1.58
+  DTW 'circle': min=1.18, avg=1.50
+No match (best='circle', dist=1.18, thresh=0.75)
+
+Evaluating template_060.npy
+  DTW 'arm_up_down': min=1.31, avg=1.50
+  DTW 'circle': min=1.19, avg=1.43
+No match (best='circle', dist=1.19, thresh=0.75)
+
+Evaluating template_076.npy
+  DTW 'arm_up_down': min=1.03, avg=1.28
+  DTW 'circle': min=1.30, avg=1.49
+No match (best='arm_up_down', dist=1.03, thresh=0.75)
+
+Evaluating template_100.npy
+  DTW 'arm_up_down': min=1.58, avg=1.58
+  DTW 'circle': min=1.38, avg=1.48
+No match (best='circle', dist=1.38, thresh=0.75)
+
+Evaluating template_059.npy
+  DTW 'arm_up_down': min=1.26, avg=1.52
+  DTW 'circle': min=1.32, avg=1.64
+No match (best='arm_up_down', dist=1.26, thresh=0.75)
+
+Evaluating template_091.npy
+  DTW 'arm_up_down': min=1.38, avg=1.55
+  DTW 'circle': min=1.17, avg=1.39
+No match (best='circle', dist=1.17, thresh=0.75)
+
+Evaluating template_031.npy
+  DTW 'arm_up_down': min=1.07, avg=1.33
+  DTW 'circle': min=1.02, avg=1.27
+No match (best='circle', dist=1.02, thresh=0.75)
+
+Evaluating template_001.npy
+  DTW 'arm_up_down': min=1.33, avg=1.57
+  DTW 'circle': min=1.36, avg=1.54
+No match (best='arm_up_down', dist=1.33, thresh=0.75)
+
+Evaluating template_088.npy
+  DTW 'arm_up_down': min=1.19, avg=1.42
+  DTW 'circle': min=0.95, avg=1.35
+No match (best='circle', dist=0.95, thresh=0.75)
+
+Evaluating template_075.npy
+  DTW 'arm_up_down': min=1.14, avg=1.40
+  DTW 'circle': min=1.22, avg=1.48
+No match (best='arm_up_down', dist=1.14, thresh=0.75)
+
+Evaluating template_009.npy
+  DTW 'arm_up_down': min=1.19, avg=1.42
+  DTW 'circle': min=1.15, avg=1.43
+No match (best='circle', dist=1.15, thresh=0.75)
+
+Evaluating template_101.npy
+  DTW 'arm_up_down': min=1.18, avg=1.43
+  DTW 'circle': min=1.29, avg=1.61
+No match (best='arm_up_down', dist=1.18, thresh=0.75)
+
+Evaluating template_097.npy
+  DTW 'arm_up_down': min=1.31, avg=1.56
+  DTW 'circle': min=1.39, avg=1.56
+No match (best='arm_up_down', dist=1.31, thresh=0.75)
+
+Evaluating template_036.npy
+  DTW 'arm_up_down': min=1.34, avg=1.60
+  DTW 'circle': min=1.17, avg=1.41
+No match (best='circle', dist=1.17, thresh=0.75)
+
+Evaluating template_080.npy
+  DTW 'arm_up_down': min=0.96, avg=1.24
+  DTW 'circle': min=1.01, avg=1.31
+No match (best='arm_up_down', dist=0.96, thresh=0.75)
+
+Evaluating template_035.npy
+  DTW 'arm_up_down': min=1.42, avg=1.60
+  DTW 'circle': min=1.24, avg=1.54
+No match (best='circle', dist=1.24, thresh=0.75)
+
+Evaluating template_067.npy
+  DTW 'arm_up_down': min=1.38, avg=1.61
+  DTW 'circle': min=1.03, avg=1.67
+No match (best='circle', dist=1.03, thresh=0.75)
+
+Evaluating template_024.npy
+  DTW 'arm_up_down': min=1.27, avg=1.52
+  DTW 'circle': min=1.21, avg=1.44
+No match (best='circle', dist=1.21, thresh=0.75)
+

@@ -1,6 +1,7 @@
 <launch>
 	<!-- Set up arguments for foreground single and multi agent cases -->
         <arg name="open_kernel_size" default="3" />
+		<arg name="close_kernel_size" default="17" />
         <arg name="median_kernel" default="3" />
         <arg name="fg_depth_thresh" default="1500" />
 
@@ -26,6 +27,8 @@
 	<param name="min_depth_values" value="100" />
 	<param name="depth_variation_thresh" value="300" />
 	<param name="peaks_threshold" value="0.4" />
+	<param name="split_area_thresh" value="8000" />
+	<param name="split_ratio_thresh" value="1.4" />
 
 	<param name="fg_blob_mem" value="60" />
 	<param name="fg_bbox_mem" value="20" />
@@ -35,6 +38,7 @@
 	<param name="fg_depth_thresh" value="$(arg fg_depth_thresh)" />
 	<param name="median_kernel" value="$(arg median_kernel)" />
 	<param name="open_kernel_size" value="$(arg open_kernel_size)"/>
+	<param name="close_kernel_size" value="$(arg close_kernel_size)"/>
 
     </node>
 </launch>

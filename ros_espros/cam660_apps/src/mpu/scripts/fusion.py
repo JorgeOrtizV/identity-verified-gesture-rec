@@ -18,13 +18,13 @@ class FusionNode:
     def __init__(self):
         self.bridge = CvBridge()
 
-        # --- Calibration ---
+        # Calibration
         self.image_width = rospy.get_param("~image_width", 320)
         self.fov_horizontal = rospy.get_param("~fov_horizontal", 108) # WF lens degrees
         self.height = rospy.get_param("~camera_height", 1.9) # meters above ground
         self.gravity = 9.80665
 
-        # --- IMU ---
+        # IMU
         self.imu_window_duration = rospy.get_param("~imu_window_duration", 0.4)
         self.imu_safety_margin = rospy.get_param("~imu_safety_margin", 0.3)
         self.imu_rate = rospy.get_param("~imu_rate", 50) # Hz - updated with time
@@ -33,7 +33,7 @@ class FusionNode:
         self.max_accel = rospy.get_param("~max_accel", 9.0)
         self.imu_min_activity_thresh = rospy.get_param("~imu_thresh", 0.05)
 
-        # --- Vision ---
+        # Vision
         self.vision_window_duration = rospy.get_param("~vision_window_duration", 1.0)
         self.visual_queue_size = rospy.get_param("~visual_queue_size", 10)
         self.sync_slop = rospy.get_param("~sync_slop", 0.05) # seconds
@@ -41,28 +41,28 @@ class FusionNode:
         self.fg_change_alpha = rospy.get_param("~fg_update_alpha", 0.99)
         self.fg_change_history_len = rospy.get_param("~fg_change_history_len", 10)
 
-        # --- Agent tracking ---
+        # Agent tracking
         self.min_agent_age = rospy.get_param("~min_agent_age", 5)
         self.default_max_agent_vel = rospy.get_param("~max_agent_vel", 5.0)
         self.agent_vel_alpha = rospy.get_param("~agent_vel_alpha", 0.98)
         self.agent_inactive_reset_sec = rospy.get_param("~agent_inactive_reset_sec", 0.5)
         self.agent_delete_timeout_sec = rospy.get_param("~agent_delete_timeout_sec", 3.0)
 
-        # --- Scoring ---
+        # Scoring
         self.gaussian_scale = rospy.get_param("~gaussian_scale", 1.0)
         self.energy_accel_weight = rospy.get_param("~energy_accel_weight", 0.5) # gyro weight = 1 - this
         self.temporal_weight = rospy.get_param("~temporal_weight", 0.6)
         self.temporal_lag_tolerance = rospy.get_param("~temporal_lag_tolerance", 0.1) # seconds
         self.max_fusion_score = rospy.get_param("~max_fusion_score", 2.0)
 
-        # --- Activity state classification thresholds (vision-only) ---
+        # Activity state classification thresholds (vision-only)
         self.state_walking_motion = rospy.get_param("~state_walking_motion", 0.6)
         self.state_gesture_motion_low = rospy.get_param("~state_gesture_motion_low", 0.05)
         self.state_gesture_fg = rospy.get_param("~state_gesture_fg", 0.25)
         self.state_idle_motion = rospy.get_param("~state_idle_motion", 0.1)
         self.state_idle_fg = rospy.get_param("~state_idle_fg", 0.4)
 
-        # --- Activity state multipliers ---
+        # Activity state multipliers
         self.walking_multiplier = rospy.get_param("~walking_multiplier", 1.3)
         self.walking_bonus_motion = rospy.get_param("~walking_bonus_motion", 0.5)
         self.walking_bonus_accel = rospy.get_param("~walking_bonus_accel", 0.5)
@@ -77,13 +77,13 @@ class FusionNode:
         self.idle_bonus_fg = rospy.get_param("~idle_bonus_fg", 0.3)
         self.ambiguous_multiplier = rospy.get_param("~ambiguous_multiplier", 1.0) # No penalty for the moment, analyze if going back to penalty model (maybe 0.99 because we reach ambiguous very often)
 
-        # --- Long-term correlation ---
+        # Long-term correlation
         self.activity_history_len = rospy.get_param("~activity_history_len", 30)
         self.corr_bonus_scale = rospy.get_param("~corr_bonus_scale", 0.25)
         self.max_corr_bonus_no_temporal = rospy.get_param("~max_corr_bonus_no_temporal", 0.15)
         self.correlation_min_history = rospy.get_param("~correlation_min_history", 10)
 
-        # --- Authorization ---
+        # Authorization
         self.confidence_thresh = rospy.get_param("~confidence_thresh", 0.8)
         self.tolerant_confidence_thresh = rospy.get_param("~tolerant_confidence_thresh", 0.6)
         self.reentry_confidence_thresh = rospy.get_param("~reentry_confidence_thresh", 1.2)
@@ -94,13 +94,13 @@ class FusionNode:
         self.switch_cooldown = rospy.get_param("~switch_cooldown", 3.0)
         self.switch_margin = rospy.get_param("~switch_margin", 1.3) # 30% improvement required
 
-        # --- Exploration-exploitation ---
+        # Exploration-exploitation
         self.exploit_high_conf = rospy.get_param("~exploit_high_conf", 1.3)
         self.exploit_high_prob = rospy.get_param("~exploit_high_prob", 0.2)
         self.exploit_med_conf = rospy.get_param("~exploit_med_conf", 0.8)
         self.exploit_med_prob = rospy.get_param("~exploit_med_prob", 0.5)
 
-        # --- Init state ---
+        # Init state
         self.imu_buffer = deque()
         self.agent_buffers = {}
         self.fg_buffers = {}
@@ -332,6 +332,7 @@ class FusionNode:
             activity_state = self.classify_activity_state(agent_motion, fg_motion)
             self.agent_activity[agent.id] = activity_state
 
+            # Define bonuses : IMU-Vision fusion
             if activity_state == "WALKING":
                 rospy.loginfo_throttle(0.5, f"Agent {agent.id}: WALKING mode")
                 if agent_motion >= self.walking_bonus_motion and accel_norm >= self.walking_bonus_accel:
@@ -353,7 +354,7 @@ class FusionNode:
                 rospy.loginfo_throttle(0.5, f"Agent {agent.id}: AMBIGUOUS mode")
                 energy_score *= self.ambiguous_multiplier
 
-            # --- Dual-channel temporal cross-correlation score ---
+            # Dual-channel temporal cross-correlation score
             temporal_score = self.compute_temporal_score(agent.id, now)
 
             # Long-term activity correlation bonus (split channels)
@@ -512,10 +513,10 @@ class FusionNode:
             return "AMBIGUOUS"
 
     def compute_temporal_score(self, agent_id, now):
-        """Dual-channel temporal cross-correlation:
-        Channel 1: IMU accel <-> agent speed (translational)
-        Channel 2: IMU gyro  <-> fg_motion  (rotational/in-place)
-        Returns average of available channels."""
+        # Dual-channel temporal cross-correlation:
+        # Channel 1: IMU accel <-> agent speed (translational)
+        # Channel 2: IMU gyro  <-> fg_motion  (rotational/in-place)
+        # Returns average of available channels.
         t_start = now - self.imu_window_duration
 
         # IMU samples in window (accel and gyro)
@@ -557,8 +558,7 @@ class FusionNode:
         return np.mean(channel_scores)
 
     def _cross_correlate(self, signal_a, signal_b):
-        """Normalized cross-correlation with configurable lag tolerance.
-        Returns best non-negative correlation (0.0 to 1.0)."""
+        # Normalized cross-correlation with configurable lag tolerance. Returns best non-negative correlation (0.0 to 1.0).
         a_zm = signal_a - np.mean(signal_a)
         b_zm = signal_b - np.mean(signal_b)
         std_a = np.std(a_zm)
@@ -745,6 +745,11 @@ class FusionNode:
 
         if agent_id == self.currently_authorized:
             return True
+
+        # Always evaluate agents that haven't built up confidence yet to prevent starvation of legitimate new challengers - better approach: time based. If an agent is relatively new, then evaluate, if we know the agent for a while and conf is low then it doesn-t really make sense to evaluate it (if we have a strong conf agent)
+        # agent_conf = self.authority_score.get(agent_id, 0.0)
+        # if agent_conf < 0.4:
+        #     return True
 
         auth_conf = self.authority_score.get(self.currently_authorized, 0.0)
 

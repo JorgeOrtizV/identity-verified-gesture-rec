@@ -7,10 +7,15 @@ import math
 from sensor_msgs.msg import Imu
 
 
+REQUIRED_KEYS = ('AcX', 'AcY', 'AcZ', 'GyX', 'GyY', 'GyZ')
+
 class MPUReceiver:
     def __init__(self):
+        self.allowed_source = rospy.get_param("~esp32_ip", "") #TODO: Add esp IP: Check with micropython
+        self.port = rospy.get_param("~udp_port", 5005)
+
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind(("0.0.0.0", 5005))
+        self.sock.bind(("0.0.0.0", self.port))
         self.sock.settimeout(1.0)
 
         # Scaling Factors
@@ -24,18 +29,34 @@ class MPUReceiver:
             queue_size=10
         )
 
+        if self.allowed_source:
+            rospy.loginfo("Accepting IMU packets only from %s", self.allowed_source)
+        else:
+            rospy.logwarn("No esp32_ip set — accepting IMU packets from ANY source")
+
         self.run()
 
     def run(self):
-        rospy.loginfo("Started ESP32 UDP Receiver")
+        rospy.loginfo("Started ESP32 UDP Receiver on port %d", self.port)
 
         while not rospy.is_shutdown():
             try:
                 data, addr = self.sock.recvfrom(1024)
+
+                # Source IP filtering
+                if self.allowed_source and addr[0] != self.allowed_source:
+                    rospy.logwarn_throttle(5.0,
+                        "Rejected UDP packet from %s (expected %s)", addr[0], self.allowed_source)
+                    continue
+
                 raw_data = json.loads(data.decode('utf-8'))
-                # Debug print
-                # print(f"Accel X: {raw_data['AcX']} | Accel Y: {raw_data['AcY']}")
-                # Publish to publisher
+
+                # Validate required keys
+                missing = [k for k in REQUIRED_KEYS if k not in raw_data]
+                if missing:
+                    rospy.logwarn_throttle(1.0, "Malformed IMU packet, missing keys: %s", missing)
+                    continue
+
                 msg = Imu()
                 msg.header.stamp = rospy.Time.now()
                 msg.header.frame_id = "imu_link"
@@ -57,7 +78,7 @@ class MPUReceiver:
                 msg.angular_velocity_covariance[4] = 0.01
                 msg.angular_velocity_covariance[8] = 0.01
 
-                # Orientation?
+                # Orientation
                 msg.orientation_covariance[0] = 0.01
                 msg.orientation_covariance[4] = 0.01
                 msg.orientation_covariance[8] = 0.01
@@ -66,8 +87,10 @@ class MPUReceiver:
 
             except socket.timeout:
                 continue
+            except (json.JSONDecodeError, TypeError, ValueError) as e:
+                rospy.logwarn_throttle(1.0, "Invalid IMU packet: %s", e)
             except Exception as e:
-                print(f"Error: {e}")
+                rospy.logerr("Unexpected error in MPU receiver: %s", e)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,9 @@
+# Ground truth for authorization accuracy evaluation.
+# Keys must match the bag_name used when launching the system.
+# authorized_agents: list of agent IDs that SHOULD be authorized.
+
+multiagent_001:
+  authorized_agents: [0, 1]
+
+single_agent_001:
+  authorized_agents: [0]

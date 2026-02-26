@@ -13,15 +13,15 @@ from collections import deque
 
 class GestureNode:
     def __init__(self):
-        # --- Calibration ---
+        # Calibration
         self.gravity = 9.80665
         self.imu_rate = rospy.get_param("~imu_rate", 50)  # Hz, auto-updated
 
-        # --- Rolling buffer ---
+        # Rolling buffer
         self.buffer_duration = rospy.get_param("~buffer_duration", 3.0)
         self.buffer_maxlen = int(self.buffer_duration * self.imu_rate)
 
-        # --- Segmentation ---
+        # Segmentation
         self.onset_thresh = rospy.get_param("~onset_thresh", 0.3) # IMU energy th to confirm onset
         self.offset_thresh = rospy.get_param("~offset_thresh", 0.15)
         self.onset_count = rospy.get_param("~onset_count", 3)      # consecutive samples to confirm onset
@@ -33,22 +33,22 @@ class GestureNode:
         self.max_accel = rospy.get_param("~max_accel", 9.0)
         self.max_gyro = rospy.get_param("~max_gyro", 3.5)
 
-        # --- DTW ---
+        # DTW
         self.template_dir = rospy.get_param("~template_dir",
             os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "templates"))
         self.dtw_threshold = rospy.get_param("~dtw_threshold", 0.8)
         self.strict_threshold = rospy.get_param("~strict_threshold", 0.6)
         self.dtw_band_ratio = rospy.get_param("~dtw_band_ratio", 0.5)  # Sakoe-Chiba band
 
-        # --- Recording mode ---
+        # Recording mode
         self.record_mode = rospy.get_param("~record_mode", False)
         self.record_gesture_name = rospy.get_param("~record_gesture_name", "")
 
-        # --- Identity verification ---
+        # Identity verification
         self.identity_verification = rospy.get_param("~identity_verification", False)
         self.authorized_agent_id = -1
 
-        # --- State ---
+        # State
         self.buffer = deque(maxlen=self.buffer_maxlen)
         self.state = "IDLE"
         self.onset_counter = 0
@@ -64,7 +64,7 @@ class GestureNode:
         if not self.record_mode:
             self.load_templates()
 
-        # --- Subscribers ---
+        # Subscribers
         self.imu_sub = rospy.Subscriber(
             "/imu/data", Imu, self.imu_callback, queue_size=100
         )
@@ -74,7 +74,7 @@ class GestureNode:
                 "/fusion/authorized_agent_id", Int32, self.auth_callback, queue_size=1
             )
 
-        # --- Publishers ---
+        # Publishers
         self.gesture_pub = rospy.Publisher(
             "/gesture/recognized", String, queue_size=1
         )
@@ -310,7 +310,11 @@ class GestureNode:
         os.makedirs(save_dir, exist_ok=True)
 
         existing = [f for f in os.listdir(save_dir) if f.endswith(".npy")]
-        idx = len(existing) + 1
+        if existing:
+            indices = [int(f.split("_")[1].split(".")[0]) for f in existing]
+            idx = max(indices) + 1
+        else:
+            idx = 1
         fname = os.path.join(save_dir, f"template_{idx:03d}.npy")
 
         np.save(fname, gesture)

@@ -190,10 +190,8 @@ class AgentTrackerNode:
                 blob_to_agents[c] = []
             blob_to_agents[c].append(r)
 
-        # Only check for superblobs when Hungarian left agents unmatched
-        # (indicating blobs may have merged). When all agents have valid
-        # 1-to-1 matches, the wide Mahalanobis gate can falsely flag
-        # separate blobs as superblobs and override the correct assignment.
+        # Only check for superblobs when Hungarian left agents unmatched - indicating blobs may have merged. When all agents have valid
+        # 1-to-1 matches, the wide Mahalanobis gate can falsely flag separate blobs as superblobs and override the correct assignment.
         matched_by_hungarian = set()
         for agent_list in blob_to_agents.values():
             matched_by_hungarian.update(agent_list)
@@ -205,10 +203,8 @@ class AgentTrackerNode:
                     if cost_matrix[agent_idx, blob_idx] < self.maha_thresh:
                         close_agents.append(agent_idx)
 
-                # If more than two agents are close to a blob we override hungarian assignment
-                # but only if all agents are spatially inside the blob bbox (real superblob).
-                # An inflated Mahalanobis gate can make a distant agent appear "close"
-                # even when it's far outside the blob — that's a false superblob.
+                # If more than two agents are close to a blob we override hungarian assignment but only if all agents are spatially inside the blob bbox (real superblob).
+                # An inflated Mahalanobis gate can make a distant agent appear "close" even when it's far outside the blob — that's a false superblob.
                 if len(close_agents) >= 2:
                     blob = blobs[blob_idx]
                     margin = 20  # pixels
@@ -504,7 +500,7 @@ class AgentTrackerNode:
                 )
                 to_delete.append(aid)
 
-        for aid in to_delete:
+        for aid in set(to_delete):
             del self.agents[aid]
 
     def publish_agents(self, header):

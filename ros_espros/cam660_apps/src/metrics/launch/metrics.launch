@@ -1,0 +1,10 @@
+<launch>
+	<arg name="bag_name" default="unnamed"/>
+
+	<node pkg="metrics"
+	      type="metrics_node.py"
+	      name="metrics_node"
+	      output="screen">
+		<param name="bag_name" value="$(arg bag_name)"/>
+	</node>
+</launch>

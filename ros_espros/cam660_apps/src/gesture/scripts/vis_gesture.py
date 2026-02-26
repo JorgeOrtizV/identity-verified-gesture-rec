@@ -5,7 +5,7 @@ import numpy as np
 import cv2
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
-from tof_preprocessing.msg import Agent, AgentArray
+from tof_preprocessing.msg import AgentArray
 from std_msgs.msg import Int32, String
 from message_filters import Subscriber, ApproximateTimeSynchronizer
 
