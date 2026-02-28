@@ -1,0 +1,93 @@
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_001
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_002
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_003
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_004 fg_depth_thresh:=1600 close_kernel_size:=19
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_005
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_006
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_008 fg_depth_thresh:=1700 close_kernel_size:=23
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_009 fg_depth_thresh:=1600
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_010
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_011 fg_depth_thresh:=1600
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_012 fg_depth_thresh:=1750 close_kernel_size:=19
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_013 fg_depth_thresh:=1750 close_kernel_size:=21
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_014 fg_depth_thresh:=1750 close_kernel_size:=21
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_015 fg_depth_thresh:=1600
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_016 fg_depth_thresh:=1600
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_017 fg_depth_thresh:=1600 close_kernel_size:=19
+
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_018 fg_depth_thresh:=1575 close_kernel_size:=21
+
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_019 fg_depth_thresh:=1525 close_kernel_size:=25
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_021 fg_depth_thresh:=1600 close_kernel_size:=21
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_022 fg_depth_thresh:=1600 close_kernel_size:=21
+
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_023 fg_depth_thresh:=1700 close_kernel_size:=21
+
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_024 fg_depth_thresh:=1600 close_kernel_size:=23
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_025 fg_depth_thresh:=1700 close_kernel_size:=19
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_026 fg_depth_thresh:=1700 close_kernel_size:=19
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_027 fg_depth_thresh:=1700 close_kernel_size:=21
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_028 fg_depth_thresh:=1700 close_kernel_size:=21
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_029 fg_depth_thresh:=1700 close_kernel_size:=21
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=single_030 fg_depth_thresh:=1600 close_kernel_size:=19
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_001 fg_depth_thresh:=1600
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_002
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_003 fg_depth_thresh:=1600
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_004 fg_depth_thresh:=1600 median_kernel:=5 open_kernel_size:=5
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_005 fg_depth_thresh:=1600 median_kernel:=5 open_kernel_size:=5
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_006 fg_depth_thresh:=1600 median_kernel:=5 open_kernel_size:=5
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_007 fg_depth_thresh:=1700 median_kernel:=5 open_kernel_size:=5
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_008 median_kernel:=5 open_kernel_size:=5
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_009 median_kernel:=5 open_kernel_size:=5
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_010 fg_depth_thresh:=1300 median_kernel:=5 open_kernel_size:=5
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_011
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_012
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_013 fg_depth_thresh:=1400
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_014
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_015
+
+roslaunch tof_preprocessing system_rosbag.launch bag_name:=multi_016 fg_depth_thresh:=1300
+
+

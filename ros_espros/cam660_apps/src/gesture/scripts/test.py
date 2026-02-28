@@ -15,7 +15,11 @@ class TestGesture:
 
         # Calibration
         self.dtw_band_ratio = 0.5
-        self.dtw_threshold = 0.75
+        self.dtw_threshold = 0.82   # global default
+        self.dtw_thresholds = {     # per-class overrides
+            "circle":       0.82,
+            "arm_up_down":  0.82,
+        }
 
 
     def test(self):
@@ -109,10 +113,11 @@ class TestGesture:
         for name, min_d, avg_d in results:
             output+=f"  DTW '{name}': min={min_d:.2f}, avg={avg_d:.2f}\n"
 
-        if best_name is not None and best_dist < self.dtw_threshold:
+        threshold = self.dtw_thresholds.get(best_name, self.dtw_threshold)
+        if best_name is not None and best_dist < threshold:
             output+=f"RECOGNIZED: '{best_name}' (distance={best_dist:.2f}) - matching file: {(best_pos+1):03d}\n"
         else:
-            output+=f"No match (best='{best_name}', dist={best_dist:.2f}, thresh={self.dtw_threshold})\n"
+            output+=f"No match (best='{best_name}', dist={best_dist:.2f}, thresh={threshold})\n"
 
         return output
 

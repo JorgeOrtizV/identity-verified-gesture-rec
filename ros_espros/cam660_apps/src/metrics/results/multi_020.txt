@@ -1,0 +1,13 @@
+============================================================
+METRICS REPORT: multi_020
+============================================================
+
+Scene duration: 0.70 s
+Agents seen: 0
+Authorized agents: 
+Total auth events: 0
+Gestures: 0 total, 0 while authorized
+
+--- Per-Agent ---
+  Agent 0: in_scene=0.70s, auth_count=0, total_time_authorized=0.00s, gestures=0, avg_auth_event_conf=0.000, avg_auth_conf=0.000, avg_scene_conf=0.168, time_to_auth=N/A
+

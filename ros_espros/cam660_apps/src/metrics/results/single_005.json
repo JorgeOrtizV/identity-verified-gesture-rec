@@ -1,0 +1,30 @@
+{
+  "bag_name": "single_005",
+  "scene_duration": 17.920937184,
+  "all_agent_ids": [
+    0
+  ],
+  "authorized_agent_ids": [
+    0
+  ],
+  "total_auth_events": 1,
+  "total_gestures": 0,
+  "authorized_gestures": 0,
+  "gesture_latency": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0
+  },
+  "per_agent": {
+    "0": {
+      "time_in_scene": 10.4086547,
+      "total_time_authorized": 9.245309591,
+      "times_authorized": 1,
+      "gestures": 0,
+      "gesture_counts": {},
+      "avg_auth_event_conf": 0.801679253578186,
+      "avg_auth_conf": 0.9363059782833787,
+      "avg_scene_confidence": 0.8707359488260873
+    }
+  }
+}

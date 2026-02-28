@@ -28,9 +28,10 @@
         <param name="max_gyro"          value="3.5" />
 
         <!-- DTW -->
-        <param name="dtw_threshold"   value="0.8" />
-	    <param name="strict_threshold" value="0.6" />
-        <param name="dtw_band_ratio"  value="0.5" />
+        <param name="dtw_threshold"          value="0.85" />  <!-- global default -->
+        <param name="dtw_threshold_circle"   value="0.9" />  <!-- OOD floor is 0.83 -->
+        <param name="strict_threshold"       value="0.6" />
+        <param name="dtw_band_ratio"         value="0.5" />
 
         <!-- Recording (set via launch args) -->
         <param name="record_mode"         value="$(arg record_mode)" />

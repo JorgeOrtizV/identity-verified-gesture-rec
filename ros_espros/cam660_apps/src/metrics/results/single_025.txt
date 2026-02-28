@@ -1,0 +1,13 @@
+============================================================
+METRICS REPORT: single_025
+============================================================
+
+Scene duration: 40.51 s
+Agents seen: 0
+Authorized agents: 0
+Total auth events: 1
+Gestures: 0 total, 0 while authorized
+
+--- Per-Agent ---
+  Agent 0: in_scene=36.62s, auth_count=1, total_time_authorized=33.02s, gestures=0, avg_auth_event_conf=0.803, avg_auth_conf=0.820, avg_scene_conf=0.784
+

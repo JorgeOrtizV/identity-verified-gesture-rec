@@ -1,0 +1,290 @@
+{
+  "single_001" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"circle": 1, "arm_up_down": 1}
+    }
+  },
+  "single_002" : {
+    "authorized_agents" : [0,1],
+    "expected_gestures": {
+      "0" : {"circle": 1, "arm_up_down": 1}
+    }
+  },
+  "single_003" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"circle": 3, "arm_up_down": 2}
+    }
+  },
+  "single_004" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"circle": 1}
+    }
+  },
+  "single_005" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1}
+    }
+  },
+  "single_006" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1}
+    }
+  },
+  "single_008" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle":1}
+    }
+  },
+  "single_009" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1}
+    }
+  },
+  "single_010" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1}
+    }
+  },
+  "single_011" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "single_012" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "single_013" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "single_014" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "single_015" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "single_016" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "single_017" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "single_018" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 4, "circle": 4}
+    }
+  },
+  "single_019" : {
+    "authorized_agents" : [0, 2],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 6, "circle": 5}
+    }
+  },
+  "single_021" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 2}
+    }
+  },
+  "single_022" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 3, "circle": 1}
+    }
+  },
+  "single_023" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 2}
+    }
+  },
+  "single_024" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "single_025" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "single_026" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "single_027" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "single_028" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "single_029" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "single_030" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "multi_001" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "multi_002" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "multi_003" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 1, "circle": 1}
+    }
+  },
+  "multi_004" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"arm_up_down": 3, "circle": 4}
+    }
+  },
+  "multi_005" : {
+    "authorized_agents" : [0,1],
+    "expected_gestures": {
+      "0" : {"circle" : 1},
+      "1" : {"arm_up_down": 5, "circle": 3}
+    }
+  },
+  "multi_006" : {
+    "authorized_agents" : [0,2,7,8],
+    "expected_gestures": {
+      "0" : {"circle": 1}
+    }
+  },
+  "multi_007" : {
+    "authorized_agents" : [0,2,4,5,6],
+    "expected_gestures": {
+      "2" : {"circle": 1}
+    }
+  },
+  "multi_008" : {
+    "authorized_agents" : [1,3],
+    "expected_gestures": {
+      "1" : {"circle": 1, "arm_up_down": 1}
+    }
+  },
+  "multi_009" : {
+    "authorized_agents" : [1],
+    "expected_gestures": {
+      "1" : {"circle": 4, "arm_up_down": 4}
+    }
+  },
+  "multi_010" : {
+    "authorized_agents" : [1],
+    "expected_gestures": {
+      "1" : {"circle": 1, "arm_up_down": 1}
+    }
+  },
+  "multi_011" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"circle": 4, "arm_up_down": 3}
+    }
+  },
+  "multi_012" : {
+    "authorized_agents" : [1],
+    "expected_gestures": {
+      "1" : {"circle": 1, "arm_up_down": 1}
+    }
+  },
+  "multi_013" : {
+    "authorized_agents" : [0,3],
+    "expected_gestures": {
+      "0" : {"circle": 4, "arm_up_down": 2}
+    }
+  },
+  "multi_014" : {
+    "authorized_agents" : [0],
+    "expected_gestures": {
+      "0" : {"circle": 1}
+    }
+  },
+  "multi_015" : {
+    "authorized_agents" : [2,3],
+    "expected_gestures": {
+      "2" : {"circle": 1, "arm_up_down":1},
+      "3" : {"circle": 1}
+    }
+  },
+  "multi_016" : {
+    "authorized_agents" : [0,3,6],
+    "expected_gestures": {
+      "0" : {"circle": 1},
+      "3" : {"circle": 1, "arm":1}
+    }
+  },
+  "multi_017" : {
+    "authorized_agents" : [0,3,5],
+    "expected_gestures": {
+      "0" : {"circle": 1}
+    }
+  },
+  "multi_018" : {
+    "authorized_agents" : [0,2,4],
+    "expected_gestures": {
+      "0" : {"circle": 1},
+      "2" : {"circle": 2, "arm_up_down":2}
+    }
+  },
+  "multi_019" : {
+    "authorized_agents" : [2],
+    "expected_gestures": {
+      "2" : {"circle": 1, "arm_up_down":1}
+    }
+  },
+
+
+}

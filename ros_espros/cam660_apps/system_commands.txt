@@ -15,3 +15,13 @@ roslaunch tof_preprocessing system_rosbag.launch fg_depth_thresh:=1600 median_ke
 
 # Record for single agent
 ./record_sys.sh 
+
+# Overall metrics
+* Print only: python compute_accuracy.py ground_truth.json
+* Print and save: python compute_accuracy.py ground_truth.json -o results/report.txt
+
+# Clean gestures by sample size
+python3 clean_templates.py [--threshold 30] [--dry-run] [--templates-dir <path>]
+
+# Offline test gestures
+python3 test.py [template_dir - circle/arm_up_down/ood/other]

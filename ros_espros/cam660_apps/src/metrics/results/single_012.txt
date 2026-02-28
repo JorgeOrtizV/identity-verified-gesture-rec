@@ -1,0 +1,15 @@
+============================================================
+METRICS REPORT: single_012
+============================================================
+
+Scene duration: 39.63 s
+Agents seen: 0, 1
+Authorized agents: 0
+Total auth events: 1
+Gestures: 1 total, 1 while authorized
+Gesture latency: mean=0.952  min=0.952  max=0.952 s
+
+--- Per-Agent ---
+  Agent 0: in_scene=17.43s, auth_count=1, total_time_authorized=13.21s, gestures=1, avg_auth_event_conf=0.814, avg_auth_conf=0.819, avg_scene_conf=0.732
+  Agent 1: in_scene=2.50s, auth_count=0, total_time_authorized=0.00s, gestures=0, avg_auth_event_conf=0.000, avg_auth_conf=0.000, avg_scene_conf=0.560
+

@@ -36,7 +36,7 @@ class GestureNode:
         # DTW
         self.template_dir = rospy.get_param("~template_dir",
             os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "templates"))
-        self.dtw_threshold = rospy.get_param("~dtw_threshold", 0.8)
+        self.dtw_threshold = rospy.get_param("~dtw_threshold", 0.82)  # global default
         self.strict_threshold = rospy.get_param("~strict_threshold", 0.6)
         self.dtw_band_ratio = rospy.get_param("~dtw_band_ratio", 0.5)  # Sakoe-Chiba band
 
@@ -59,10 +59,19 @@ class GestureNode:
         self.last_imu_time = None
         self.imu_intervals = deque(maxlen=50)
 
+        # Snapshot triggering id
+        self.gesture_auth_snapshot = -1
+
         # Templates: {gesture_name: [np.array(N, 6), ...]}
         self.templates = {}
         if not self.record_mode:
             self.load_templates()
+
+        # Per-class thresholds: ~dtw_threshold_<name> overrides global default
+        self.dtw_thresholds = {
+            name: rospy.get_param("~dtw_threshold_" + name, self.dtw_threshold)
+            for name in self.templates
+        }
 
         # Subscribers
         self.imu_sub = rospy.Subscriber(
@@ -147,6 +156,7 @@ class GestureNode:
                     self.state = "ACTIVE"
                     self.onset_counter = 0
                     self.offset_counter = 0
+                    self.gesture_auth_snapshot = self.authorized_agent_id
 
                     # Grab lookback from rolling buffer
                     buf_list = list(self.buffer)
@@ -197,7 +207,7 @@ class GestureNode:
         if self.record_mode:
             self.save_template(gesture_norm)
         else:
-            if self.identity_verification and self.authorized_agent_id == -1:
+            if self.identity_verification and self.gesture_auth_snapshot == -1:
                 rospy.loginfo("[GESTURE] No authorized agent - discarding gesture")
                 return
             self.classify(gesture_norm)
@@ -253,11 +263,12 @@ class GestureNode:
         for name, min_d, avg_d in results:
             rospy.loginfo(f"  DTW '{name}': min={min_d:.2f}, avg={avg_d:.2f}")
 
-        if best_name is not None and best_dist < self.dtw_threshold:
+        threshold = self.dtw_thresholds.get(best_name, self.dtw_threshold)
+        if best_name is not None and best_dist < threshold:
             rospy.loginfo(f"RECOGNIZED: '{best_name}' (distance={best_dist:.2f}) - matching file: {(best_pos+1):03d}") # Also print the matched file for debugging purposes
             self.gesture_pub.publish(best_name)
         else:
-            rospy.loginfo(f"No match (best='{best_name}', dist={best_dist:.2f}, thresh={self.dtw_threshold})")
+            rospy.loginfo(f"No match (best='{best_name}', dist={best_dist:.2f}, thresh={threshold})")
 
     def dtw_distance(self, s1, s2):
         # Multivariate DTW with Sakoe-Chiba band. Distance is normalized by path length so it's comparable across gestures of different durations.

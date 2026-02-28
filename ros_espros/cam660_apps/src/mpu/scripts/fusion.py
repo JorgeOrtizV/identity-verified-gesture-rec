@@ -66,7 +66,7 @@ class FusionNode:
         self.walking_multiplier = rospy.get_param("~walking_multiplier", 1.3)
         self.walking_bonus_motion = rospy.get_param("~walking_bonus_motion", 0.5)
         self.walking_bonus_accel = rospy.get_param("~walking_bonus_accel", 0.5)
-        self.gesture_multiplier = rospy.get_param("~gesture_multiplier", 1.5)
+        self.gesture_multiplier = rospy.get_param("~gesture_multiplier", 1.3)
         self.gesture_bonus_motion = rospy.get_param("~gesture_bonus_motion", 0.4)
         self.gesture_bonus_fg = rospy.get_param("~gesture_bonus_fg", 0.25)
         self.gesture_bonus_gyro = rospy.get_param("~gesture_bonus_gyro", 0.3) #0.5 before, not reaching GESTURE state a lot.

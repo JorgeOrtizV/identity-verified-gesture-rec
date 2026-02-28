@@ -1,0 +1,21 @@
+============================================================
+METRICS REPORT: multi_017
+============================================================
+
+Scene duration: 74.93 s
+Agents seen: 0, 1, 2, 3, 4, 5, 6, 7, 8
+Authorized agents: 0, 2, 5, 6
+Total auth events: 10
+Gestures: 0 total, 0 while authorized
+
+--- Per-Agent ---
+  Agent 0: in_scene=49.37s, auth_count=5, total_time_authorized=42.33s, gestures=0, avg_auth_event_conf=0.818, avg_auth_conf=0.907, avg_scene_conf=0.799, time_to_auth=3.15s
+  Agent 1: in_scene=10.25s, auth_count=0, total_time_authorized=0.00s, gestures=0, avg_auth_event_conf=0.000, avg_auth_conf=0.000, avg_scene_conf=0.080, time_to_auth=N/A
+  Agent 2: in_scene=11.55s, auth_count=2, total_time_authorized=4.48s, gestures=0, avg_auth_event_conf=0.909, avg_auth_conf=0.762, avg_scene_conf=0.610, time_to_auth=5.41s
+  Agent 3: in_scene=3.84s, auth_count=0, total_time_authorized=0.00s, gestures=0, avg_auth_event_conf=0.000, avg_auth_conf=0.000, avg_scene_conf=0.683, time_to_auth=N/A
+  Agent 4: in_scene=1.95s, auth_count=0, total_time_authorized=0.00s, gestures=0, avg_auth_event_conf=0.000, avg_auth_conf=0.000, avg_scene_conf=0.235, time_to_auth=N/A
+  Agent 5: in_scene=8.77s, auth_count=2, total_time_authorized=8.46s, gestures=0, avg_auth_event_conf=0.849, avg_auth_conf=0.842, avg_scene_conf=0.800, time_to_auth=1.73s
+  Agent 6: in_scene=7.91s, auth_count=1, total_time_authorized=0.69s, gestures=0, avg_auth_event_conf=0.807, avg_auth_conf=0.814, avg_scene_conf=0.684, time_to_auth=4.82s
+  Agent 7: in_scene=1.99s, auth_count=0, total_time_authorized=0.00s, gestures=0, avg_auth_event_conf=0.000, avg_auth_conf=0.000, avg_scene_conf=0.000, time_to_auth=N/A
+  Agent 8: in_scene=1.25s, auth_count=0, total_time_authorized=0.00s, gestures=0, avg_auth_event_conf=0.000, avg_auth_conf=0.000, avg_scene_conf=0.000, time_to_auth=N/A
+

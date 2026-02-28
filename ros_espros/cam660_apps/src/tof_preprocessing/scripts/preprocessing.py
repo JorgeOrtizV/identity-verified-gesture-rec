@@ -254,7 +254,7 @@ class DepthPreprocessingNode:
             y = stats[i, cv2.CC_STAT_TOP]
             w = stats[i, cv2.CC_STAT_WIDTH]
             h = stats[i, cv2.CC_STAT_HEIGHT]
-            pad = 5
+            pad = 10
             x1, y1 = max(0, x - pad), max(0, y - pad)
             x2, y2 = min(self.img_w, x + w + pad), min(self.img_h, y + h + pad)
 

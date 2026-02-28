@@ -44,6 +44,12 @@ SEP_MINOR = "-" * 52
 def _div(num, den):
     return num / float(den) if den > 0 else 0.0
 
+def _safe_int(s):
+    try:
+        return int(s)
+    except (ValueError, TypeError):
+        return None
+
 def _f1(prec, rec):
     return 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0.0
 
@@ -109,11 +115,22 @@ def report_bag(bag_name, data, gt_entry):
     per_agent         = data.get("per_agent", {})
 
     am = auth_metrics(data, gt_entry)
+    gt_auth = set(gt_entry.get("authorized_agents", []))
 
-    total_auth_time = sum(v.get("total_time_authorized", 0.0) for v in per_agent.values())
+    total_auth_time   = sum(v.get("total_time_authorized", 0.0) for v in per_agent.values())
+    correct_auth_time = sum(
+        ag.get("total_time_authorized", 0.0)
+        for aid_str, ag in per_agent.items()
+        if _safe_int(aid_str) in gt_auth
+    )
     scene_coverage  = _div(total_auth_time, scene_dur)
     auth_stability  = _div(total_auth_events, scene_dur)  # auth events per second
     false_det       = total_gestures - auth_gestures
+
+    gt_gestures = gt_entry.get("expected_gestures", {})
+    total_expected_gestures = sum(
+        c for exp in gt_gestures.values() for c in exp.values()
+    ) if gt_gestures else None
 
     print(SEP_MAJOR)
     print("BAG: %-40s [scene: %.1fs]" % (bag_name, scene_dur))
@@ -126,11 +143,28 @@ def report_bag(bag_name, data, gt_entry):
     print("  TP=%-3d  FP=%-3d  FN=%-3d  TN=%-3d"
           % (am["tp"], am["fp"], am["fn"], am["tn"]))
 
+    # Per-bag average time to auth (authorized agents per GT only)
+    bag_tta_values = []
+    for aid_str, ag in per_agent.items():
+        try:
+            aid_int = int(aid_str)
+        except ValueError:
+            continue
+        if aid_int in gt_auth:
+            tta = ag.get("time_to_auth")
+            if tta is not None:
+                bag_tta_values.append(tta)
+    avg_bag_tta = _div(sum(bag_tta_values), len(bag_tta_values)) if bag_tta_values else None
+
     # System
     print("\n[System]")
     print("  Auth events : %d" % total_auth_events)
     print("  Stability   : %.2f evt/s  (lower = more stable)" % auth_stability)
     print("  Scene auth coverage : %.1f%%  (time any agent was authorized)" % (scene_coverage * 100))
+    if avg_bag_tta is not None:
+        print("  Avg time to auth    : %.2fs  (authorized agents, n=%d)" % (avg_bag_tta, len(bag_tta_values)))
+    print("  Correct auth time   : %.1fs / %.1fs (%.1f%%)"
+          % (correct_auth_time, total_auth_time, _pct(correct_auth_time, total_auth_time)))
 
     # Per-agent
     print("\n[Per-Agent]")
@@ -142,14 +176,36 @@ def report_bag(bag_name, data, gt_entry):
               "auth_events=%d/%d (%4.1f%%)"
               % (aid_str, presence, auth_t, _pct(auth_t, presence),
                  n_auth, total_auth_events, _pct(n_auth, total_auth_events)))
-        print("             avg_auth_conf=%.3f  avg_scene_conf=%.3f"
-              % (ag.get("avg_auth_confidence", 0.0), ag.get("avg_scene_confidence", 0.0)))
+        tta = ag.get("time_to_auth")
+        tta_str = "%.2fs" % tta if tta is not None else "N/A"
+        print("             avg_auth_conf=%.3f  avg_scene_conf=%.3f  time_to_auth=%s"
+              % (ag.get("avg_auth_event_conf", 0.0), ag.get("avg_scene_confidence", 0.0), tta_str))
+        n_gest = ag.get("gestures", 0)
+        if n_gest > 0:
+            counts_str = "  ".join(
+                "%s=%d" % (k, v) for k, v in sorted(ag.get("gesture_counts", {}).items())
+            )
+            print("             gestures=%d  (%s)" % (n_gest, counts_str))
+
+    gt_auth_gestures = sum(
+        ag.get("gestures", 0)
+        for aid_str, ag in per_agent.items()
+        if _safe_int(aid_str) in gt_auth
+    )
+    fp_auth_gestures = auth_gestures - gt_auth_gestures
 
     # Gestures
     print("\n[Gestures]")
+    if total_expected_gestures is not None:
+        print("  Expected (GT) : %d total" % total_expected_gestures)
     print("  Detected      : %d total" % total_gestures)
     print("  Authorized    : %d/%d (%.1f%%)"
           % (auth_gestures, total_gestures, _pct(auth_gestures, total_gestures)))
+    print("    -> GT agent  : %d/%d (%.1f%%)"
+          % (gt_auth_gestures, total_gestures, _pct(gt_auth_gestures, total_gestures)))
+    if fp_auth_gestures > 0:
+        print("    -> FP agent  : %d/%d (%.1f%%)"
+              % (fp_auth_gestures, total_gestures, _pct(fp_auth_gestures, total_gestures)))
     print("  False detected: %d/%d (%.1f%%)  (gesture with no authorized agent)"
           % (false_det, total_gestures, _pct(false_det, total_gestures)))
 
@@ -159,7 +215,6 @@ def report_bag(bag_name, data, gt_entry):
               % (lat_mean, lat.get("min", 0.0), lat.get("max", 0.0)))
 
     # Gesture accuracy vs ground truth (optional — only if GT provides it)
-    gt_gestures = gt_entry.get("expected_gestures", {})
     gest_agg = {"tp": 0, "fp": 0, "fn": 0}
     if gt_gestures:
         print("  Gesture accuracy (vs ground truth):")
@@ -179,21 +234,38 @@ def report_bag(bag_name, data, gt_entry):
 
     print()
 
+    # Collect time_to_auth for authorized agents only (per ground truth)
+    tta_values = []
+    for aid_str, ag in per_agent.items():
+        try:
+            aid_int = int(aid_str)
+        except ValueError:
+            continue
+        if aid_int in gt_auth:
+            tta = ag.get("time_to_auth")
+            if tta is not None:
+                tta_values.append(tta)
+
     return {
-        "am":               am,
-        "scene_dur":        scene_dur,
-        "total_auth_events": total_auth_events,
-        "total_auth_time":  total_auth_time,
-        "total_gestures":   total_gestures,
-        "auth_gestures":    auth_gestures,
-        "lat_mean":         lat.get("mean", 0.0),
-        "lat_min":          lat.get("min", 0.0),
-        "lat_max":          lat.get("max", 0.0),
-        "has_lat":          lat.get("mean", 0.0) > 0,
-        "gest_tp":          gest_agg["tp"],
-        "gest_fp":          gest_agg["fp"],
-        "gest_fn":          gest_agg["fn"],
-        "has_gest_gt":      bool(gt_gestures),
+        "am":                    am,
+        "scene_dur":             scene_dur,
+        "total_auth_events":     total_auth_events,
+        "total_auth_time":       total_auth_time,
+        "correct_auth_time":     correct_auth_time,
+        "total_gestures":        total_gestures,
+        "total_expected_gestures": total_expected_gestures or 0,
+        "auth_gestures":         auth_gestures,
+        "gt_auth_gestures":      gt_auth_gestures,
+        "fp_auth_gestures":      fp_auth_gestures,
+        "lat_mean":              lat.get("mean", 0.0),
+        "lat_min":               lat.get("min", 0.0),
+        "lat_max":               lat.get("max", 0.0),
+        "has_lat":               lat.get("mean", 0.0) > 0,
+        "gest_tp":               gest_agg["tp"],
+        "gest_fp":               gest_agg["fp"],
+        "gest_fn":               gest_agg["fn"],
+        "has_gest_gt":           bool(gt_gestures),
+        "tta_values":            tta_values,
     }
 
 
@@ -213,16 +285,24 @@ def report_aggregate(label, bag_metrics):
     acc  = _div(tp + tn, tp + tn + fp + fn)
 
     # System
-    total_scene     = sum(m["scene_dur"] for m in bag_metrics)
-    total_auth_ev   = sum(m["total_auth_events"] for m in bag_metrics)
-    total_auth_time = sum(m["total_auth_time"] for m in bag_metrics)
-    stability       = _div(total_auth_ev, total_scene)
-    coverage        = _div(total_auth_time, total_scene)
+    total_scene       = sum(m["scene_dur"] for m in bag_metrics)
+    total_auth_ev     = sum(m["total_auth_events"] for m in bag_metrics)
+    total_auth_time   = sum(m["total_auth_time"] for m in bag_metrics)
+    correct_auth_time = sum(m["correct_auth_time"] for m in bag_metrics)
+    stability         = _div(total_auth_ev, total_scene)
+    coverage          = _div(total_auth_time, total_scene)
 
     # Gestures
-    total_gest  = sum(m["total_gestures"] for m in bag_metrics)
-    auth_gest   = sum(m["auth_gestures"] for m in bag_metrics)
-    false_det   = total_gest - auth_gest
+    total_gest       = sum(m["total_gestures"] for m in bag_metrics)
+    total_expected   = sum(m["total_expected_gestures"] for m in bag_metrics)
+    auth_gest        = sum(m["auth_gestures"] for m in bag_metrics)
+    gt_auth_gest     = sum(m["gt_auth_gestures"] for m in bag_metrics)
+    fp_auth_gest     = sum(m["fp_auth_gestures"] for m in bag_metrics)
+    false_det        = total_gest - auth_gest
+
+    # Time to auth — average across all authorized agents that have a value
+    all_tta = [v for m in bag_metrics for v in m["tta_values"]]
+    avg_tta = _div(sum(all_tta), len(all_tta)) if all_tta else None
 
     # Latency — average of per-bag means, global min/max
     lat_bags = [m for m in bag_metrics if m["has_lat"]]
@@ -253,11 +333,22 @@ def report_aggregate(label, bag_metrics):
     print("  Auth events : %d" % total_auth_ev)
     print("  Stability   : %.2f evt/s" % stability)
     print("  Scene auth coverage : %.1f%%" % (coverage * 100))
+    if avg_tta is not None:
+        print("  Avg time to auth    : %.2fs  (authorized agents, n=%d)" % (avg_tta, len(all_tta)))
+    print("  Correct auth time   : %.1fs / %.1fs (%.1f%%)"
+          % (correct_auth_time, total_auth_time, _pct(correct_auth_time, total_auth_time)))
 
     print("\n[Gestures]")
+    if total_expected > 0:
+        print("  Expected (GT) : %d total" % total_expected)
     print("  Detected      : %d total" % total_gest)
     print("  Authorized    : %d/%d (%.1f%%)"
           % (auth_gest, total_gest, _pct(auth_gest, total_gest)))
+    print("    -> GT agent  : %d/%d (%.1f%%)"
+          % (gt_auth_gest, total_gest, _pct(gt_auth_gest, total_gest)))
+    if fp_auth_gest > 0:
+        print("    -> FP agent  : %d/%d (%.1f%%)"
+              % (fp_auth_gest, total_gest, _pct(fp_auth_gest, total_gest)))
     print("  False detected: %d/%d (%.1f%%)"
           % (false_det, total_gest, _pct(false_det, total_gest)))
     if lat_mean > 0:

@@ -13,10 +13,13 @@ class MetricsNode:
     def __init__(self):
         self.bag_name = rospy.get_param("~bag_name", "unnamed")
         self.start_time = None
+        self.last_data_time = None  
+        self.last_rospy_time = None
 
         # Per-agent tracking
-        self.agent_first_seen = {}   # agent_id -> rospy.Time
-        self.agent_last_seen = {}    # agent_id -> rospy.Time
+        self.agent_first_seen = {}         # agent_id -> rospy.Time (bag clock)
+        self.agent_first_seen_rospy = {}   # agent_id -> rospy.Time (wall clock, for time_to_auth)
+        self.agent_last_seen = {}          # agent_id -> rospy.Time (bag clock)
 
         # Authorization events: (agent_id, stamp, confidence)
         self.auth_events = []
@@ -25,6 +28,7 @@ class MetricsNode:
         self.pending_confidence = None
         self.auth_time = {}
         self.scene_conf_samples = {}  # agent_id -> [all confidence values across the scene]
+        self.auth_conf_samples = {}   # agent_id -> [all confidence values while authorized]
 
         # Gesture events: (name, stamp, auth_agent_id)
         self.gesture_events = []
@@ -33,6 +37,9 @@ class MetricsNode:
         self.gesture_state = "IDLE"
         self.gesture_active_start = None
         self.gesture_latencies = []
+
+        # Triggering user snapshot
+        self.gesture_auth_snapshot = -1
 
         # Sub
         rospy.Subscriber(
@@ -66,12 +73,16 @@ class MetricsNode:
         stamp = msg.header.stamp
         if self.start_time is None:
             self.start_time = stamp
+        self.last_rospy_time = rospy.Time.now()
+        self.last_data_time = stamp
 
         # Agent first seen and agent last seen
+        now = rospy.Time.now()
         for agent in msg.agents:
             aid = agent.id
             if aid not in self.agent_first_seen:
                 self.agent_first_seen[aid] = stamp
+                self.agent_first_seen_rospy[aid] = now
             self.agent_last_seen[aid] = stamp
 
     def auth_id_cb(self, msg):
@@ -101,6 +112,10 @@ class MetricsNode:
         if self.auth_events and self.auth_events[-1]["confidence"] == 0.0:
             self.auth_events[-1]["confidence"] = msg.data
 
+        # Accumulate all confidence values during the authorized window
+        if self.current_auth_id >= 0:
+            self.auth_conf_samples.setdefault(self.current_auth_id, []).append(msg.data)
+
     def conf_cb(self, msg):
         # Accumulate per-agent confidence across the entire scene
         for c in msg.confs:
@@ -111,7 +126,7 @@ class MetricsNode:
         stamp = rospy.Time.now()
         self.gesture_events.append(
             {"name": msg.data, "stamp": stamp,
-             "auth_agent_id": self.current_auth_id}
+             "auth_agent_id": self.gesture_auth_snapshot}
         )
 
         # Compute latency from ACTIVE start to recognition
@@ -124,6 +139,7 @@ class MetricsNode:
         state = msg.data.strip().upper()
         if state == "ACTIVE" and self.gesture_state != "ACTIVE":
             self.gesture_active_start = rospy.Time.now()
+            self.gesture_auth_snapshot = self.current_auth_id
         elif state == "IDLE" and self.gesture_state == "ACTIVE":
             pass  # keep active_start for latency calc until gesture_cb fires
         self.gesture_state = state
@@ -132,11 +148,13 @@ class MetricsNode:
     # Report generation
 
     def on_shutdown(self):
-        end_time = rospy.Time.now()
+        # Use last received data timestamp to avoid inflating times when
+        # the user delays pressing Ctrl+C after bag playback ends.
+        end_time = self.last_data_time if self.last_data_time is not None else rospy.Time.now()
 
         # Close out any ongoing authorization window
         if self.current_auth_id >= 0 and self.current_auth_start is not None:
-            self.auth_time[self.current_auth_id] = self.auth_time.get(self.current_auth_id, 0) + (end_time - self.current_auth_start).to_sec()
+            self.auth_time[self.current_auth_id] = self.auth_time.get(self.current_auth_id, 0) + (self.last_rospy_time - self.current_auth_start).to_sec()
 
         if self.start_time is None:
             rospy.logwarn("Metrics node: no data received, skipping report.")
@@ -192,14 +210,26 @@ class MetricsNode:
             samples = self.scene_conf_samples.get(aid, [])
             avg_scene_conf = sum(samples) / len(samples) if samples else 0.0
 
+            # Average confidence over all authorized time for this agent
+            auth_samples = self.auth_conf_samples.get(aid, [])
+            avg_authorized_conf = sum(auth_samples) / len(auth_samples) if auth_samples else 0.0
+
+            # Time from first detection to first authorization (both wall clock)
+            time_to_auth = None
+            first_seen_rospy = self.agent_first_seen_rospy.get(aid)
+            if agent_auth_events and first_seen_rospy is not None:
+                time_to_auth = (agent_auth_events[0]["stamp"] - first_seen_rospy).to_sec()
+
             per_agent[aid] = {
                 "time_in_scene": time_in_scene,
                 "total_time_authorized": auth_time,
                 "times_authorized": times_authorized,
                 "gestures": len(agent_gestures),
                 "gesture_counts": dict(Counter(g["name"] for g in agent_gestures)),
-                "avg_auth_confidence": avg_auth_conf,
+                "avg_auth_event_conf": avg_auth_conf, # At the moment of auth
+                "avg_auth_conf": avg_authorized_conf, # Through all the time authorized
                 "avg_scene_confidence": avg_scene_conf,
+                "time_to_auth": time_to_auth,
             }
 
         # Build report
@@ -232,17 +262,22 @@ class MetricsNode:
         lines.append("--- Per-Agent ---")
         for aid in all_agent_ids:
             s = per_agent[aid]
+            tta = s["time_to_auth"]
+            tta_str = "%.2fs" % tta if tta is not None else "N/A"
             lines.append(
                 "  Agent %d: in_scene=%.2fs, auth_count=%d, total_time_authorized=%.2fs, "
-                "gestures=%d, avg_auth_conf=%.3f, avg_scene_conf=%.3f"
+                "gestures=%d, avg_auth_event_conf=%.3f, avg_auth_conf=%.3f, avg_scene_conf=%.3f, "
+                "time_to_auth=%s"
                 % (
                     aid,
                     s["time_in_scene"],
                     s["times_authorized"],
                     s["total_time_authorized"],
                     s["gestures"],
-                    s["avg_auth_confidence"],
+                    s["avg_auth_event_conf"],
+                    s["avg_auth_conf"],
                     s["avg_scene_confidence"],
+                    tta_str,
                 )
             )
         lines.append("")
