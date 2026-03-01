@@ -1,0 +1,52 @@
+Offline gesture performance - Recording of circle (20), arm up and down (20), and ood (10) gestures per participant.
+
+Templates may have been removed due to inaccurate execution of the gesture by the participant, affecting the total number of templates per class
+
+A minimum template size of 40 samples was required.
+
+11 participants. 5/11 female, 6/11 male. Different heights ranging from 160 cm - 190 cm and different body types.
+
+################  Circle class ######################
+180 templates
+** Match: 145
+** No match: 35
+
+################  Arm up and down class #############
+193 templates
+** Match: 165
+** No match: 28
+
+################  Out of Distribution Class #########
+121 templates
+** Match: 1
+** No match: 120
+
+
+Overall metrics:
+
+  Metric: Correct (TP_circle + TP_arm + TN_ood)
+  Value: 145 + 165 + 120 = 430
+  ────────────────────────────────────────
+  Metric: Errors (FN_circle + FN_arm + FP_ood)
+  Value: 35 + 28 + 1 = 64
+  ────────────────────────────────────────
+  Metric: Overall accuracy
+  Value: 430/494 = 87.0%
+  ────────────────────────────────────────
+  Metric: Micro precision (gesture classes)
+  Value: 310/311 = 0.997
+  ────────────────────────────────────────
+  Metric: Micro recall (gesture classes)
+  Value: 310/373 = 0.831
+  ────────────────────────────────────────
+  Metric: Micro F1 (gesture classes)
+  Value: 0.906
+  ────────────────────────────────────────
+  Metric: Macro precision
+  Value: (1.000 + 0.994)/2 = 0.997
+  ────────────────────────────────────────
+  Metric: Macro recall
+  Value: (0.806 + 0.855)/2 = 0.830
+  ────────────────────────────────────────
+  Metric: Macro F1
+  Value: 0.906

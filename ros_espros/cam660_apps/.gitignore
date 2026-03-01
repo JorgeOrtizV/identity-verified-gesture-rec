@@ -1,0 +1,19 @@
+# Catkin workspace build artifacts
+build/
+devel/
+logs/
+install/
+
+# Python
+*.pyc
+__pycache__/
+
+# Claude Code
+.claude/
+
+# Editor/IDE
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

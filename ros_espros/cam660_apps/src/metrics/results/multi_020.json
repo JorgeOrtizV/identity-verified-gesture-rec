@@ -1,28 +1,92 @@
 {
   "bag_name": "multi_020",
-  "scene_duration": 0.695755802,
+  "scene_duration": 67.043119629,
   "all_agent_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "authorized_agent_ids": [
     0
   ],
-  "authorized_agent_ids": [],
-  "total_auth_events": 0,
-  "total_gestures": 0,
-  "authorized_gestures": 0,
+  "total_auth_events": 1,
+  "total_gestures": 1,
+  "authorized_gestures": 1,
   "gesture_latency": {
-    "mean": 0.0,
-    "min": 0.0,
-    "max": 0.0
+    "mean": 3.534383774,
+    "min": 3.534383774,
+    "max": 3.534383774
   },
   "per_agent": {
     "0": {
-      "time_in_scene": 0.695755802,
+      "time_in_scene": 32.177041889,
+      "total_time_authorized": 33.349248171,
+      "times_authorized": 1,
+      "gestures": 1,
+      "gesture_counts": {
+        "arm_up_down": 1
+      },
+      "avg_auth_event_conf": 0.8083305954933167,
+      "avg_auth_conf": 0.8266650937891088,
+      "avg_scene_confidence": 0.8114664635650356,
+      "time_to_auth": 3.839901447
+    },
+    "1": {
+      "time_in_scene": 10.547164141,
       "total_time_authorized": 0,
       "times_authorized": 0,
       "gestures": 0,
       "gesture_counts": {},
       "avg_auth_event_conf": 0.0,
       "avg_auth_conf": 0.0,
-      "avg_scene_confidence": 0.167648084461689,
+      "avg_scene_confidence": 0.6715488733635062,
+      "time_to_auth": null
+    },
+    "2": {
+      "time_in_scene": 20.481044446,
+      "total_time_authorized": 0,
+      "times_authorized": 0,
+      "gestures": 0,
+      "gesture_counts": {},
+      "avg_auth_event_conf": 0.0,
+      "avg_auth_conf": 0.0,
+      "avg_scene_confidence": 0.6740448482632637,
+      "time_to_auth": null
+    },
+    "3": {
+      "time_in_scene": 4.03150533,
+      "total_time_authorized": 0,
+      "times_authorized": 0,
+      "gestures": 0,
+      "gesture_counts": {},
+      "avg_auth_event_conf": 0.0,
+      "avg_auth_conf": 0.0,
+      "avg_scene_confidence": 0.0,
+      "time_to_auth": null
+    },
+    "4": {
+      "time_in_scene": 4.036561026,
+      "total_time_authorized": 0,
+      "times_authorized": 0,
+      "gestures": 0,
+      "gesture_counts": {},
+      "avg_auth_event_conf": 0.0,
+      "avg_auth_conf": 0.0,
+      "avg_scene_confidence": 0.5608113947014014,
+      "time_to_auth": null
+    },
+    "5": {
+      "time_in_scene": 6.03905332,
+      "total_time_authorized": 0,
+      "times_authorized": 0,
+      "gestures": 0,
+      "gesture_counts": {},
+      "avg_auth_event_conf": 0.0,
+      "avg_auth_conf": 0.0,
+      "avg_scene_confidence": 0.33257718905806544,
       "time_to_auth": null
     }
   }

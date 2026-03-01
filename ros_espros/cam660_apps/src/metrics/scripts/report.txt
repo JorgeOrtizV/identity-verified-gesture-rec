@@ -262,6 +262,850 @@ BAG: multi_007                                [scene: 45.7s]
     Agent 2    circle=0/1                                Prec=0.000  Recall=0.000  F1=0.000
 
 ========================================================================
+BAG: multi_008                                [scene: 36.2s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.750  Precision=0.667  Recall=1.000  F1=0.800
+  TP=2    FP=1    FN=0    TN=1  
+
+[System]
+  Auth events : 5
+  Stability   : 0.14 evt/s  (lower = more stable)
+  Scene auth coverage : 77.1%  (time any agent was authorized)
+  Avg time to auth    : 3.43s  (authorized agents, n=2)
+  Correct auth time   : 21.3s / 27.9s (76.1%)
+
+[Per-Agent]
+  Agent 0    presence= 17.3s  auth=  6.7s (38.5%)  auth_events=2/5 (40.0%)
+             avg_auth_conf=0.818  avg_scene_conf=0.790  time_to_auth=2.66s
+  Agent 1    presence= 12.0s  auth= 12.9s (107.5%)  auth_events=2/5 (40.0%)
+             avg_auth_conf=0.876  avg_scene_conf=0.785  time_to_auth=3.51s
+  Agent 2    presence=  5.9s  auth=  0.0s ( 0.0%)  auth_events=0/5 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.614  time_to_auth=N/A
+  Agent 3    presence= 11.8s  auth=  8.4s (71.3%)  auth_events=1/5 (20.0%)
+             avg_auth_conf=0.814  avg_scene_conf=0.775  time_to_auth=3.35s
+
+[Gestures]
+  Expected (GT) : 2 total
+  Detected      : 0 total
+  Authorized    : 0/0 (0.0%)
+    -> GT agent  : 0/0 (0.0%)
+  False detected: 0/0 (0.0%)  (gesture with no authorized agent)
+  Gesture accuracy (vs ground truth):
+    Agent 1    arm_up_down=0/1  circle=0/1               Prec=0.000  Recall=0.000  F1=0.000
+
+========================================================================
+BAG: multi_009                                [scene: 49.8s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.000  Precision=0.000  Recall=0.000  F1=0.000
+  TP=0    FP=2    FN=1    TN=0  
+
+[System]
+  Auth events : 3
+  Stability   : 0.06 evt/s  (lower = more stable)
+  Scene auth coverage : 90.2%  (time any agent was authorized)
+  Correct auth time   : 0.0s / 44.9s (0.0%)
+
+[Per-Agent]
+  Agent 0    presence= 49.8s  auth= 41.9s (84.1%)  auth_events=2/3 (66.7%)
+             avg_auth_conf=0.817  avg_scene_conf=0.846  time_to_auth=4.72s
+             gestures=6  (arm_up_down=4  circle=2)
+  Agent 1    presence=  5.2s  auth=  0.0s ( 0.0%)  auth_events=0/3 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.546  time_to_auth=N/A
+  Agent 2    presence=  5.9s  auth=  3.0s (50.8%)  auth_events=1/3 (33.3%)
+             avg_auth_conf=0.829  avg_scene_conf=0.840  time_to_auth=4.49s
+             gestures=1  (circle=1)
+
+[Gestures]
+  Expected (GT) : 8 total
+  Detected      : 7 total
+  Authorized    : 7/7 (100.0%)
+    -> GT agent  : 0/7 (0.0%)
+    -> FP agent  : 7/7 (100.0%)
+  False detected: 0/7 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=2.427s  min=1.342s  max=3.313s
+  Gesture accuracy (vs ground truth):
+    Agent 1    arm_up_down=0/4  circle=0/4               Prec=0.000  Recall=0.000  F1=0.000
+
+========================================================================
+BAG: multi_010                                [scene: 34.7s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.500  Precision=0.500  Recall=1.000  F1=0.667
+  TP=1    FP=1    FN=0    TN=0  
+
+[System]
+  Auth events : 6
+  Stability   : 0.17 evt/s  (lower = more stable)
+  Scene auth coverage : 75.2%  (time any agent was authorized)
+  Avg time to auth    : 4.16s  (authorized agents, n=1)
+  Correct auth time   : 20.5s / 26.1s (78.7%)
+
+[Per-Agent]
+  Agent 0    presence= 34.2s  auth=  5.6s (16.2%)  auth_events=3/6 (50.0%)
+             avg_auth_conf=0.545  avg_scene_conf=0.737  time_to_auth=8.12s
+             gestures=1  (circle=1)
+  Agent 1    presence= 25.8s  auth= 20.5s (79.6%)  auth_events=3/6 (50.0%)
+             avg_auth_conf=0.885  avg_scene_conf=0.796  time_to_auth=4.16s
+
+[Gestures]
+  Expected (GT) : 2 total
+  Detected      : 1 total
+  Authorized    : 1/1 (100.0%)
+    -> GT agent  : 0/1 (0.0%)
+    -> FP agent  : 1/1 (100.0%)
+  False detected: 0/1 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=2.662s  min=2.662s  max=2.662s
+  Gesture accuracy (vs ground truth):
+    Agent 1    arm_up_down=0/1  circle=0/1               Prec=0.000  Recall=0.000  F1=0.000
+
+========================================================================
+BAG: multi_011                                [scene: 52.2s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.500  Precision=0.333  Recall=1.000  F1=0.500
+  TP=1    FP=2    FN=0    TN=1  
+
+[System]
+  Auth events : 11
+  Stability   : 0.21 evt/s  (lower = more stable)
+  Scene auth coverage : 83.5%  (time any agent was authorized)
+  Avg time to auth    : 2.34s  (authorized agents, n=1)
+  Correct auth time   : 30.0s / 43.6s (68.9%)
+
+[Per-Agent]
+  Agent 0    presence= 45.4s  auth= 30.0s (66.1%)  auth_events=6/11 (54.5%)
+             avg_auth_conf=0.900  avg_scene_conf=0.816  time_to_auth=2.34s
+             gestures=4  (arm_up_down=1  circle=3)
+  Agent 1    presence= 21.1s  auth=  7.8s (37.1%)  auth_events=4/11 (36.4%)
+             avg_auth_conf=0.898  avg_scene_conf=0.818  time_to_auth=8.28s
+             gestures=1  (arm_up_down=1)
+  Agent 2    presence=  6.9s  auth=  5.7s (83.4%)  auth_events=1/11 ( 9.1%)
+             avg_auth_conf=0.816  avg_scene_conf=0.796  time_to_auth=6.53s
+  Agent 3    presence=  1.9s  auth=  0.0s ( 0.0%)  auth_events=0/11 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.483  time_to_auth=N/A
+
+[Gestures]
+  Expected (GT) : 7 total
+  Detected      : 5 total
+  Authorized    : 5/5 (100.0%)
+    -> GT agent  : 4/5 (80.0%)
+    -> FP agent  : 1/5 (20.0%)
+  False detected: 0/5 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=3.220s  min=2.160s  max=4.073s
+  Gesture accuracy (vs ground truth):
+    Agent 0    arm_up_down=1/3  circle=3/4               Prec=1.000  Recall=0.571  F1=0.727
+
+========================================================================
+BAG: multi_012                                [scene: 36.4s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.333  Precision=0.333  Recall=1.000  F1=0.500
+  TP=1    FP=2    FN=0    TN=0  
+
+[System]
+  Auth events : 7
+  Stability   : 0.19 evt/s  (lower = more stable)
+  Scene auth coverage : 83.5%  (time any agent was authorized)
+  Avg time to auth    : 2.15s  (authorized agents, n=1)
+  Correct auth time   : 15.0s / 30.4s (49.3%)
+
+[Per-Agent]
+  Agent 0    presence= 28.2s  auth=  8.4s (30.0%)  auth_events=3/7 (42.9%)
+             avg_auth_conf=0.856  avg_scene_conf=0.727  time_to_auth=5.76s
+  Agent 1    presence= 20.8s  auth= 15.0s (72.1%)  auth_events=3/7 (42.9%)
+             avg_auth_conf=0.916  avg_scene_conf=0.855  time_to_auth=2.15s
+  Agent 2    presence=  8.2s  auth=  7.0s (85.6%)  auth_events=1/7 (14.3%)
+             avg_auth_conf=0.834  avg_scene_conf=0.767  time_to_auth=1.17s
+
+[Gestures]
+  Expected (GT) : 2 total
+  Detected      : 0 total
+  Authorized    : 0/0 (0.0%)
+    -> GT agent  : 0/0 (0.0%)
+  False detected: 0/0 (0.0%)  (gesture with no authorized agent)
+  Gesture accuracy (vs ground truth):
+    Agent 1    arm_up_down=0/1  circle=0/1               Prec=0.000  Recall=0.000  F1=0.000
+
+========================================================================
+BAG: multi_013                                [scene: 65.0s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.750  Precision=0.667  Recall=1.000  F1=0.800
+  TP=2    FP=1    FN=0    TN=1  
+
+[System]
+  Auth events : 9
+  Stability   : 0.14 evt/s  (lower = more stable)
+  Scene auth coverage : 51.9%  (time any agent was authorized)
+  Avg time to auth    : 2.02s  (authorized agents, n=2)
+  Correct auth time   : 18.5s / 33.8s (54.8%)
+
+[Per-Agent]
+  Agent 0    presence= 26.8s  auth= 14.4s (53.5%)  auth_events=4/9 (44.4%)
+             avg_auth_conf=0.985  avg_scene_conf=0.810  time_to_auth=2.30s
+             gestures=3  (arm_up_down=1  circle=2)
+  Agent 1    presence= 14.5s  auth= 15.3s (105.1%)  auth_events=4/9 (44.4%)
+             avg_auth_conf=0.929  avg_scene_conf=0.868  time_to_auth=1.76s
+  Agent 2    presence= 12.2s  auth=  0.0s ( 0.0%)  auth_events=0/9 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.556  time_to_auth=N/A
+  Agent 3    presence=  5.9s  auth=  4.2s (70.4%)  auth_events=1/9 (11.1%)
+             avg_auth_conf=0.818  avg_scene_conf=0.696  time_to_auth=1.75s
+
+[Gestures]
+  Expected (GT) : 6 total
+  Detected      : 3 total
+  Authorized    : 3/3 (100.0%)
+    -> GT agent  : 3/3 (100.0%)
+  False detected: 0/3 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=3.504s  min=3.134s  max=4.145s
+  Gesture accuracy (vs ground truth):
+    Agent 0    arm_up_down=1/2  circle=2/4               Prec=1.000  Recall=0.500  F1=0.667
+
+========================================================================
+BAG: multi_014                                [scene: 54.3s]
+========================================================================
+
+[Authorization]
+  Accuracy=1.000  Precision=1.000  Recall=1.000  F1=1.000
+  TP=1    FP=0    FN=0    TN=2  
+
+[System]
+  Auth events : 1
+  Stability   : 0.02 evt/s  (lower = more stable)
+  Scene auth coverage : 80.7%  (time any agent was authorized)
+  Avg time to auth    : 1.08s  (authorized agents, n=1)
+  Correct auth time   : 43.9s / 43.9s (100.0%)
+
+[Per-Agent]
+  Agent 0    presence= 45.0s  auth= 43.9s (97.5%)  auth_events=1/1 (100.0%)
+             avg_auth_conf=0.813  avg_scene_conf=0.861  time_to_auth=1.08s
+             gestures=1  (circle=1)
+  Agent 1    presence=  3.3s  auth=  0.0s ( 0.0%)  auth_events=0/1 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.594  time_to_auth=N/A
+  Agent 2    presence=  2.9s  auth=  0.0s ( 0.0%)  auth_events=0/1 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.510  time_to_auth=N/A
+
+[Gestures]
+  Expected (GT) : 1 total
+  Detected      : 1 total
+  Authorized    : 1/1 (100.0%)
+    -> GT agent  : 1/1 (100.0%)
+  False detected: 0/1 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=3.210s  min=3.210s  max=3.210s
+  Gesture accuracy (vs ground truth):
+    Agent 0    circle=1/1                                Prec=1.000  Recall=1.000  F1=1.000
+
+========================================================================
+BAG: multi_015                                [scene: 63.2s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.500  Precision=0.500  Recall=1.000  F1=0.667
+  TP=2    FP=2    FN=0    TN=0  
+
+[System]
+  Auth events : 6
+  Stability   : 0.09 evt/s  (lower = more stable)
+  Scene auth coverage : 52.6%  (time any agent was authorized)
+  Avg time to auth    : 6.41s  (authorized agents, n=2)
+  Correct auth time   : 17.8s / 33.3s (53.4%)
+
+[Per-Agent]
+  Agent 0    presence= 57.4s  auth= 12.1s (21.0%)  auth_events=3/6 (50.0%)
+             avg_auth_conf=0.813  avg_scene_conf=0.704  time_to_auth=20.18s
+  Agent 1    presence=  2.7s  auth=  3.4s (127.8%)  auth_events=1/6 (16.7%)
+             avg_auth_conf=0.805  avg_scene_conf=0.813  time_to_auth=1.65s
+  Agent 2    presence=  9.9s  auth= 13.1s (131.3%)  auth_events=1/6 (16.7%)
+             avg_auth_conf=0.821  avg_scene_conf=0.727  time_to_auth=4.01s
+  Agent 3    presence= 14.8s  auth=  4.7s (32.0%)  auth_events=1/6 (16.7%)
+             avg_auth_conf=0.848  avg_scene_conf=0.839  time_to_auth=8.82s
+
+[Gestures]
+  Expected (GT) : 3 total
+  Detected      : 0 total
+  Authorized    : 0/0 (0.0%)
+    -> GT agent  : 0/0 (0.0%)
+  False detected: 0/0 (0.0%)  (gesture with no authorized agent)
+  Gesture accuracy (vs ground truth):
+    Agent 2    arm_up_down=0/1  circle=0/1               Prec=0.000  Recall=0.000  F1=0.000
+    Agent 3    circle=0/1                                Prec=0.000  Recall=0.000  F1=0.000
+
+========================================================================
+BAG: multi_016                                [scene: 72.5s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.714  Precision=0.600  Recall=1.000  F1=0.750
+  TP=3    FP=2    FN=0    TN=2  
+
+[System]
+  Auth events : 16
+  Stability   : 0.22 evt/s  (lower = more stable)
+  Scene auth coverage : 79.4%  (time any agent was authorized)
+  Avg time to auth    : 1.99s  (authorized agents, n=3)
+  Correct auth time   : 43.0s / 57.6s (74.8%)
+
+[Per-Agent]
+  Agent 0    presence= 19.6s  auth= 12.5s (63.7%)  auth_events=3/16 (18.8%)
+             avg_auth_conf=0.809  avg_scene_conf=0.780  time_to_auth=3.58s
+  Agent 1    presence= 10.2s  auth=  4.6s (44.6%)  auth_events=2/16 (12.5%)
+             avg_auth_conf=0.810  avg_scene_conf=0.721  time_to_auth=3.17s
+  Agent 2    presence=  0.1s  auth=  0.0s ( 0.0%)  auth_events=0/16 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.000  time_to_auth=N/A
+  Agent 3    presence= 45.7s  auth= 27.5s (60.0%)  auth_events=7/16 (43.8%)
+             avg_auth_conf=0.805  avg_scene_conf=0.710  time_to_auth=0.94s
+  Agent 4    presence= 17.7s  auth= 10.0s (56.1%)  auth_events=3/16 (18.8%)
+             avg_auth_conf=0.854  avg_scene_conf=0.713  time_to_auth=6.87s
+             gestures=1  (circle=1)
+  Agent 5    presence=  0.2s  auth=  0.0s ( 0.0%)  auth_events=0/16 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.000  time_to_auth=N/A
+  Agent 6    presence=  6.2s  auth=  3.1s (50.3%)  auth_events=1/16 ( 6.2%)
+             avg_auth_conf=0.806  avg_scene_conf=0.663  time_to_auth=1.45s
+
+[Gestures]
+  Expected (GT) : 3 total
+  Detected      : 1 total
+  Authorized    : 1/1 (100.0%)
+    -> GT agent  : 0/1 (0.0%)
+    -> FP agent  : 1/1 (100.0%)
+  False detected: 0/1 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=1.625s  min=1.625s  max=1.625s
+  Gesture accuracy (vs ground truth):
+    Agent 0    circle=0/1                                Prec=0.000  Recall=0.000  F1=0.000
+    Agent 3    arm_up_down=0/1  circle=0/1               Prec=0.000  Recall=0.000  F1=0.000
+
+========================================================================
+BAG: multi_017                                [scene: 74.9s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.667  Precision=0.500  Recall=0.667  F1=0.571
+  TP=2    FP=2    FN=1    TN=4  
+
+[System]
+  Auth events : 10
+  Stability   : 0.13 evt/s  (lower = more stable)
+  Scene auth coverage : 74.7%  (time any agent was authorized)
+  Avg time to auth    : 2.44s  (authorized agents, n=2)
+  Correct auth time   : 50.8s / 56.0s (90.8%)
+
+[Per-Agent]
+  Agent 0    presence= 49.4s  auth= 42.3s (85.7%)  auth_events=5/10 (50.0%)
+             avg_auth_conf=0.818  avg_scene_conf=0.799  time_to_auth=3.15s
+  Agent 1    presence= 10.3s  auth=  0.0s ( 0.0%)  auth_events=0/10 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.080  time_to_auth=N/A
+  Agent 2    presence= 11.5s  auth=  4.5s (38.8%)  auth_events=2/10 (20.0%)
+             avg_auth_conf=0.909  avg_scene_conf=0.610  time_to_auth=5.41s
+  Agent 3    presence=  3.8s  auth=  0.0s ( 0.0%)  auth_events=0/10 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.683  time_to_auth=N/A
+  Agent 4    presence=  2.0s  auth=  0.0s ( 0.0%)  auth_events=0/10 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.235  time_to_auth=N/A
+  Agent 5    presence=  8.8s  auth=  8.5s (96.4%)  auth_events=2/10 (20.0%)
+             avg_auth_conf=0.849  avg_scene_conf=0.800  time_to_auth=1.73s
+  Agent 6    presence=  7.9s  auth=  0.7s ( 8.7%)  auth_events=1/10 (10.0%)
+             avg_auth_conf=0.807  avg_scene_conf=0.684  time_to_auth=4.82s
+  Agent 7    presence=  2.0s  auth=  0.0s ( 0.0%)  auth_events=0/10 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.000  time_to_auth=N/A
+  Agent 8    presence=  1.2s  auth=  0.0s ( 0.0%)  auth_events=0/10 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.000  time_to_auth=N/A
+
+[Gestures]
+  Expected (GT) : 1 total
+  Detected      : 0 total
+  Authorized    : 0/0 (0.0%)
+    -> GT agent  : 0/0 (0.0%)
+  False detected: 0/0 (0.0%)  (gesture with no authorized agent)
+  Gesture accuracy (vs ground truth):
+    Agent 0    circle=0/1                                Prec=0.000  Recall=0.000  F1=0.000
+
+========================================================================
+BAG: multi_018                                [scene: 55.5s]
+========================================================================
+
+[Authorization]
+  Accuracy=1.000  Precision=1.000  Recall=1.000  F1=1.000
+  TP=3    FP=0    FN=0    TN=3  
+
+[System]
+  Auth events : 3
+  Stability   : 0.05 evt/s  (lower = more stable)
+  Scene auth coverage : 67.5%  (time any agent was authorized)
+  Avg time to auth    : 4.99s  (authorized agents, n=3)
+  Correct auth time   : 37.4s / 37.4s (100.0%)
+
+[Per-Agent]
+  Agent 0    presence=  6.0s  auth= 10.0s (167.4%)  auth_events=1/3 (33.3%)
+             avg_auth_conf=0.815  avg_scene_conf=0.727  time_to_auth=1.06s
+  Agent 1    presence=  9.7s  auth=  0.0s ( 0.0%)  auth_events=0/3 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.612  time_to_auth=N/A
+  Agent 2    presence= 18.2s  auth= 18.1s (99.8%)  auth_events=1/3 (33.3%)
+             avg_auth_conf=0.818  avg_scene_conf=0.837  time_to_auth=5.15s
+             gestures=3  (arm_up_down=2  circle=1)
+  Agent 3    presence=  0.8s  auth=  0.0s ( 0.0%)  auth_events=0/3 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.096  time_to_auth=N/A
+  Agent 4    presence= 13.0s  auth=  9.3s (71.5%)  auth_events=1/3 (33.3%)
+             avg_auth_conf=0.917  avg_scene_conf=0.729  time_to_auth=8.77s
+  Agent 5    presence=  7.6s  auth=  0.0s ( 0.0%)  auth_events=0/3 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.564  time_to_auth=N/A
+
+[Gestures]
+  Expected (GT) : 5 total
+  Detected      : 3 total
+  Authorized    : 3/3 (100.0%)
+    -> GT agent  : 3/3 (100.0%)
+  False detected: 0/3 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=2.353s  min=1.461s  max=3.892s
+  Gesture accuracy (vs ground truth):
+    Agent 0    circle=0/1                                Prec=0.000  Recall=0.000  F1=0.000
+    Agent 2    arm_up_down=2/2  circle=1/2               Prec=1.000  Recall=0.750  F1=0.857
+
+========================================================================
+BAG: multi_019                                [scene: 33.7s]
+========================================================================
+
+[Authorization]
+  Accuracy=1.000  Precision=1.000  Recall=1.000  F1=1.000
+  TP=1    FP=0    FN=0    TN=2  
+
+[System]
+  Auth events : 1
+  Stability   : 0.03 evt/s  (lower = more stable)
+  Scene auth coverage : 51.8%  (time any agent was authorized)
+  Avg time to auth    : 1.80s  (authorized agents, n=1)
+  Correct auth time   : 17.5s / 17.5s (100.0%)
+
+[Per-Agent]
+  Agent 0    presence=  6.2s  auth=  0.0s ( 0.0%)  auth_events=0/1 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.000  time_to_auth=N/A
+  Agent 1    presence=  2.9s  auth=  0.0s ( 0.0%)  auth_events=0/1 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.585  time_to_auth=N/A
+  Agent 2    presence= 19.5s  auth= 17.5s (89.5%)  auth_events=1/1 (100.0%)
+             avg_auth_conf=0.809  avg_scene_conf=0.853  time_to_auth=1.80s
+             gestures=1  (arm_up_down=1)
+
+[Gestures]
+  Expected (GT) : 2 total
+  Detected      : 1 total
+  Authorized    : 1/1 (100.0%)
+    -> GT agent  : 1/1 (100.0%)
+  False detected: 0/1 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=3.426s  min=3.426s  max=3.426s
+  Gesture accuracy (vs ground truth):
+    Agent 2    arm_up_down=1/1  circle=0/1               Prec=1.000  Recall=0.500  F1=0.667
+
+========================================================================
+BAG: multi_020                                [scene: 67.0s]
+========================================================================
+
+[Authorization]
+  Accuracy=1.000  Precision=1.000  Recall=1.000  F1=1.000
+  TP=1    FP=0    FN=0    TN=5  
+
+[System]
+  Auth events : 1
+  Stability   : 0.01 evt/s  (lower = more stable)
+  Scene auth coverage : 49.7%  (time any agent was authorized)
+  Avg time to auth    : 3.84s  (authorized agents, n=1)
+  Correct auth time   : 33.3s / 33.3s (100.0%)
+
+[Per-Agent]
+  Agent 0    presence= 32.2s  auth= 33.3s (103.6%)  auth_events=1/1 (100.0%)
+             avg_auth_conf=0.808  avg_scene_conf=0.811  time_to_auth=3.84s
+             gestures=1  (arm_up_down=1)
+  Agent 1    presence= 10.5s  auth=  0.0s ( 0.0%)  auth_events=0/1 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.672  time_to_auth=N/A
+  Agent 2    presence= 20.5s  auth=  0.0s ( 0.0%)  auth_events=0/1 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.674  time_to_auth=N/A
+  Agent 3    presence=  4.0s  auth=  0.0s ( 0.0%)  auth_events=0/1 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.000  time_to_auth=N/A
+  Agent 4    presence=  4.0s  auth=  0.0s ( 0.0%)  auth_events=0/1 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.561  time_to_auth=N/A
+  Agent 5    presence=  6.0s  auth=  0.0s ( 0.0%)  auth_events=0/1 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.333  time_to_auth=N/A
+
+[Gestures]
+  Expected (GT) : 4 total
+  Detected      : 1 total
+  Authorized    : 1/1 (100.0%)
+    -> GT agent  : 1/1 (100.0%)
+  False detected: 0/1 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=3.534s  min=3.534s  max=3.534s
+  Gesture accuracy (vs ground truth):
+    Agent 0    arm_up_down=1/2  circle=0/2               Prec=1.000  Recall=0.250  F1=0.400
+
+========================================================================
+BAG: multi_021                                [scene: 46.7s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.750  Precision=0.667  Recall=1.000  F1=0.800
+  TP=2    FP=1    FN=0    TN=1  
+
+[System]
+  Auth events : 3
+  Stability   : 0.06 evt/s  (lower = more stable)
+  Scene auth coverage : 85.4%  (time any agent was authorized)
+  Avg time to auth    : 6.30s  (authorized agents, n=2)
+  Correct auth time   : 36.6s / 39.9s (91.8%)
+
+[Per-Agent]
+  Agent 0    presence= 13.6s  auth= 20.5s (150.8%)  auth_events=1/3 (33.3%)
+             avg_auth_conf=0.805  avg_scene_conf=0.856  time_to_auth=2.37s
+             gestures=2  (arm_up_down=1  circle=1)
+  Agent 1    presence= 26.5s  auth= 16.1s (60.8%)  auth_events=1/3 (33.3%)
+             avg_auth_conf=0.872  avg_scene_conf=0.727  time_to_auth=10.23s
+             gestures=1  (arm_up_down=1)
+  Agent 2    presence= 14.8s  auth=  0.0s ( 0.0%)  auth_events=0/3 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.605  time_to_auth=N/A
+  Agent 3    presence=  5.8s  auth=  3.3s (56.4%)  auth_events=1/3 (33.3%)
+             avg_auth_conf=0.807  avg_scene_conf=0.656  time_to_auth=2.51s
+
+[Gestures]
+  Expected (GT) : 4 total
+  Detected      : 3 total
+  Authorized    : 3/3 (100.0%)
+    -> GT agent  : 3/3 (100.0%)
+  False detected: 0/3 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=3.142s  min=2.787s  max=3.449s
+  Gesture accuracy (vs ground truth):
+    Agent 0    arm_up_down=1/1  circle=1/1               Prec=1.000  Recall=1.000  F1=1.000
+    Agent 1    arm_up_down=1/1  circle=0/1               Prec=1.000  Recall=0.500  F1=0.667
+
+========================================================================
+BAG: multi_022                                [scene: 61.5s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.556  Precision=0.400  Recall=0.667  F1=0.500
+  TP=2    FP=3    FN=1    TN=3  
+
+[System]
+  Auth events : 13
+  Stability   : 0.21 evt/s  (lower = more stable)
+  Scene auth coverage : 85.6%  (time any agent was authorized)
+  Avg time to auth    : 2.35s  (authorized agents, n=2)
+  Correct auth time   : 46.6s / 52.6s (88.7%)
+
+[Per-Agent]
+  Agent 0    presence=  4.8s  auth=  4.1s (85.4%)  auth_events=1/13 ( 7.7%)
+             avg_auth_conf=0.820  avg_scene_conf=0.716  time_to_auth=2.76s
+             gestures=1  (circle=1)
+  Agent 1    presence=  1.4s  auth=  0.0s ( 0.0%)  auth_events=0/13 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.423  time_to_auth=N/A
+  Agent 2    presence= 43.8s  auth= 42.5s (97.1%)  auth_events=6/13 (46.2%)
+             avg_auth_conf=0.857  avg_scene_conf=0.835  time_to_auth=1.94s
+             gestures=5  (arm_up_down=2  circle=3)
+  Agent 3    presence=  9.8s  auth=  0.9s ( 9.4%)  auth_events=2/13 (15.4%)
+             avg_auth_conf=0.879  avg_scene_conf=0.699  time_to_auth=5.02s
+  Agent 4    presence=  4.1s  auth=  0.0s ( 0.0%)  auth_events=0/13 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.689  time_to_auth=N/A
+  Agent 5    presence= 10.1s  auth=  3.5s (34.3%)  auth_events=3/13 (23.1%)
+             avg_auth_conf=0.861  avg_scene_conf=0.742  time_to_auth=5.60s
+  Agent 6    presence=  3.4s  auth=  0.0s ( 0.0%)  auth_events=0/13 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.475  time_to_auth=N/A
+  Agent 7    presence=  3.2s  auth=  0.0s ( 0.0%)  auth_events=0/13 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.605  time_to_auth=N/A
+  Agent 8    presence=  9.2s  auth=  1.6s (17.1%)  auth_events=1/13 ( 7.7%)
+             avg_auth_conf=0.895  avg_scene_conf=0.602  time_to_auth=7.63s
+
+[Gestures]
+  Expected (GT) : 8 total
+  Detected      : 6 total
+  Authorized    : 6/6 (100.0%)
+    -> GT agent  : 6/6 (100.0%)
+  False detected: 0/6 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=3.338s  min=2.843s  max=4.865s
+  Gesture accuracy (vs ground truth):
+    Agent 0    circle=1/1                                Prec=1.000  Recall=1.000  F1=1.000
+    Agent 2    arm_up_down=2/4  circle=3/3               Prec=1.000  Recall=0.714  F1=0.833
+
+========================================================================
+BAG: multi_023                                [scene: 62.4s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.800  Precision=0.750  Recall=0.750  F1=0.750
+  TP=3    FP=1    FN=1    TN=5  
+
+[System]
+  Auth events : 4
+  Stability   : 0.06 evt/s  (lower = more stable)
+  Scene auth coverage : 94.8%  (time any agent was authorized)
+  Avg time to auth    : 3.84s  (authorized agents, n=3)
+  Correct auth time   : 52.5s / 59.2s (88.8%)
+
+[Per-Agent]
+  Agent 0    presence= 40.8s  auth= 42.3s (103.7%)  auth_events=1/4 (25.0%)
+             avg_auth_conf=0.810  avg_scene_conf=0.864  time_to_auth=3.00s
+             gestures=7  (arm_up_down=2  circle=5)
+  Agent 1    presence=  4.9s  auth=  0.0s ( 0.0%)  auth_events=0/4 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.657  time_to_auth=N/A
+  Agent 2    presence=  2.5s  auth=  0.0s ( 0.0%)  auth_events=0/4 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.472  time_to_auth=N/A
+  Agent 3    presence=  4.8s  auth=  0.0s ( 0.0%)  auth_events=0/4 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.586  time_to_auth=N/A
+  Agent 4    presence=  4.4s  auth=  0.0s ( 0.0%)  auth_events=0/4 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.628  time_to_auth=N/A
+  Agent 5    presence=  6.8s  auth=  2.5s (36.5%)  auth_events=1/4 (25.0%)
+             avg_auth_conf=0.872  avg_scene_conf=0.739  time_to_auth=4.43s
+  Agent 6    presence= 11.0s  auth=  7.8s (70.6%)  auth_events=1/4 (25.0%)
+             avg_auth_conf=0.808  avg_scene_conf=0.713  time_to_auth=4.10s
+  Agent 7    presence=  3.3s  auth=  6.6s (199.6%)  auth_events=1/4 (25.0%)
+             avg_auth_conf=0.811  avg_scene_conf=0.861  time_to_auth=1.78s
+  Agent 8    presence=  2.9s  auth=  0.0s ( 0.0%)  auth_events=0/4 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.525  time_to_auth=N/A
+  Agent 9    presence=  1.7s  auth=  0.0s ( 0.0%)  auth_events=0/4 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.030  time_to_auth=N/A
+
+[Gestures]
+  Expected (GT) : 12 total
+  Detected      : 7 total
+  Authorized    : 7/7 (100.0%)
+    -> GT agent  : 7/7 (100.0%)
+  False detected: 0/7 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=3.113s  min=1.745s  max=4.860s
+  Gesture accuracy (vs ground truth):
+    Agent 0    arm_up_down=2/6  circle=5/6               Prec=1.000  Recall=0.583  F1=0.737
+
+========================================================================
+BAG: multi_024                                [scene: 96.2s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.667  Precision=0.333  Recall=1.000  F1=0.500
+  TP=1    FP=2    FN=0    TN=3  
+
+[System]
+  Auth events : 4
+  Stability   : 0.04 evt/s  (lower = more stable)
+  Scene auth coverage : 52.0%  (time any agent was authorized)
+  Avg time to auth    : 3.61s  (authorized agents, n=1)
+  Correct auth time   : 31.4s / 50.0s (62.8%)
+
+[Per-Agent]
+  Agent 0    presence= 38.2s  auth= 31.4s (82.2%)  auth_events=2/4 (50.0%)
+             avg_auth_conf=0.863  avg_scene_conf=0.839  time_to_auth=3.61s
+             gestures=2  (arm_up_down=1  circle=1)
+  Agent 1    presence=  6.4s  auth=  3.1s (48.1%)  auth_events=1/4 (25.0%)
+             avg_auth_conf=0.912  avg_scene_conf=0.840  time_to_auth=5.59s
+  Agent 2    presence=  3.9s  auth=  0.0s ( 0.0%)  auth_events=0/4 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.538  time_to_auth=N/A
+  Agent 3    presence=  4.1s  auth=  0.0s ( 0.0%)  auth_events=0/4 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.562  time_to_auth=N/A
+  Agent 4    presence= 12.4s  auth= 15.5s (125.7%)  auth_events=1/4 (25.0%)
+             avg_auth_conf=0.818  avg_scene_conf=0.750  time_to_auth=2.32s
+  Agent 5    presence=  2.6s  auth=  0.0s ( 0.0%)  auth_events=0/4 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.294  time_to_auth=N/A
+
+[Gestures]
+  Expected (GT) : 4 total
+  Detected      : 2 total
+  Authorized    : 2/2 (100.0%)
+    -> GT agent  : 2/2 (100.0%)
+  False detected: 0/2 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=3.911s  min=3.841s  max=3.982s
+  Gesture accuracy (vs ground truth):
+    Agent 0    arm_up_down=1/2  circle=1/2               Prec=1.000  Recall=0.500  F1=0.667
+
+========================================================================
+BAG: multi_025                                [scene: 86.1s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.600  Precision=0.500  Recall=1.000  F1=0.667
+  TP=2    FP=2    FN=0    TN=1  
+
+[System]
+  Auth events : 6
+  Stability   : 0.07 evt/s  (lower = more stable)
+  Scene auth coverage : 69.6%  (time any agent was authorized)
+  Avg time to auth    : 5.16s  (authorized agents, n=2)
+  Correct auth time   : 57.5s / 60.0s (95.9%)
+
+[Per-Agent]
+  Agent 0    presence= 40.2s  auth= 35.0s (86.9%)  auth_events=3/6 (50.0%)
+             avg_auth_conf=0.856  avg_scene_conf=0.820  time_to_auth=7.86s
+             gestures=2  (arm_up_down=1  circle=1)
+  Agent 1    presence=  6.2s  auth=  1.8s (29.6%)  auth_events=1/6 (16.7%)
+             avg_auth_conf=0.878  avg_scene_conf=0.703  time_to_auth=2.99s
+  Agent 11   presence= 25.0s  auth= 22.6s (90.1%)  auth_events=1/6 (16.7%)
+             avg_auth_conf=0.805  avg_scene_conf=0.779  time_to_auth=2.46s
+  Agent 2    presence=  4.8s  auth=  0.6s (13.2%)  auth_events=1/6 (16.7%)
+             avg_auth_conf=0.826  avg_scene_conf=0.593  time_to_auth=2.54s
+  Agent 3    presence=  2.5s  auth=  0.0s ( 0.0%)  auth_events=0/6 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.541  time_to_auth=N/A
+
+[Gestures]
+  Expected (GT) : 5 total
+  Detected      : 2 total
+  Authorized    : 2/2 (100.0%)
+    -> GT agent  : 2/2 (100.0%)
+  False detected: 0/2 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=3.067s  min=2.669s  max=3.465s
+  Gesture accuracy (vs ground truth):
+    Agent 0    arm_up_down=1/2  circle=1/2               Prec=1.000  Recall=0.500  F1=0.667
+    Agent 11   circle=0/1                                Prec=0.000  Recall=0.000  F1=0.000
+
+========================================================================
+BAG: multi_026                                [scene: 57.2s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.600  Precision=0.500  Recall=1.000  F1=0.667
+  TP=2    FP=2    FN=0    TN=1  
+
+[System]
+  Auth events : 17
+  Stability   : 0.30 evt/s  (lower = more stable)
+  Scene auth coverage : 88.6%  (time any agent was authorized)
+  Avg time to auth    : 1.63s  (authorized agents, n=2)
+  Correct auth time   : 31.9s / 50.7s (63.1%)
+
+[Per-Agent]
+  Agent 0    presence= 32.6s  auth= 11.0s (33.8%)  auth_events=4/17 (23.5%)
+             avg_auth_conf=0.869  avg_scene_conf=0.723  time_to_auth=5.19s
+  Agent 1    presence= 24.7s  auth= 18.7s (75.4%)  auth_events=3/17 (17.6%)
+             avg_auth_conf=0.849  avg_scene_conf=0.814  time_to_auth=1.34s
+             gestures=2  (arm_up_down=1  circle=1)
+  Agent 2    presence= 22.3s  auth=  7.7s (34.6%)  auth_events=5/17 (29.4%)
+             avg_auth_conf=0.833  avg_scene_conf=0.727  time_to_auth=2.19s
+  Agent 3    presence= 17.7s  auth= 13.3s (75.2%)  auth_events=5/17 (29.4%)
+             avg_auth_conf=0.872  avg_scene_conf=0.856  time_to_auth=1.91s
+             gestures=1  (circle=1)
+  Agent 4    presence=  1.6s  auth=  0.0s ( 0.0%)  auth_events=0/17 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.161  time_to_auth=N/A
+
+[Gestures]
+  Expected (GT) : 6 total
+  Detected      : 3 total
+  Authorized    : 3/3 (100.0%)
+    -> GT agent  : 3/3 (100.0%)
+  False detected: 0/3 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=3.101s  min=2.608s  max=3.955s
+  Gesture accuracy (vs ground truth):
+    Agent 1    arm_up_down=1/1  circle=1/3               Prec=1.000  Recall=0.500  F1=0.667
+    Agent 3    arm_up_down=0/1  circle=1/1               Prec=1.000  Recall=0.500  F1=0.667
+
+========================================================================
+BAG: multi_027                                [scene: 62.1s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.333  Precision=0.333  Recall=1.000  F1=0.500
+  TP=1    FP=2    FN=0    TN=0  
+
+[System]
+  Auth events : 13
+  Stability   : 0.21 evt/s  (lower = more stable)
+  Scene auth coverage : 94.6%  (time any agent was authorized)
+  Avg time to auth    : 3.04s  (authorized agents, n=1)
+  Correct auth time   : 50.6s / 58.8s (86.1%)
+
+[Per-Agent]
+  Agent 0    presence= 62.1s  auth= 50.6s (81.5%)  auth_events=7/13 (53.8%)
+             avg_auth_conf=0.836  avg_scene_conf=0.795  time_to_auth=3.04s
+             gestures=1  (arm_up_down=1)
+  Agent 1    presence= 20.0s  auth=  6.4s (31.9%)  auth_events=5/13 (38.5%)
+             avg_auth_conf=0.838  avg_scene_conf=0.735  time_to_auth=1.86s
+  Agent 2    presence=  5.2s  auth=  1.8s (34.0%)  auth_events=1/13 ( 7.7%)
+             avg_auth_conf=0.809  avg_scene_conf=0.692  time_to_auth=2.20s
+
+[Gestures]
+  Expected (GT) : 4 total
+  Detected      : 1 total
+  Authorized    : 1/1 (100.0%)
+    -> GT agent  : 1/1 (100.0%)
+  False detected: 0/1 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=3.235s  min=3.235s  max=3.235s
+  Gesture accuracy (vs ground truth):
+    Agent 0    arm_up_down=1/2  circle=0/2               Prec=1.000  Recall=0.250  F1=0.400
+
+========================================================================
+BAG: multi_028                                [scene: 37.7s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.500  Precision=0.500  Recall=1.000  F1=0.667
+  TP=1    FP=1    FN=0    TN=0  
+
+[System]
+  Auth events : 13
+  Stability   : 0.35 evt/s  (lower = more stable)
+  Scene auth coverage : 86.2%  (time any agent was authorized)
+  Avg time to auth    : 2.25s  (authorized agents, n=1)
+  Correct auth time   : 21.9s / 32.5s (67.5%)
+
+[Per-Agent]
+  Agent 0    presence= 36.5s  auth= 10.5s (28.9%)  auth_events=7/13 (53.8%)
+             avg_auth_conf=0.698  avg_scene_conf=0.742  time_to_auth=4.01s
+  Agent 1    presence= 26.6s  auth= 21.9s (82.6%)  auth_events=6/13 (46.2%)
+             avg_auth_conf=0.921  avg_scene_conf=0.888  time_to_auth=2.25s
+
+[Gestures]
+  Expected (GT) : 3 total
+  Detected      : 0 total
+  Authorized    : 0/0 (0.0%)
+    -> GT agent  : 0/0 (0.0%)
+  False detected: 0/0 (0.0%)  (gesture with no authorized agent)
+  Gesture accuracy (vs ground truth):
+    Agent 1    arm_up_down=0/1  circle=0/2               Prec=0.000  Recall=0.000  F1=0.000
+
+========================================================================
+BAG: multi_029                                [scene: 41.5s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.778  Precision=0.600  Recall=1.000  F1=0.750
+  TP=3    FP=2    FN=0    TN=4  
+
+[System]
+  Auth events : 6
+  Stability   : 0.14 evt/s  (lower = more stable)
+  Scene auth coverage : 70.9%  (time any agent was authorized)
+  Avg time to auth    : 1.87s  (authorized agents, n=3)
+  Correct auth time   : 18.2s / 29.4s (61.9%)
+
+[Per-Agent]
+  Agent 0    presence=  3.0s  auth=  2.9s (94.3%)  auth_events=1/6 (16.7%)
+             avg_auth_conf=0.814  avg_scene_conf=0.736  time_to_auth=2.84s
+  Agent 1    presence=  7.7s  auth=  9.0s (116.6%)  auth_events=2/6 (33.3%)
+             avg_auth_conf=0.838  avg_scene_conf=0.701  time_to_auth=0.98s
+  Agent 2    presence=  3.2s  auth=  0.0s ( 0.0%)  auth_events=0/6 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.676  time_to_auth=N/A
+  Agent 3    presence=  4.0s  auth=  0.0s ( 0.0%)  auth_events=0/6 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.489  time_to_auth=N/A
+  Agent 4    presence=  2.6s  auth=  0.0s ( 0.0%)  auth_events=0/6 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.581  time_to_auth=N/A
+  Agent 5    presence=  4.0s  auth=  0.0s ( 0.0%)  auth_events=0/6 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.707  time_to_auth=N/A
+  Agent 6    presence=  3.1s  auth=  6.4s (207.1%)  auth_events=1/6 (16.7%)
+             avg_auth_conf=0.830  avg_scene_conf=0.790  time_to_auth=1.80s
+             gestures=1  (arm_up_down=1)
+  Agent 7    presence=  4.0s  auth=  3.6s (91.9%)  auth_events=1/6 (16.7%)
+             avg_auth_conf=0.849  avg_scene_conf=0.715  time_to_auth=3.31s
+  Agent 8    presence= 10.5s  auth=  7.6s (71.9%)  auth_events=1/6 (16.7%)
+             avg_auth_conf=0.804  avg_scene_conf=0.708  time_to_auth=2.95s
+
+[Gestures]
+  Expected (GT) : 3 total
+  Detected      : 1 total
+  Authorized    : 1/1 (100.0%)
+    -> GT agent  : 1/1 (100.0%)
+  False detected: 0/1 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=4.643s  min=4.643s  max=4.643s
+  Gesture accuracy (vs ground truth):
+    Agent 1    arm_up_down=0/1  circle=0/1               Prec=0.000  Recall=0.000  F1=0.000
+    Agent 6    arm_up_down=1/1                           Prec=1.000  Recall=1.000  F1=1.000
+
+========================================================================
 BAG: single_001                               [scene: 18.2s]
 ========================================================================
 
@@ -964,75 +1808,202 @@ BAG: single_026                               [scene: 29.4s]
     Agent 0    arm_up_down=1/1  circle=0/1               Prec=1.000  Recall=0.500  F1=0.667
 
 ========================================================================
-AGGREGATE: single_*                       (24 bags  |  total scene: 788.8s)
+BAG: single_027                               [scene: 22.1s]
 ========================================================================
 
 [Authorization]
-  Accuracy=0.971  Precision=1.000  Recall=0.962  F1=0.980
-  TP=25   FP=0    FN=1    TN=8  
+  Accuracy=1.000  Precision=1.000  Recall=1.000  F1=1.000
+  TP=1    FP=0    FN=0    TN=2  
 
 [System]
-  Auth events : 30
+  Auth events : 1
+  Stability   : 0.05 evt/s  (lower = more stable)
+  Scene auth coverage : 79.1%  (time any agent was authorized)
+  Avg time to auth    : 4.45s  (authorized agents, n=1)
+  Correct auth time   : 17.5s / 17.5s (100.0%)
+
+[Per-Agent]
+  Agent 0    presence= 19.7s  auth= 17.5s (88.7%)  auth_events=1/1 (100.0%)
+             avg_auth_conf=0.817  avg_scene_conf=0.790  time_to_auth=4.45s
+  Agent 1    presence=  3.6s  auth=  0.0s ( 0.0%)  auth_events=0/1 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.512  time_to_auth=N/A
+  Agent 2    presence=  1.3s  auth=  0.0s ( 0.0%)  auth_events=0/1 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.348  time_to_auth=N/A
+
+[Gestures]
+  Expected (GT) : 2 total
+  Detected      : 0 total
+  Authorized    : 0/0 (0.0%)
+    -> GT agent  : 0/0 (0.0%)
+  False detected: 0/0 (0.0%)  (gesture with no authorized agent)
+  Gesture accuracy (vs ground truth):
+    Agent 0    arm_up_down=0/1  circle=0/1               Prec=0.000  Recall=0.000  F1=0.000
+
+========================================================================
+BAG: single_028                               [scene: 29.7s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.500  Precision=0.500  Recall=1.000  F1=0.667
+  TP=1    FP=1    FN=0    TN=0  
+
+[System]
+  Auth events : 3
+  Stability   : 0.10 evt/s  (lower = more stable)
+  Scene auth coverage : 64.9%  (time any agent was authorized)
+  Avg time to auth    : 2.17s  (authorized agents, n=1)
+  Correct auth time   : 18.4s / 19.3s (95.5%)
+
+[Per-Agent]
+  Agent 0    presence= 21.7s  auth= 18.4s (84.9%)  auth_events=2/3 (66.7%)
+             avg_auth_conf=0.815  avg_scene_conf=0.756  time_to_auth=2.17s
+             gestures=1  (circle=1)
+  Agent 1    presence=  1.8s  auth=  0.9s (46.7%)  auth_events=1/3 (33.3%)
+             avg_auth_conf=0.832  avg_scene_conf=0.658  time_to_auth=0.96s
+
+[Gestures]
+  Expected (GT) : 2 total
+  Detected      : 1 total
+  Authorized    : 1/1 (100.0%)
+    -> GT agent  : 1/1 (100.0%)
+  False detected: 0/1 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=2.995s  min=2.995s  max=2.995s
+  Gesture accuracy (vs ground truth):
+    Agent 0    arm_up_down=0/1  circle=1/1               Prec=1.000  Recall=0.500  F1=0.667
+
+========================================================================
+BAG: single_029                               [scene: 27.1s]
+========================================================================
+
+[Authorization]
+  Accuracy=0.500  Precision=0.500  Recall=1.000  F1=0.667
+  TP=1    FP=1    FN=0    TN=0  
+
+[System]
+  Auth events : 2
+  Stability   : 0.07 evt/s  (lower = more stable)
+  Scene auth coverage : 66.5%  (time any agent was authorized)
+  Avg time to auth    : 4.55s  (authorized agents, n=1)
+  Correct auth time   : 17.3s / 18.1s (95.9%)
+
+[Per-Agent]
+  Agent 0    presence= 22.4s  auth= 17.3s (77.3%)  auth_events=1/2 (50.0%)
+             avg_auth_conf=0.815  avg_scene_conf=0.789  time_to_auth=4.55s
+  Agent 1    presence=  1.7s  auth=  0.7s (44.5%)  auth_events=1/2 (50.0%)
+             avg_auth_conf=0.839  avg_scene_conf=0.699  time_to_auth=0.90s
+
+[Gestures]
+  Expected (GT) : 2 total
+  Detected      : 0 total
+  Authorized    : 0/0 (0.0%)
+    -> GT agent  : 0/0 (0.0%)
+  False detected: 0/0 (0.0%)  (gesture with no authorized agent)
+  Gesture accuracy (vs ground truth):
+    Agent 0    arm_up_down=0/1  circle=0/1               Prec=0.000  Recall=0.000  F1=0.000
+
+========================================================================
+BAG: single_030                               [scene: 19.1s]
+========================================================================
+
+[Authorization]
+  Accuracy=1.000  Precision=1.000  Recall=1.000  F1=1.000
+  TP=1    FP=0    FN=0    TN=1  
+
+[System]
+  Auth events : 1
+  Stability   : 0.05 evt/s  (lower = more stable)
+  Scene auth coverage : 87.2%  (time any agent was authorized)
+  Avg time to auth    : 0.95s  (authorized agents, n=1)
+  Correct auth time   : 16.7s / 16.7s (100.0%)
+
+[Per-Agent]
+  Agent 0    presence= 12.7s  auth= 16.7s (130.8%)  auth_events=1/1 (100.0%)
+             avg_auth_conf=0.806  avg_scene_conf=0.873  time_to_auth=0.95s
+             gestures=2  (arm_up_down=1  circle=1)
+  Agent 1    presence=  2.1s  auth=  0.0s ( 0.0%)  auth_events=0/1 ( 0.0%)
+             avg_auth_conf=0.000  avg_scene_conf=0.511  time_to_auth=N/A
+
+[Gestures]
+  Expected (GT) : 2 total
+  Detected      : 2 total
+  Authorized    : 2/2 (100.0%)
+    -> GT agent  : 2/2 (100.0%)
+  False detected: 0/2 (0.0%)  (gesture with no authorized agent)
+  Recognition latency: mean=2.973s  min=2.780s  max=3.166s
+  Gesture accuracy (vs ground truth):
+    Agent 0    arm_up_down=1/1  circle=1/1               Prec=1.000  Recall=1.000  F1=1.000
+
+========================================================================
+AGGREGATE: single_*                       (28 bags  |  total scene: 886.9s)
+========================================================================
+
+[Authorization]
+  Accuracy=0.930  Precision=0.935  Recall=0.967  F1=0.951
+  TP=29   FP=2    FN=1    TN=11 
+
+[System]
+  Auth events : 37
   Stability   : 0.04 evt/s
-  Scene auth coverage : 67.1%
-  Correct auth time   : 529.1s / 529.1s (100.0%)
+  Scene auth coverage : 67.7%
+  Avg time to auth    : 3.03s  (authorized agents, n=4)
+  Correct auth time   : 598.9s / 600.5s (99.7%)
 
 [Gestures]
-  Expected (GT) : 65 total
-  Detected      : 35 total
-  Authorized    : 35/35 (100.0%)
-    -> GT agent  : 35/35 (100.0%)
-  False detected: 0/35 (0.0%)
-  Recognition latency: mean=2.835s  min=0.302s  max=4.621s
-  Gesture accuracy:  Prec=1.000  Recall=0.538  F1=0.700
+  Expected (GT) : 73 total
+  Detected      : 38 total
+  Authorized    : 38/38 (100.0%)
+    -> GT agent  : 38/38 (100.0%)
+  False detected: 0/38 (0.0%)
+  Recognition latency: mean=2.850s  min=0.302s  max=4.621s
+  Gesture accuracy:  Prec=1.000  Recall=0.521  F1=0.685
 
 ========================================================================
-AGGREGATE: multi_*                        (7 bags  |  total scene: 274.2s)
+AGGREGATE: multi_*                        (29 bags  |  total scene: 1521.1s)
 ========================================================================
 
 [Authorization]
-  Accuracy=0.829  Precision=0.765  Recall=0.867  F1=0.812
-  TP=13   FP=4    FN=2    TN=16 
+  Accuracy=0.719  Precision=0.588  Recall=0.893  F1=0.709
+  TP=50   FP=35   FN=6    TN=55 
 
 [System]
-  Auth events : 32
+  Auth events : 190
   Stability   : 0.12 evt/s
-  Scene auth coverage : 63.9%
-  Avg time to auth    : 2.90s  (authorized agents, n=7)
-  Correct auth time   : 165.2s / 175.3s (94.3%)
+  Scene auth coverage : 71.9%
+  Avg time to auth    : 3.23s  (authorized agents, n=44)
+  Correct auth time   : 861.7s / 1093.9s (78.8%)
 
 [Gestures]
-  Expected (GT) : 24 total
-  Detected      : 15 total
-  Authorized    : 15/15 (100.0%)
-    -> GT agent  : 14/15 (93.3%)
-    -> FP agent  : 1/15 (6.7%)
-  False detected: 0/15 (0.0%)
-  Recognition latency: mean=2.875s  min=1.068s  max=3.712s
-  Gesture accuracy:  Prec=1.000  Recall=0.583  F1=0.737
+  Expected (GT) : 119 total
+  Detected      : 63 total
+  Authorized    : 63/63 (100.0%)
+    -> GT agent  : 52/63 (82.5%)
+    -> FP agent  : 11/63 (17.5%)
+  False detected: 0/63 (0.0%)
+  Recognition latency: mean=3.077s  min=1.068s  max=4.865s
+  Gesture accuracy:  Prec=1.000  Recall=0.437  F1=0.608
 
 ========================================================================
-AGGREGATE: TOTAL                          (31 bags  |  total scene: 1063.1s)
+AGGREGATE: TOTAL                          (57 bags  |  total scene: 2408.0s)
 ========================================================================
 
 [Authorization]
-  Accuracy=0.899  Precision=0.905  Recall=0.927  F1=0.916
-  TP=38   FP=4    FN=3    TN=24 
+  Accuracy=0.767  Precision=0.681  Recall=0.919  F1=0.782
+  TP=79   FP=37   FN=7    TN=66 
 
 [System]
-  Auth events : 62
-  Stability   : 0.06 evt/s
-  Scene auth coverage : 66.3%
-  Avg time to auth    : 2.90s  (authorized agents, n=7)
-  Correct auth time   : 694.3s / 704.4s (98.6%)
+  Auth events : 227
+  Stability   : 0.09 evt/s
+  Scene auth coverage : 70.4%
+  Avg time to auth    : 3.21s  (authorized agents, n=48)
+  Correct auth time   : 1460.6s / 1694.4s (86.2%)
 
 [Gestures]
-  Expected (GT) : 89 total
-  Detected      : 50 total
-  Authorized    : 50/50 (100.0%)
-    -> GT agent  : 49/50 (98.0%)
-    -> FP agent  : 1/50 (2.0%)
-  False detected: 0/50 (0.0%)
-  Recognition latency: mean=2.845s  min=0.302s  max=4.621s
-  Gesture accuracy:  Prec=1.000  Recall=0.551  F1=0.710
+  Expected (GT) : 192 total
+  Detected      : 101 total
+  Authorized    : 101/101 (100.0%)
+    -> GT agent  : 90/101 (89.1%)
+    -> FP agent  : 11/101 (10.9%)
+  False detected: 0/101 (0.0%)
+  Recognition latency: mean=2.974s  min=0.302s  max=4.865s
+  Gesture accuracy:  Prec=1.000  Recall=0.469  F1=0.638
 

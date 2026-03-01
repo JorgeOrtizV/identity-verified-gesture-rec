@@ -2,15 +2,18 @@
 METRICS REPORT: unnamed
 ============================================================
 
-Scene duration: 49.77 s
-Agents seen: 0, 1, 2
-Authorized agents: 0, 2
-Total auth events: 3
-Gestures: 7 total, 7 while authorized
-Gesture latency: mean=2.441  min=1.354  max=3.332 s
+Scene duration: 96.16 s
+Agents seen: 0, 1, 2, 3, 4, 5
+Authorized agents: 0, 1, 4
+Total auth events: 4
+Gestures: 2 total, 2 while authorized
+Gesture latency: mean=3.951  min=3.856  max=4.045 s
 
 --- Per-Agent ---
-  Agent 0: in_scene=49.77s, auth_count=2, total_time_authorized=40.86s, gestures=6, avg_auth_event_conf=0.821, avg_auth_conf=0.854, avg_scene_conf=0.843, time_to_auth=5.55s
-  Agent 1: in_scene=5.23s, auth_count=0, total_time_authorized=0.00s, gestures=0, avg_auth_event_conf=0.000, avg_auth_conf=0.000, avg_scene_conf=0.516, time_to_auth=N/A
-  Agent 2: in_scene=5.94s, auth_count=1, total_time_authorized=3.14s, gestures=1, avg_auth_event_conf=0.828, avg_auth_conf=1.023, avg_scene_conf=0.849, time_to_auth=4.84s
+  Agent 0: in_scene=38.23s, auth_count=2, total_time_authorized=30.43s, gestures=2, avg_auth_event_conf=0.855, avg_auth_conf=0.870, avg_scene_conf=0.820, time_to_auth=3.61s
+  Agent 1: in_scene=6.40s, auth_count=1, total_time_authorized=4.07s, gestures=0, avg_auth_event_conf=0.852, avg_auth_conf=0.877, avg_scene_conf=0.713, time_to_auth=6.28s
+  Agent 2: in_scene=3.89s, auth_count=0, total_time_authorized=0.00s, gestures=0, avg_auth_event_conf=0.000, avg_auth_conf=0.000, avg_scene_conf=0.535, time_to_auth=N/A
+  Agent 3: in_scene=4.13s, auth_count=0, total_time_authorized=0.00s, gestures=0, avg_auth_event_conf=0.000, avg_auth_conf=0.000, avg_scene_conf=0.559, time_to_auth=N/A
+  Agent 4: in_scene=12.36s, auth_count=1, total_time_authorized=15.52s, gestures=0, avg_auth_event_conf=0.819, avg_auth_conf=0.826, avg_scene_conf=0.745, time_to_auth=2.33s
+  Agent 5: in_scene=2.55s, auth_count=0, total_time_authorized=0.00s, gestures=0, avg_auth_event_conf=0.000, avg_auth_conf=0.000, avg_scene_conf=0.085, time_to_auth=N/A
 

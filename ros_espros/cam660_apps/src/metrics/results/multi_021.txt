@@ -1,0 +1,17 @@
+============================================================
+METRICS REPORT: multi_021
+============================================================
+
+Scene duration: 46.66 s
+Agents seen: 0, 1, 2, 3
+Authorized agents: 0, 1, 3
+Total auth events: 3
+Gestures: 3 total, 3 while authorized
+Gesture latency: mean=3.142  min=2.787  max=3.449 s
+
+--- Per-Agent ---
+  Agent 0: in_scene=13.58s, auth_count=1, total_time_authorized=20.48s, gestures=2, avg_auth_event_conf=0.805, avg_auth_conf=1.034, avg_scene_conf=0.856, time_to_auth=2.37s
+  Agent 1: in_scene=26.51s, auth_count=1, total_time_authorized=16.12s, gestures=1, avg_auth_event_conf=0.872, avg_auth_conf=0.891, avg_scene_conf=0.727, time_to_auth=10.23s
+  Agent 2: in_scene=14.79s, auth_count=0, total_time_authorized=0.00s, gestures=0, avg_auth_event_conf=0.000, avg_auth_conf=0.000, avg_scene_conf=0.605, time_to_auth=N/A
+  Agent 3: in_scene=5.78s, auth_count=1, total_time_authorized=3.26s, gestures=0, avg_auth_event_conf=0.807, avg_auth_conf=0.822, avg_scene_conf=0.656, time_to_auth=2.51s
+
