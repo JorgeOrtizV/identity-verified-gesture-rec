@@ -1,4 +1,4 @@
-# cam660_apps
+# Identity-verified Gesture Recognition based on Time-of-Flight Sensors
 
 A ROS-based system for real-time person authorization and gesture recognition using the [Espros cam660](https://www.espros.com/photonics/tof-cameras/) time-of-flight (ToF) depth camera, with optional IMU-assisted gesture segmentation.
 
