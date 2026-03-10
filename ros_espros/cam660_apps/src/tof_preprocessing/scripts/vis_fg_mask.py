@@ -10,6 +10,9 @@ class DepthSubscriber:
     def __init__(self):
         self.bridge = CvBridge()
         rospy.Subscriber("/preproc/foreground_mask", Image, self.callback, queue_size=1)
+        cv2.namedWindow("Mask image", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Mask image", 640, 480)
+        cv2.moveWindow("Mask image", 660, 0)
 
     def callback(self, msg):
         mask = self.bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")

@@ -31,6 +31,9 @@ class KalmanSubscriber:
         self.ts.registerCallback(self.callback)
 
         rospy.loginfo("Kalman visualization node ready")
+        cv2.namedWindow("Kalman Tracking", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Kalman Tracking", 640, 480)
+        cv2.moveWindow("Kalman Tracking", 0, 530)
 
     def callback(self, fg_msg, agent_msg):
         mask = self.bridge.imgmsg_to_cv2(fg_msg, desired_encoding="passthrough")

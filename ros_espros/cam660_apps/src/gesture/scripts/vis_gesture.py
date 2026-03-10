@@ -59,6 +59,9 @@ class GestureSubscriber:
         self.ts.registerCallback(self.callback)
 
         rospy.loginfo("Gesture visualization node ready")
+        cv2.namedWindow("Gesture Visualization", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Gesture Visualization", 640, 480)
+        cv2.moveWindow("Gesture Visualization", 1320, 530)
 
     def auth_callback(self, msg):
         self.authorized_id = msg.data

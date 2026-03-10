@@ -355,6 +355,7 @@ class DepthPreprocessingNode:
                 track = Track(self.next_track_id, blob["centroid"], blob["bbox"])
                 track.bbox_history.append(blob["bbox"])
                 track.centroid_history.append(blob["centroid"])
+                #track.last_seen = self.frame_count
                 updated_tracks[self.next_track_id] = track
                 self.next_track_id += 1
             else:

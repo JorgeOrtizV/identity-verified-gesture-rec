@@ -47,6 +47,9 @@ class ConfidenceSubscriber:
         self.ts.registerCallback(self.callback)
 
         rospy.loginfo("Confidence visualization node ready")
+        cv2.namedWindow("Confidence Visualization", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Confidence Visualization", 640, 480)
+        cv2.moveWindow("Confidence Visualization", 660, 530)
 
     def auth_callback(self, msg):
         self.authorized_id = msg.data

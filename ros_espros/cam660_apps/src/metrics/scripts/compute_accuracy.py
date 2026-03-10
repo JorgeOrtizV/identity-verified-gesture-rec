@@ -115,7 +115,8 @@ def report_bag(bag_name, data, gt_entry):
     per_agent         = data.get("per_agent", {})
 
     am = auth_metrics(data, gt_entry)
-    gt_auth = set(gt_entry.get("authorized_agents", []))
+    gt_auth   = set(gt_entry.get("authorized_agents", []))
+    pred_auth = set(data.get("authorized_agent_ids", []))
 
     total_auth_time   = sum(v.get("total_time_authorized", 0.0) for v in per_agent.values())
     correct_auth_time = sum(
@@ -132,6 +133,36 @@ def report_bag(bag_name, data, gt_entry):
         c for exp in gt_gestures.values() for c in exp.values()
     ) if gt_gestures else None
 
+    # Collect per-agent metrics
+    # TTA split: GT agents that were (correctly) authorized vs FP agents that were (wrongly) authorized
+    # Conf split: GT agents (should be authorized) vs all non-GT agents (should never be authorized)
+    tta_gt_values = []  # TTA for GT agents that were authorized
+    tta_fp_values = []  # TTA for non-GT agents that were falsely authorized
+    conf_gt       = []  # avg_scene_confidence for GT agents
+    conf_non_gt   = []  # avg_scene_confidence for non-GT agents
+
+    for aid_str, ag in per_agent.items():
+        aid_int = _safe_int(aid_str)
+        if aid_int is None:
+            continue
+        tta  = ag.get("time_to_auth")
+        conf = ag.get("avg_scene_confidence")
+        if aid_int in gt_auth:
+            if conf is not None:
+                conf_gt.append(conf)
+            if tta is not None and aid_int in pred_auth:
+                tta_gt_values.append(tta)
+        else:
+            if conf is not None:
+                conf_non_gt.append(conf)
+            if tta is not None and aid_int in pred_auth:
+                tta_fp_values.append(tta)
+
+    avg_tta_gt    = _div(sum(tta_gt_values), len(tta_gt_values)) if tta_gt_values else None
+    avg_tta_fp    = _div(sum(tta_fp_values), len(tta_fp_values)) if tta_fp_values else None
+    avg_conf_gt   = _div(sum(conf_gt),       len(conf_gt))       if conf_gt       else None
+    avg_conf_non_gt = _div(sum(conf_non_gt), len(conf_non_gt))   if conf_non_gt   else None
+
     print(SEP_MAJOR)
     print("BAG: %-40s [scene: %.1fs]" % (bag_name, scene_dur))
     print(SEP_MAJOR)
@@ -143,26 +174,19 @@ def report_bag(bag_name, data, gt_entry):
     print("  TP=%-3d  FP=%-3d  FN=%-3d  TN=%-3d"
           % (am["tp"], am["fp"], am["fn"], am["tn"]))
 
-    # Per-bag average time to auth (authorized agents per GT only)
-    bag_tta_values = []
-    for aid_str, ag in per_agent.items():
-        try:
-            aid_int = int(aid_str)
-        except ValueError:
-            continue
-        if aid_int in gt_auth:
-            tta = ag.get("time_to_auth")
-            if tta is not None:
-                bag_tta_values.append(tta)
-    avg_bag_tta = _div(sum(bag_tta_values), len(bag_tta_values)) if bag_tta_values else None
-
     # System
     print("\n[System]")
     print("  Auth events : %d" % total_auth_events)
     print("  Stability   : %.2f evt/s  (lower = more stable)" % auth_stability)
     print("  Scene auth coverage : %.1f%%  (time any agent was authorized)" % (scene_coverage * 100))
-    if avg_bag_tta is not None:
-        print("  Avg time to auth    : %.2fs  (authorized agents, n=%d)" % (avg_bag_tta, len(bag_tta_values)))
+    if avg_tta_gt is not None:
+        print("  Avg TTA GT agents     : %.2fs" % avg_tta_gt)
+    if avg_tta_fp is not None:
+        print("  Avg TTA FP agents     : %.2fs" % avg_tta_fp)
+    if avg_conf_gt is not None:
+        print("  Avg conf GT agents    : %.3f  (n=%d)" % (avg_conf_gt,     len(conf_gt)))
+    if avg_conf_non_gt is not None:
+        print("  Avg conf non-GT agents: %.3f  (n=%d)" % (avg_conf_non_gt, len(conf_non_gt)))
     print("  Correct auth time   : %.1fs / %.1fs (%.1f%%)"
           % (correct_auth_time, total_auth_time, _pct(correct_auth_time, total_auth_time)))
 
@@ -234,18 +258,6 @@ def report_bag(bag_name, data, gt_entry):
 
     print()
 
-    # Collect time_to_auth for authorized agents only (per ground truth)
-    tta_values = []
-    for aid_str, ag in per_agent.items():
-        try:
-            aid_int = int(aid_str)
-        except ValueError:
-            continue
-        if aid_int in gt_auth:
-            tta = ag.get("time_to_auth")
-            if tta is not None:
-                tta_values.append(tta)
-
     return {
         "am":                    am,
         "scene_dur":             scene_dur,
@@ -265,7 +277,10 @@ def report_bag(bag_name, data, gt_entry):
         "gest_fp":               gest_agg["fp"],
         "gest_fn":               gest_agg["fn"],
         "has_gest_gt":           bool(gt_gestures),
-        "tta_values":            tta_values,
+        "tta_gt_values":         tta_gt_values,
+        "tta_fp_values":         tta_fp_values,
+        "conf_gt_values":        conf_gt,
+        "conf_non_gt_values":    conf_non_gt,
     }
 
 
@@ -300,9 +315,17 @@ def report_aggregate(label, bag_metrics):
     fp_auth_gest     = sum(m["fp_auth_gestures"] for m in bag_metrics)
     false_det        = total_gest - auth_gest
 
-    # Time to auth — average across all authorized agents that have a value
-    all_tta = [v for m in bag_metrics for v in m["tta_values"]]
-    avg_tta = _div(sum(all_tta), len(all_tta)) if all_tta else None
+    # Time to auth — GT agents (correctly authorized) vs FP agents (falsely authorized)
+    all_tta_gt  = [v for m in bag_metrics for v in m["tta_gt_values"]]
+    all_tta_fp  = [v for m in bag_metrics for v in m["tta_fp_values"]]
+    avg_tta_gt  = _div(sum(all_tta_gt), len(all_tta_gt)) if all_tta_gt else None
+    avg_tta_fp  = _div(sum(all_tta_fp), len(all_tta_fp)) if all_tta_fp else None
+
+    # Confidence — GT agents vs all non-GT agents
+    all_conf_gt     = [v for m in bag_metrics for v in m["conf_gt_values"]]
+    all_conf_non_gt = [v for m in bag_metrics for v in m["conf_non_gt_values"]]
+    avg_conf_gt     = _div(sum(all_conf_gt),     len(all_conf_gt))     if all_conf_gt     else None
+    avg_conf_non_gt = _div(sum(all_conf_non_gt), len(all_conf_non_gt)) if all_conf_non_gt else None
 
     # Latency — average of per-bag means, global min/max
     lat_bags = [m for m in bag_metrics if m["has_lat"]]
@@ -333,8 +356,14 @@ def report_aggregate(label, bag_metrics):
     print("  Auth events : %d" % total_auth_ev)
     print("  Stability   : %.2f evt/s" % stability)
     print("  Scene auth coverage : %.1f%%" % (coverage * 100))
-    if avg_tta is not None:
-        print("  Avg time to auth    : %.2fs  (authorized agents, n=%d)" % (avg_tta, len(all_tta)))
+    if avg_tta_gt is not None:
+        print("  Avg TTA GT agents     : %.2fs" % avg_tta_gt)
+    if avg_tta_fp is not None:
+        print("  Avg TTA FP agents     : %.2fs" % avg_tta_fp)
+    if avg_conf_gt is not None:
+        print("  Avg conf GT agents    : %.3f  (n=%d)" % (avg_conf_gt,     len(all_conf_gt)))
+    if avg_conf_non_gt is not None:
+        print("  Avg conf non-GT agents: %.3f  (n=%d)" % (avg_conf_non_gt, len(all_conf_non_gt)))
     print("  Correct auth time   : %.1fs / %.1fs (%.1f%%)"
           % (correct_auth_time, total_auth_time, _pct(correct_auth_time, total_auth_time)))
 

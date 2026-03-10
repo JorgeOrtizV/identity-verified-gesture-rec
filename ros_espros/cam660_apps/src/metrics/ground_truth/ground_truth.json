@@ -217,9 +217,9 @@
     }
   },
   "multi_009" : {
-    "authorized_agents" : [1],
+    "authorized_agents" : [0],
     "expected_gestures": {
-      "1" : {"circle": 4, "arm_up_down": 4}
+      "0" : {"circle": 4, "arm_up_down": 4}
     }
   },
   "multi_010" : {

@@ -10,6 +10,8 @@ BAG: multi_001                                [scene: 26.3s]
   Auth events : 1
   Stability   : 0.04 evt/s  (lower = more stable)
   Scene auth coverage : 41.8%  (time any agent was authorized)
+  Avg conf GT agents    : 0.726  (n=1)
+  Avg conf non-GT agents: 0.549  (n=1)
   Correct auth time   : 11.0s / 11.0s (100.0%)
 
 [Per-Agent]
@@ -41,6 +43,8 @@ BAG: multi_002                                [scene: 25.1s]
   Auth events : 1
   Stability   : 0.04 evt/s  (lower = more stable)
   Scene auth coverage : 49.9%  (time any agent was authorized)
+  Avg conf GT agents    : 0.722  (n=1)
+  Avg conf non-GT agents: 0.544  (n=2)
   Correct auth time   : 12.5s / 12.5s (100.0%)
 
 [Per-Agent]
@@ -74,6 +78,8 @@ BAG: multi_003                                [scene: 21.6s]
   Auth events : 1
   Stability   : 0.05 evt/s  (lower = more stable)
   Scene auth coverage : 34.0%  (time any agent was authorized)
+  Avg conf GT agents    : 0.710  (n=1)
+  Avg conf non-GT agents: 0.374  (n=1)
   Correct auth time   : 7.3s / 7.3s (100.0%)
 
 [Per-Agent]
@@ -105,6 +111,8 @@ BAG: multi_004                                [scene: 47.4s]
   Auth events : 7
   Stability   : 0.15 evt/s  (lower = more stable)
   Scene auth coverage : 81.9%  (time any agent was authorized)
+  Avg conf GT agents    : 0.819  (n=1)
+  Avg conf non-GT agents: 0.379  (n=6)
   Correct auth time   : 37.8s / 38.8s (97.3%)
 
 [Per-Agent]
@@ -148,6 +156,8 @@ BAG: multi_005                                [scene: 49.7s]
   Auth events : 6
   Stability   : 0.12 evt/s  (lower = more stable)
   Scene auth coverage : 83.5%  (time any agent was authorized)
+  Avg conf GT agents    : 0.849  (n=2)
+  Avg conf non-GT agents: 0.537  (n=3)
   Correct auth time   : 40.7s / 41.5s (98.2%)
 
 [Per-Agent]
@@ -187,7 +197,9 @@ BAG: multi_006                                [scene: 58.4s]
   Auth events : 3
   Stability   : 0.05 evt/s  (lower = more stable)
   Scene auth coverage : 62.5%  (time any agent was authorized)
-  Avg time to auth    : 4.01s  (authorized agents, n=3)
+  Avg TTA GT agents     : 4.01s
+  Avg conf GT agents    : 0.667  (n=4)
+  Avg conf non-GT agents: 0.169  (n=5)
   Correct auth time   : 36.5s / 36.5s (100.0%)
 
 [Per-Agent]
@@ -233,7 +245,10 @@ BAG: multi_007                                [scene: 45.7s]
   Auth events : 13
   Stability   : 0.28 evt/s  (lower = more stable)
   Scene auth coverage : 60.5%  (time any agent was authorized)
-  Avg time to auth    : 2.06s  (authorized agents, n=4)
+  Avg TTA GT agents     : 2.06s
+  Avg TTA FP agents     : 6.22s
+  Avg conf GT agents    : 0.686  (n=5)
+  Avg conf non-GT agents: 0.620  (n=2)
   Correct auth time   : 19.3s / 27.6s (70.0%)
 
 [Per-Agent]
@@ -273,7 +288,10 @@ BAG: multi_008                                [scene: 36.2s]
   Auth events : 5
   Stability   : 0.14 evt/s  (lower = more stable)
   Scene auth coverage : 77.1%  (time any agent was authorized)
-  Avg time to auth    : 3.43s  (authorized agents, n=2)
+  Avg TTA GT agents     : 3.43s
+  Avg TTA FP agents     : 2.66s
+  Avg conf GT agents    : 0.780  (n=2)
+  Avg conf non-GT agents: 0.702  (n=2)
   Correct auth time   : 21.3s / 27.9s (76.1%)
 
 [Per-Agent]
@@ -300,14 +318,18 @@ BAG: multi_009                                [scene: 49.8s]
 ========================================================================
 
 [Authorization]
-  Accuracy=0.000  Precision=0.000  Recall=0.000  F1=0.000
-  TP=0    FP=2    FN=1    TN=0  
+  Accuracy=0.667  Precision=0.500  Recall=1.000  F1=0.667
+  TP=1    FP=1    FN=0    TN=1  
 
 [System]
   Auth events : 3
   Stability   : 0.06 evt/s  (lower = more stable)
   Scene auth coverage : 90.2%  (time any agent was authorized)
-  Correct auth time   : 0.0s / 44.9s (0.0%)
+  Avg TTA GT agents     : 4.72s
+  Avg TTA FP agents     : 4.49s
+  Avg conf GT agents    : 0.846  (n=1)
+  Avg conf non-GT agents: 0.693  (n=2)
+  Correct auth time   : 41.9s / 44.9s (93.3%)
 
 [Per-Agent]
   Agent 0    presence= 49.8s  auth= 41.9s (84.1%)  auth_events=2/3 (66.7%)
@@ -323,12 +345,12 @@ BAG: multi_009                                [scene: 49.8s]
   Expected (GT) : 8 total
   Detected      : 7 total
   Authorized    : 7/7 (100.0%)
-    -> GT agent  : 0/7 (0.0%)
-    -> FP agent  : 7/7 (100.0%)
+    -> GT agent  : 6/7 (85.7%)
+    -> FP agent  : 1/7 (14.3%)
   False detected: 0/7 (0.0%)  (gesture with no authorized agent)
   Recognition latency: mean=2.427s  min=1.342s  max=3.313s
   Gesture accuracy (vs ground truth):
-    Agent 1    arm_up_down=0/4  circle=0/4               Prec=0.000  Recall=0.000  F1=0.000
+    Agent 0    arm_up_down=4/4  circle=2/4               Prec=1.000  Recall=0.750  F1=0.857
 
 ========================================================================
 BAG: multi_010                                [scene: 34.7s]
@@ -342,7 +364,10 @@ BAG: multi_010                                [scene: 34.7s]
   Auth events : 6
   Stability   : 0.17 evt/s  (lower = more stable)
   Scene auth coverage : 75.2%  (time any agent was authorized)
-  Avg time to auth    : 4.16s  (authorized agents, n=1)
+  Avg TTA GT agents     : 4.16s
+  Avg TTA FP agents     : 8.12s
+  Avg conf GT agents    : 0.796  (n=1)
+  Avg conf non-GT agents: 0.737  (n=1)
   Correct auth time   : 20.5s / 26.1s (78.7%)
 
 [Per-Agent]
@@ -375,7 +400,10 @@ BAG: multi_011                                [scene: 52.2s]
   Auth events : 11
   Stability   : 0.21 evt/s  (lower = more stable)
   Scene auth coverage : 83.5%  (time any agent was authorized)
-  Avg time to auth    : 2.34s  (authorized agents, n=1)
+  Avg TTA GT agents     : 2.34s
+  Avg TTA FP agents     : 7.41s
+  Avg conf GT agents    : 0.816  (n=1)
+  Avg conf non-GT agents: 0.699  (n=3)
   Correct auth time   : 30.0s / 43.6s (68.9%)
 
 [Per-Agent]
@@ -413,7 +441,10 @@ BAG: multi_012                                [scene: 36.4s]
   Auth events : 7
   Stability   : 0.19 evt/s  (lower = more stable)
   Scene auth coverage : 83.5%  (time any agent was authorized)
-  Avg time to auth    : 2.15s  (authorized agents, n=1)
+  Avg TTA GT agents     : 2.15s
+  Avg TTA FP agents     : 3.46s
+  Avg conf GT agents    : 0.855  (n=1)
+  Avg conf non-GT agents: 0.747  (n=2)
   Correct auth time   : 15.0s / 30.4s (49.3%)
 
 [Per-Agent]
@@ -445,7 +476,10 @@ BAG: multi_013                                [scene: 65.0s]
   Auth events : 9
   Stability   : 0.14 evt/s  (lower = more stable)
   Scene auth coverage : 51.9%  (time any agent was authorized)
-  Avg time to auth    : 2.02s  (authorized agents, n=2)
+  Avg TTA GT agents     : 2.02s
+  Avg TTA FP agents     : 1.76s
+  Avg conf GT agents    : 0.753  (n=2)
+  Avg conf non-GT agents: 0.712  (n=2)
   Correct auth time   : 18.5s / 33.8s (54.8%)
 
 [Per-Agent]
@@ -481,7 +515,9 @@ BAG: multi_014                                [scene: 54.3s]
   Auth events : 1
   Stability   : 0.02 evt/s  (lower = more stable)
   Scene auth coverage : 80.7%  (time any agent was authorized)
-  Avg time to auth    : 1.08s  (authorized agents, n=1)
+  Avg TTA GT agents     : 1.08s
+  Avg conf GT agents    : 0.861  (n=1)
+  Avg conf non-GT agents: 0.552  (n=2)
   Correct auth time   : 43.9s / 43.9s (100.0%)
 
 [Per-Agent]
@@ -515,7 +551,10 @@ BAG: multi_015                                [scene: 63.2s]
   Auth events : 6
   Stability   : 0.09 evt/s  (lower = more stable)
   Scene auth coverage : 52.6%  (time any agent was authorized)
-  Avg time to auth    : 6.41s  (authorized agents, n=2)
+  Avg TTA GT agents     : 6.41s
+  Avg TTA FP agents     : 10.92s
+  Avg conf GT agents    : 0.783  (n=2)
+  Avg conf non-GT agents: 0.759  (n=2)
   Correct auth time   : 17.8s / 33.3s (53.4%)
 
 [Per-Agent]
@@ -550,7 +589,10 @@ BAG: multi_016                                [scene: 72.5s]
   Auth events : 16
   Stability   : 0.22 evt/s  (lower = more stable)
   Scene auth coverage : 79.4%  (time any agent was authorized)
-  Avg time to auth    : 1.99s  (authorized agents, n=3)
+  Avg TTA GT agents     : 1.99s
+  Avg TTA FP agents     : 5.02s
+  Avg conf GT agents    : 0.718  (n=3)
+  Avg conf non-GT agents: 0.358  (n=4)
   Correct auth time   : 43.0s / 57.6s (74.8%)
 
 [Per-Agent]
@@ -594,7 +636,10 @@ BAG: multi_017                                [scene: 74.9s]
   Auth events : 10
   Stability   : 0.13 evt/s  (lower = more stable)
   Scene auth coverage : 74.7%  (time any agent was authorized)
-  Avg time to auth    : 2.44s  (authorized agents, n=2)
+  Avg TTA GT agents     : 2.44s
+  Avg TTA FP agents     : 5.11s
+  Avg conf GT agents    : 0.760  (n=3)
+  Avg conf non-GT agents: 0.268  (n=6)
   Correct auth time   : 50.8s / 56.0s (90.8%)
 
 [Per-Agent]
@@ -638,7 +683,9 @@ BAG: multi_018                                [scene: 55.5s]
   Auth events : 3
   Stability   : 0.05 evt/s  (lower = more stable)
   Scene auth coverage : 67.5%  (time any agent was authorized)
-  Avg time to auth    : 4.99s  (authorized agents, n=3)
+  Avg TTA GT agents     : 4.99s
+  Avg conf GT agents    : 0.764  (n=3)
+  Avg conf non-GT agents: 0.424  (n=3)
   Correct auth time   : 37.4s / 37.4s (100.0%)
 
 [Per-Agent]
@@ -679,7 +726,9 @@ BAG: multi_019                                [scene: 33.7s]
   Auth events : 1
   Stability   : 0.03 evt/s  (lower = more stable)
   Scene auth coverage : 51.8%  (time any agent was authorized)
-  Avg time to auth    : 1.80s  (authorized agents, n=1)
+  Avg TTA GT agents     : 1.80s
+  Avg conf GT agents    : 0.853  (n=1)
+  Avg conf non-GT agents: 0.292  (n=2)
   Correct auth time   : 17.5s / 17.5s (100.0%)
 
 [Per-Agent]
@@ -713,7 +762,9 @@ BAG: multi_020                                [scene: 67.0s]
   Auth events : 1
   Stability   : 0.01 evt/s  (lower = more stable)
   Scene auth coverage : 49.7%  (time any agent was authorized)
-  Avg time to auth    : 3.84s  (authorized agents, n=1)
+  Avg TTA GT agents     : 3.84s
+  Avg conf GT agents    : 0.811  (n=1)
+  Avg conf non-GT agents: 0.448  (n=5)
   Correct auth time   : 33.3s / 33.3s (100.0%)
 
 [Per-Agent]
@@ -753,7 +804,10 @@ BAG: multi_021                                [scene: 46.7s]
   Auth events : 3
   Stability   : 0.06 evt/s  (lower = more stable)
   Scene auth coverage : 85.4%  (time any agent was authorized)
-  Avg time to auth    : 6.30s  (authorized agents, n=2)
+  Avg TTA GT agents     : 6.30s
+  Avg TTA FP agents     : 2.51s
+  Avg conf GT agents    : 0.792  (n=2)
+  Avg conf non-GT agents: 0.631  (n=2)
   Correct auth time   : 36.6s / 39.9s (91.8%)
 
 [Per-Agent]
@@ -791,7 +845,10 @@ BAG: multi_022                                [scene: 61.5s]
   Auth events : 13
   Stability   : 0.21 evt/s  (lower = more stable)
   Scene auth coverage : 85.6%  (time any agent was authorized)
-  Avg time to auth    : 2.35s  (authorized agents, n=2)
+  Avg TTA GT agents     : 2.35s
+  Avg TTA FP agents     : 6.08s
+  Avg conf GT agents    : 0.658  (n=3)
+  Avg conf non-GT agents: 0.635  (n=6)
   Correct auth time   : 46.6s / 52.6s (88.7%)
 
 [Per-Agent]
@@ -839,7 +896,10 @@ BAG: multi_023                                [scene: 62.4s]
   Auth events : 4
   Stability   : 0.06 evt/s  (lower = more stable)
   Scene auth coverage : 94.8%  (time any agent was authorized)
-  Avg time to auth    : 3.84s  (authorized agents, n=3)
+  Avg TTA GT agents     : 3.84s
+  Avg TTA FP agents     : 1.78s
+  Avg conf GT agents    : 0.710  (n=4)
+  Avg conf non-GT agents: 0.539  (n=6)
   Correct auth time   : 52.5s / 59.2s (88.8%)
 
 [Per-Agent]
@@ -887,7 +947,10 @@ BAG: multi_024                                [scene: 96.2s]
   Auth events : 4
   Stability   : 0.04 evt/s  (lower = more stable)
   Scene auth coverage : 52.0%  (time any agent was authorized)
-  Avg time to auth    : 3.61s  (authorized agents, n=1)
+  Avg TTA GT agents     : 3.61s
+  Avg TTA FP agents     : 3.95s
+  Avg conf GT agents    : 0.839  (n=1)
+  Avg conf non-GT agents: 0.597  (n=5)
   Correct auth time   : 31.4s / 50.0s (62.8%)
 
 [Per-Agent]
@@ -927,7 +990,10 @@ BAG: multi_025                                [scene: 86.1s]
   Auth events : 6
   Stability   : 0.07 evt/s  (lower = more stable)
   Scene auth coverage : 69.6%  (time any agent was authorized)
-  Avg time to auth    : 5.16s  (authorized agents, n=2)
+  Avg TTA GT agents     : 5.16s
+  Avg TTA FP agents     : 2.76s
+  Avg conf GT agents    : 0.799  (n=2)
+  Avg conf non-GT agents: 0.612  (n=3)
   Correct auth time   : 57.5s / 60.0s (95.9%)
 
 [Per-Agent]
@@ -966,7 +1032,10 @@ BAG: multi_026                                [scene: 57.2s]
   Auth events : 17
   Stability   : 0.30 evt/s  (lower = more stable)
   Scene auth coverage : 88.6%  (time any agent was authorized)
-  Avg time to auth    : 1.63s  (authorized agents, n=2)
+  Avg TTA GT agents     : 1.63s
+  Avg TTA FP agents     : 3.69s
+  Avg conf GT agents    : 0.835  (n=2)
+  Avg conf non-GT agents: 0.537  (n=3)
   Correct auth time   : 31.9s / 50.7s (63.1%)
 
 [Per-Agent]
@@ -1006,7 +1075,10 @@ BAG: multi_027                                [scene: 62.1s]
   Auth events : 13
   Stability   : 0.21 evt/s  (lower = more stable)
   Scene auth coverage : 94.6%  (time any agent was authorized)
-  Avg time to auth    : 3.04s  (authorized agents, n=1)
+  Avg TTA GT agents     : 3.04s
+  Avg TTA FP agents     : 2.03s
+  Avg conf GT agents    : 0.795  (n=1)
+  Avg conf non-GT agents: 0.713  (n=2)
   Correct auth time   : 50.6s / 58.8s (86.1%)
 
 [Per-Agent]
@@ -1040,7 +1112,10 @@ BAG: multi_028                                [scene: 37.7s]
   Auth events : 13
   Stability   : 0.35 evt/s  (lower = more stable)
   Scene auth coverage : 86.2%  (time any agent was authorized)
-  Avg time to auth    : 2.25s  (authorized agents, n=1)
+  Avg TTA GT agents     : 2.25s
+  Avg TTA FP agents     : 4.01s
+  Avg conf GT agents    : 0.888  (n=1)
+  Avg conf non-GT agents: 0.742  (n=1)
   Correct auth time   : 21.9s / 32.5s (67.5%)
 
 [Per-Agent]
@@ -1070,7 +1145,10 @@ BAG: multi_029                                [scene: 41.5s]
   Auth events : 6
   Stability   : 0.14 evt/s  (lower = more stable)
   Scene auth coverage : 70.9%  (time any agent was authorized)
-  Avg time to auth    : 1.87s  (authorized agents, n=3)
+  Avg TTA GT agents     : 1.87s
+  Avg TTA FP agents     : 3.13s
+  Avg conf GT agents    : 0.742  (n=3)
+  Avg conf non-GT agents: 0.646  (n=6)
   Correct auth time   : 18.2s / 29.4s (61.9%)
 
 [Per-Agent]
@@ -1117,6 +1195,7 @@ BAG: single_001                               [scene: 18.2s]
   Auth events : 1
   Stability   : 0.05 evt/s  (lower = more stable)
   Scene auth coverage : 77.4%  (time any agent was authorized)
+  Avg conf GT agents    : 0.807  (n=1)
   Correct auth time   : 14.1s / 14.1s (100.0%)
 
 [Per-Agent]
@@ -1146,6 +1225,7 @@ BAG: single_002                               [scene: 27.3s]
   Auth events : 2
   Stability   : 0.07 evt/s  (lower = more stable)
   Scene auth coverage : 40.3%  (time any agent was authorized)
+  Avg conf GT agents    : 0.678  (n=2)
   Correct auth time   : 11.0s / 11.0s (100.0%)
 
 [Per-Agent]
@@ -1177,6 +1257,7 @@ BAG: single_003                               [scene: 46.4s]
   Auth events : 1
   Stability   : 0.02 evt/s  (lower = more stable)
   Scene auth coverage : 75.4%  (time any agent was authorized)
+  Avg conf GT agents    : 0.815  (n=1)
   Correct auth time   : 35.0s / 35.0s (100.0%)
 
 [Per-Agent]
@@ -1206,6 +1287,7 @@ BAG: single_004                               [scene: 11.1s]
   Auth events : 1
   Stability   : 0.09 evt/s  (lower = more stable)
   Scene auth coverage : 60.2%  (time any agent was authorized)
+  Avg conf GT agents    : 0.719  (n=1)
   Correct auth time   : 6.7s / 6.7s (100.0%)
 
 [Per-Agent]
@@ -1233,6 +1315,7 @@ BAG: single_005                               [scene: 17.9s]
   Auth events : 1
   Stability   : 0.06 evt/s  (lower = more stable)
   Scene auth coverage : 51.6%  (time any agent was authorized)
+  Avg conf GT agents    : 0.871  (n=1)
   Correct auth time   : 9.2s / 9.2s (100.0%)
 
 [Per-Agent]
@@ -1260,6 +1343,8 @@ BAG: single_006                               [scene: 25.0s]
   Auth events : 1
   Stability   : 0.04 evt/s  (lower = more stable)
   Scene auth coverage : 31.4%  (time any agent was authorized)
+  Avg conf GT agents    : 0.768  (n=1)
+  Avg conf non-GT agents: 0.403  (n=1)
   Correct auth time   : 7.8s / 7.8s (100.0%)
 
 [Per-Agent]
@@ -1289,6 +1374,8 @@ BAG: single_008                               [scene: 19.5s]
   Auth events : 2
   Stability   : 0.10 evt/s  (lower = more stable)
   Scene auth coverage : 42.7%  (time any agent was authorized)
+  Avg conf GT agents    : 0.740  (n=1)
+  Avg conf non-GT agents: 0.422  (n=1)
   Correct auth time   : 8.3s / 8.3s (100.0%)
 
 [Per-Agent]
@@ -1318,6 +1405,8 @@ BAG: single_009                               [scene: 17.6s]
   Auth events : 1
   Stability   : 0.06 evt/s  (lower = more stable)
   Scene auth coverage : 73.6%  (time any agent was authorized)
+  Avg conf GT agents    : 0.858  (n=1)
+  Avg conf non-GT agents: 0.567  (n=1)
   Correct auth time   : 13.0s / 13.0s (100.0%)
 
 [Per-Agent]
@@ -1349,6 +1438,8 @@ BAG: single_010                               [scene: 17.1s]
   Auth events : 1
   Stability   : 0.06 evt/s  (lower = more stable)
   Scene auth coverage : 81.7%  (time any agent was authorized)
+  Avg conf GT agents    : 0.842  (n=1)
+  Avg conf non-GT agents: 0.000  (n=1)
   Correct auth time   : 14.0s / 14.0s (100.0%)
 
 [Per-Agent]
@@ -1380,6 +1471,8 @@ BAG: single_011                               [scene: 16.1s]
   Auth events : 1
   Stability   : 0.06 evt/s  (lower = more stable)
   Scene auth coverage : 83.0%  (time any agent was authorized)
+  Avg conf GT agents    : 0.742  (n=1)
+  Avg conf non-GT agents: 0.513  (n=1)
   Correct auth time   : 13.4s / 13.4s (100.0%)
 
 [Per-Agent]
@@ -1411,6 +1504,8 @@ BAG: single_012                               [scene: 39.6s]
   Auth events : 1
   Stability   : 0.03 evt/s  (lower = more stable)
   Scene auth coverage : 33.3%  (time any agent was authorized)
+  Avg conf GT agents    : 0.732  (n=1)
+  Avg conf non-GT agents: 0.560  (n=1)
   Correct auth time   : 13.2s / 13.2s (100.0%)
 
 [Per-Agent]
@@ -1442,6 +1537,8 @@ BAG: single_013                               [scene: 19.7s]
   Auth events : 1
   Stability   : 0.05 evt/s  (lower = more stable)
   Scene auth coverage : 56.6%  (time any agent was authorized)
+  Avg conf GT agents    : 0.761  (n=1)
+  Avg conf non-GT agents: 0.285  (n=1)
   Correct auth time   : 11.2s / 11.2s (100.0%)
 
 [Per-Agent]
@@ -1471,6 +1568,7 @@ BAG: single_014                               [scene: 17.7s]
   Auth events : 1
   Stability   : 0.06 evt/s  (lower = more stable)
   Scene auth coverage : 56.8%  (time any agent was authorized)
+  Avg conf GT agents    : 0.708  (n=1)
   Correct auth time   : 10.1s / 10.1s (100.0%)
 
 [Per-Agent]
@@ -1500,6 +1598,7 @@ BAG: single_015                               [scene: 28.2s]
   Auth events : 1
   Stability   : 0.04 evt/s  (lower = more stable)
   Scene auth coverage : 63.9%  (time any agent was authorized)
+  Avg conf GT agents    : 0.807  (n=1)
   Correct auth time   : 18.0s / 18.0s (100.0%)
 
 [Per-Agent]
@@ -1529,6 +1628,7 @@ BAG: single_016                               [scene: 24.1s]
   Auth events : 1
   Stability   : 0.04 evt/s  (lower = more stable)
   Scene auth coverage : 61.7%  (time any agent was authorized)
+  Avg conf GT agents    : 0.764  (n=1)
   Correct auth time   : 14.9s / 14.9s (100.0%)
 
 [Per-Agent]
@@ -1558,6 +1658,7 @@ BAG: single_017                               [scene: 18.0s]
   Auth events : 1
   Stability   : 0.06 evt/s  (lower = more stable)
   Scene auth coverage : 82.8%  (time any agent was authorized)
+  Avg conf GT agents    : 0.823  (n=1)
   Correct auth time   : 14.9s / 14.9s (100.0%)
 
 [Per-Agent]
@@ -1587,6 +1688,7 @@ BAG: single_018                               [scene: 70.4s]
   Auth events : 2
   Stability   : 0.03 evt/s  (lower = more stable)
   Scene auth coverage : 88.6%  (time any agent was authorized)
+  Avg conf GT agents    : 0.776  (n=1)
   Correct auth time   : 62.4s / 62.4s (100.0%)
 
 [Per-Agent]
@@ -1616,6 +1718,8 @@ BAG: single_019                               [scene: 123.3s]
   Auth events : 2
   Stability   : 0.02 evt/s  (lower = more stable)
   Scene auth coverage : 49.4%  (time any agent was authorized)
+  Avg conf GT agents    : 0.716  (n=2)
+  Avg conf non-GT agents: 0.234  (n=1)
   Correct auth time   : 60.9s / 60.9s (100.0%)
 
 [Per-Agent]
@@ -1649,6 +1753,7 @@ BAG: single_021                               [scene: 37.7s]
   Auth events : 2
   Stability   : 0.05 evt/s  (lower = more stable)
   Scene auth coverage : 87.0%  (time any agent was authorized)
+  Avg conf GT agents    : 0.887  (n=1)
   Correct auth time   : 32.8s / 32.8s (100.0%)
 
 [Per-Agent]
@@ -1676,6 +1781,7 @@ BAG: single_022                               [scene: 39.9s]
   Auth events : 1
   Stability   : 0.03 evt/s  (lower = more stable)
   Scene auth coverage : 72.4%  (time any agent was authorized)
+  Avg conf GT agents    : 0.890  (n=1)
   Correct auth time   : 28.9s / 28.9s (100.0%)
 
 [Per-Agent]
@@ -1705,6 +1811,7 @@ BAG: single_023                               [scene: 46.2s]
   Auth events : 1
   Stability   : 0.02 evt/s  (lower = more stable)
   Scene auth coverage : 93.0%  (time any agent was authorized)
+  Avg conf GT agents    : 0.982  (n=1)
   Correct auth time   : 43.0s / 43.0s (100.0%)
 
 [Per-Agent]
@@ -1734,6 +1841,7 @@ BAG: single_024                               [scene: 38.0s]
   Auth events : 1
   Stability   : 0.03 evt/s  (lower = more stable)
   Scene auth coverage : 77.1%  (time any agent was authorized)
+  Avg conf GT agents    : 0.779  (n=1)
   Correct auth time   : 29.2s / 29.2s (100.0%)
 
 [Per-Agent]
@@ -1763,6 +1871,7 @@ BAG: single_025                               [scene: 40.5s]
   Auth events : 1
   Stability   : 0.02 evt/s  (lower = more stable)
   Scene auth coverage : 81.5%  (time any agent was authorized)
+  Avg conf GT agents    : 0.784  (n=1)
   Correct auth time   : 33.0s / 33.0s (100.0%)
 
 [Per-Agent]
@@ -1790,6 +1899,7 @@ BAG: single_026                               [scene: 29.4s]
   Auth events : 2
   Stability   : 0.07 evt/s  (lower = more stable)
   Scene auth coverage : 82.2%  (time any agent was authorized)
+  Avg conf GT agents    : 0.782  (n=1)
   Correct auth time   : 24.2s / 24.2s (100.0%)
 
 [Per-Agent]
@@ -1819,7 +1929,9 @@ BAG: single_027                               [scene: 22.1s]
   Auth events : 1
   Stability   : 0.05 evt/s  (lower = more stable)
   Scene auth coverage : 79.1%  (time any agent was authorized)
-  Avg time to auth    : 4.45s  (authorized agents, n=1)
+  Avg TTA GT agents     : 4.45s
+  Avg conf GT agents    : 0.790  (n=1)
+  Avg conf non-GT agents: 0.430  (n=2)
   Correct auth time   : 17.5s / 17.5s (100.0%)
 
 [Per-Agent]
@@ -1851,7 +1963,10 @@ BAG: single_028                               [scene: 29.7s]
   Auth events : 3
   Stability   : 0.10 evt/s  (lower = more stable)
   Scene auth coverage : 64.9%  (time any agent was authorized)
-  Avg time to auth    : 2.17s  (authorized agents, n=1)
+  Avg TTA GT agents     : 2.17s
+  Avg TTA FP agents     : 0.96s
+  Avg conf GT agents    : 0.756  (n=1)
+  Avg conf non-GT agents: 0.658  (n=1)
   Correct auth time   : 18.4s / 19.3s (95.5%)
 
 [Per-Agent]
@@ -1883,7 +1998,10 @@ BAG: single_029                               [scene: 27.1s]
   Auth events : 2
   Stability   : 0.07 evt/s  (lower = more stable)
   Scene auth coverage : 66.5%  (time any agent was authorized)
-  Avg time to auth    : 4.55s  (authorized agents, n=1)
+  Avg TTA GT agents     : 4.55s
+  Avg TTA FP agents     : 0.90s
+  Avg conf GT agents    : 0.789  (n=1)
+  Avg conf non-GT agents: 0.699  (n=1)
   Correct auth time   : 17.3s / 18.1s (95.9%)
 
 [Per-Agent]
@@ -1913,7 +2031,9 @@ BAG: single_030                               [scene: 19.1s]
   Auth events : 1
   Stability   : 0.05 evt/s  (lower = more stable)
   Scene auth coverage : 87.2%  (time any agent was authorized)
-  Avg time to auth    : 0.95s  (authorized agents, n=1)
+  Avg TTA GT agents     : 0.95s
+  Avg conf GT agents    : 0.873  (n=1)
+  Avg conf non-GT agents: 0.511  (n=1)
   Correct auth time   : 16.7s / 16.7s (100.0%)
 
 [Per-Agent]
@@ -1945,7 +2065,10 @@ AGGREGATE: single_*                       (28 bags  |  total scene: 886.9s)
   Auth events : 37
   Stability   : 0.04 evt/s
   Scene auth coverage : 67.7%
-  Avg time to auth    : 3.03s  (authorized agents, n=4)
+  Avg TTA GT agents     : 3.03s
+  Avg TTA FP agents     : 0.93s
+  Avg conf GT agents    : 0.788  (n=30)
+  Avg conf non-GT agents: 0.439  (n=13)
   Correct auth time   : 598.9s / 600.5s (99.7%)
 
 [Gestures]
@@ -1962,48 +2085,54 @@ AGGREGATE: multi_*                        (29 bags  |  total scene: 1521.1s)
 ========================================================================
 
 [Authorization]
-  Accuracy=0.719  Precision=0.588  Recall=0.893  F1=0.709
-  TP=50   FP=35   FN=6    TN=55 
+  Accuracy=0.733  Precision=0.600  Recall=0.911  F1=0.723
+  TP=51   FP=34   FN=5    TN=56 
 
 [System]
   Auth events : 190
   Stability   : 0.12 evt/s
   Scene auth coverage : 71.9%
-  Avg time to auth    : 3.23s  (authorized agents, n=44)
-  Correct auth time   : 861.7s / 1093.9s (78.8%)
+  Avg TTA GT agents     : 3.26s
+  Avg TTA FP agents     : 4.67s
+  Avg conf GT agents    : 0.757  (n=56)
+  Avg conf non-GT agents: 0.523  (n=90)
+  Correct auth time   : 903.5s / 1093.9s (82.6%)
 
 [Gestures]
   Expected (GT) : 119 total
   Detected      : 63 total
   Authorized    : 63/63 (100.0%)
-    -> GT agent  : 52/63 (82.5%)
-    -> FP agent  : 11/63 (17.5%)
+    -> GT agent  : 58/63 (92.1%)
+    -> FP agent  : 5/63 (7.9%)
   False detected: 0/63 (0.0%)
   Recognition latency: mean=3.077s  min=1.068s  max=4.865s
-  Gesture accuracy:  Prec=1.000  Recall=0.437  F1=0.608
+  Gesture accuracy:  Prec=1.000  Recall=0.487  F1=0.655
 
 ========================================================================
 AGGREGATE: TOTAL                          (57 bags  |  total scene: 2408.0s)
 ========================================================================
 
 [Authorization]
-  Accuracy=0.767  Precision=0.681  Recall=0.919  F1=0.782
-  TP=79   FP=37   FN=7    TN=66 
+  Accuracy=0.778  Precision=0.690  Recall=0.930  F1=0.792
+  TP=80   FP=36   FN=6    TN=67 
 
 [System]
   Auth events : 227
   Stability   : 0.09 evt/s
   Scene auth coverage : 70.4%
-  Avg time to auth    : 3.21s  (authorized agents, n=48)
-  Correct auth time   : 1460.6s / 1694.4s (86.2%)
+  Avg TTA GT agents     : 3.24s
+  Avg TTA FP agents     : 4.44s
+  Avg conf GT agents    : 0.768  (n=86)
+  Avg conf non-GT agents: 0.512  (n=103)
+  Correct auth time   : 1502.4s / 1694.4s (88.7%)
 
 [Gestures]
   Expected (GT) : 192 total
   Detected      : 101 total
   Authorized    : 101/101 (100.0%)
-    -> GT agent  : 90/101 (89.1%)
-    -> FP agent  : 11/101 (10.9%)
+    -> GT agent  : 96/101 (95.0%)
+    -> FP agent  : 5/101 (5.0%)
   False detected: 0/101 (0.0%)
   Recognition latency: mean=2.974s  min=0.302s  max=4.865s
-  Gesture accuracy:  Prec=1.000  Recall=0.469  F1=0.638
+  Gesture accuracy:  Prec=1.000  Recall=0.500  F1=0.667
 

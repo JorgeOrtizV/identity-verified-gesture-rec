@@ -10,6 +10,9 @@ class DepthSubscriber:
     def __init__(self):
         self.bridge = CvBridge()
         rospy.Subscriber("/preproc/depth_clean", Image, self.callback, queue_size=1)
+        cv2.namedWindow("Depth image", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Depth image", 640, 480)
+        cv2.moveWindow("Depth image", 0, 0)
 
     def callback(self, msg):
         depth = self.bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")

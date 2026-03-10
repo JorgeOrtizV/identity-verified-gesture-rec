@@ -33,7 +33,7 @@ Overall metrics:
   Metric: Overall accuracy
   Value: 430/494 = 87.0%
   ────────────────────────────────────────
-  Metric: Micro precision (gesture classes)
+  Metric: Micro precision (gesture classes) - all matches
   Value: 310/311 = 0.997
   ────────────────────────────────────────
   Metric: Micro recall (gesture classes)

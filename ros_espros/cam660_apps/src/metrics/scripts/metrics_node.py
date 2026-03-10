@@ -215,6 +215,9 @@ class MetricsNode:
             avg_authorized_conf = sum(auth_samples) / len(auth_samples) if auth_samples else 0.0
 
             # Time from first detection to first authorization (both wall clock)
+            # TODO: ROS callback delivery order between /tracking/kalman and /fusion/authorized_agent_id is not guaranteed.  If the auth_id callback fires before the first
+            # kalman message for that agent is delivered to this node, agent_first_seen_rospy[aid] will not yet be set, so time_to_auth is stored as None even though an authorization
+            # event was recorded.  This affects most single-agent bags where the agent is already tracked before the authorization topic begins publishing.  
             time_to_auth = None
             first_seen_rospy = self.agent_first_seen_rospy.get(aid)
             if agent_auth_events and first_seen_rospy is not None:
