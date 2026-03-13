@@ -206,22 +206,22 @@ Micro F1 (gesture classes): **0.906** — Precision: 0.997, Recall: 0.831
 
 | Metric | Value |
 |---|---|
-| Authorization F1 | 0.709 |
-| Authorization accuracy | 0.719 |
-| Precision / Recall | 0.588 / 0.893 |
-| Correct auth time | 78.8% |
+| Authorization F1 | 0.723 |
+| Authorization accuracy | 0.733 |
+| Precision / Recall | 0.600 / 0.911 |
+| Correct auth time | 82.6% |
 | Scene auth coverage | 71.9% |
-| Avg time to authorization | 3.23 s |
+| Avg time to authorization | 3.26 s |
 | Gesture precision | 1.000 |
-| Gesture recall | 0.437 |
-| Gestures to GT agent | 82.5% |
+| Gesture recall | 0.487 |
+| Gestures to GT agent | 92.1% |
 | Recognition latency (mean) | 3.08 s |
 
 #### Key observations
 
 - **Gesture precision is perfect (1.000) in both scenarios** — the system never recognizes a gesture incorrectly. Recall is the limiting factor (gestures missed, not wrongly classified).
 - **Single-agent authorization is highly reliable** — near-zero false positives, only 1 missed authorization across 28 bags.
-- **Multi-agent authorization has more false positives** — when multiple people are present, non-authorized agents occasionally briefly exceed the confidence threshold. Correct authorization time remains at 78.8%, meaning FP windows are short time flickering before authorization returns to the right agent.
+- **Multi-agent authorization has more false positives** — when multiple people are present, non-authorized agents occasionally briefly exceed the confidence threshold. Correct authorization time remains at 82.6%, meaning FP windows are short time flickering before authorization returns to the right agent.
 - **Gesture recall is limited by detection, not classification** — the main causes of missed gestures are: agent temporarily lost during segmentation, gesture performed before confidence has built up, or gestures executed back-to-back without sufficient rest time between them.
 - **Recognition latency ~3 s** — inherent to the DTW sliding-window approach; the system needs to observe the full gesture trajectory before matching.
 - **Stationary agents may be absorbed into the background** over time due to the adaptive background model (`bg_beta2`). Vigorous movement restores foreground detection.
