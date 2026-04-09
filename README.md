@@ -20,11 +20,11 @@ Additionally, I metrics node, working as a passive subscriber, collects per agen
 
 The system uses two complementary sensing modalities:
 
-- **Depth camera:** [ESPROS TOFcam660](https://www.espros.com/photonics/tof-cameras/) — a continuous-wave phase-based ToF sensor (320×240 px, up to 160 fps, 108°×77° FoV). Mounted overhead at approximately 1.9 m above the floor, pointing straight down. Connected via Ethernet. At this height the ground coverage is approximately 5.2 m × 3.0 m. Only the raw distance image is used — no RGB, no point clouds.
+- **Depth camera:** [ESPROS TOFcam660](https://www.espros.com/photonics/tof-cameras/) — a continuous-wave phase-based ToF sensor (320×240 px, up to 160 fps, 108°×77° FoV). Mounted overhead at approximately 1.9 m above the floor, pointing straight down. Connected via Ethernet. At this height the ground coverage is approximately 5.2 m × 3.0 m. Only the raw distance image is used (no RGB, no point clouds).
 
 - **IMU:** MPU-6050 6-axis sensor (3-axis accelerometer + 3-axis gyroscope) on an ESP32 microcontroller, worn on the wrist. Transmits raw inertial data at 50 Hz over WiFi UDP. Serves a dual role: passive identity token (via IMU-vision motion correlation) and primary gesture sensing modality (via DTW on 6-channel trajectories).
 
-No external servers or cloud services are required — all processing runs locally on a standard laptop (tested on HP Omen 15, 16 GB RAM).
+No external servers or cloud services are required . All processing runs locally on a standard laptop (tested on HP Omen 15, 16 GB RAM).
 
 ### Packages
 
