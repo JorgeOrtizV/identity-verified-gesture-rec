@@ -173,10 +173,16 @@ Per-bag result files (`.txt` and `.json`) are written to `src/metrics/results/` 
 
 ## Demo
 ### Single-agent
-<video src="demo/demo_single.mp4" width="320" height="240" controls></video>
+<figure class="video_container">
+  <iframe src="demo/demo_single.mp4" frameborder="0" allowfullscreen="true"> 
+</iframe>
+</figure>
 
 ### Multi-agent
-<video src="demo/demo_multi.mp4" width="320" height="240" controls></video>
+<figure class="video_container">
+  <iframe src="demo/demo_multi.mp4" frameborder="0" allowfullscreen="true"> 
+</iframe>
+</figure>
 
 ## Performance
 
