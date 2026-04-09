@@ -14,6 +14,17 @@ The system detects and tracks people in a scene, assigns a confidence-based auth
      
 Additionally, I metrics node, working as a passive subscriber, collects per agent-level stats and generate automatic reports on shutdown.
 
+---
+
+## Hardware Setup
+
+The system uses two complementary sensing modalities:
+
+- **Depth camera:** [ESPROS TOFcam660](https://www.espros.com/photonics/tof-cameras/) — a continuous-wave phase-based ToF sensor (320×240 px, up to 160 fps, 108°×77° FoV). Mounted overhead at approximately 1.9 m above the floor, pointing straight down. Connected via Ethernet. At this height the ground coverage is approximately 5.2 m × 3.0 m. Only the raw distance image is used — no RGB, no point clouds.
+
+- **IMU:** MPU-6050 6-axis sensor (3-axis accelerometer + 3-axis gyroscope) on an ESP32 microcontroller, worn on the wrist. Transmits raw inertial data at 50 Hz over WiFi UDP. Serves a dual role: passive identity token (via IMU-vision motion correlation) and primary gesture sensing modality (via DTW on 6-channel trajectories).
+
+No external servers or cloud services are required — all processing runs locally on a standard laptop (tested on HP Omen 15, 16 GB RAM).
 
 ### Packages
 
@@ -210,3 +221,21 @@ Micro F1 (gesture classes): **0.906** — Precision: 0.997, Recall: 0.831
 - **Gesture recall is limited by detection, not classification** — the main causes of missed gestures are: agent temporarily lost during segmentation, gesture performed before confidence has built up, or gestures executed back-to-back without sufficient rest time between them.
 - **Recognition latency ~3 s** — inherent to the DTW sliding-window approach; the system needs to observe the full gesture trajectory before matching.
 - **Stationary agents may be absorbed into the background** over time due to the adaptive background model (`bg_beta2`). Vigorous movement restores foreground detection.
+
+---
+
+## Dataset
+
+A synchronized depth + IMU dataset collected as part of this project is publicly available on Zenodo:
+
+> **[Overhead ToF Depth and Wrist-Worn IMU Dataset for Identity-Verified Gesture Recognition](https://doi.org/10.5281/zenodo.19480695)**
+
+The dataset includes:
+
+- **Gesture templates:** 493 recordings (180 circle, 193 arm\_up\_down, 120 out-of-distribution) from 11 participants (5F/6M, heights 1.58–1.93 m), stored as normalized NumPy arrays (`.npy`) and their respective ROS bags (.bag) with synchronized TOF-IMU recordings.
+- **System evaluation bags:** 57 ROS bag files (28 single-agent, 29 multi-agent) totaling ~2408 s of interaction, containing synchronized TOFcam660 depth streams and raw IMU measurements.
+- **Ground truth annotations:** `ground_truth.json` with per-bag authorized agent IDs and expected gesture counts.
+
+All recordings were made under varying lighting conditions (natural, artificial, and combined). No personally identifiable information is stored — depth maps contain no color, texture, or facial features.
+
+To the best of our knowledge, this is the first publicly available dataset for gesture recognition from an overhead ToF configuration with synchronized IMU data.
