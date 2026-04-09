@@ -173,10 +173,10 @@ Per-bag result files (`.txt` and `.json`) are written to `src/metrics/results/` 
 
 ## Demo
 ### Single-agent
-https://github.com/JorgeOrtizV/identity-verified-gesture-rec/raw/main/demo/demo_single.mp4
+<video src="demo/demo_single.mp4" width="600" controls></video>
 
 ### Multi-agent
-https://github.com/JorgeOrtizV/identity-verified-gesture-rec/raw/main/demo/demo_multi.mp4
+<video src="demo/demo_multi.mp4" width="600" controls></video>
 
 ## Performance
 
