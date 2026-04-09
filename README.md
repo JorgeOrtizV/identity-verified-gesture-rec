@@ -8,34 +8,12 @@ The system detects and tracks people in a scene, assigns a confidence-based auth
 
 ## System Overview
 
-```
-cam660 depth stream
-        │
-        ▼
-┌─────────────────────┐
-│  tof_preprocessing  │  Background subtraction → blob detection
-│                     │  → Kalman tracking → confidence fusion
-│                     │  → authorized agent selection
-└────────┬────────────┘
-         │  /tracking/kalman
-         │  /fusion/authorized_agent_id
-         │  /fusion/authorized_agent_confidence
-         │
-         ▼
-┌─────────────────────┐
-│      gesture        │  IMU-driven segmentation (IDLE/ACTIVE state
-│                     │  machine) → DTW template matching against
-│                     │  per-class gesture templates
-└────────┬────────────┘
-         │  /gesture/recognized
-         │  /gesture/state
-         ▼
-┌─────────────────────┐
-│      metrics        │  Passive subscriber — collects per-agent and
-│                     │  scene-level stats; writes report + JSON on
-│                     │  shutdown
-└─────────────────────┘
-```
+![System Overview](figures/system_diagram.png)  
+
+        
+     
+Additionally, I metrics node, working as a passive subscriber, collects per agent-level stats and generate automatic reports on shutdown.
+
 
 ### Packages
 
