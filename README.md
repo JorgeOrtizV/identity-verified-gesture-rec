@@ -171,6 +171,13 @@ Per-bag result files (`.txt` and `.json`) are written to `src/metrics/results/` 
 
 ---
 
+## Demo
+### Single-agent
+<video src="demo/demo_single.mp4" width="320" height="240" controls></video>
+
+### Multi-agent
+<video src="demo/demo_multi.mp4" width="320" height="240" controls></video>
+
 ## Performance
 
 Evaluated on 57 recorded bags (28 single-agent, 29 multi-agent) across 11 participants (5F/6M, heights 160–190 cm). Each bag contains one or more gesture attempts (circle or arm up-and-down) by the authorized person.
