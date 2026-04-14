@@ -232,9 +232,9 @@ A synchronized depth + IMU dataset collected as part of this project is publicly
 
 The dataset includes:
 
-- **Gesture templates:** 493 recordings (180 circle, 193 arm\_up\_down, 120 out-of-distribution) from 11 participants (5F/6M, heights 1.58–1.93 m), stored as normalized NumPy arrays (`.npy`) and their respective ROS bags (.bag) with synchronized TOF-IMU recordings.
-- **System evaluation bags:** 57 ROS bag files (28 single-agent, 29 multi-agent) totaling ~2408 s of interaction, containing synchronized TOFcam660 depth streams and raw IMU measurements.
-- **Ground truth annotations:** `ground_truth.json` with per-bag authorized agent IDs and expected gesture counts.
+- **Gesture templates:** 493 recordings (180 circle, 193 arm\_up\_down, 120 out-of-distribution) from 11 participants (5F/6M, heights 1.58–1.93 m), stored as normalized NumPy arrays (`.npy`) and their respective ROS bags (`.bag`) with synchronized TOF-IMU recordings.
+- **System evaluation bags:** 57 ROS bag files (28 single-agent, 29 multi-agent) totaling ~2408 s of interaction, containing synchronized TOFcam660 depth streams and raw IMU measurements (`.bag`).
+- **Ground truth annotations:** `ground_truth.json` with per-bag authorized agent IDs and expected gesture counts (found under ros_espros/cam660_apps/src/metrics/ground_truth/).
 
 All recordings were made under varying lighting conditions (natural, artificial, and combined). No personally identifiable information is stored — depth maps contain no color, texture, or facial features.
 
